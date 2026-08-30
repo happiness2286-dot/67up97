@@ -75,7 +75,7 @@ function renderTabFrame3Day() {
         n1List = appData.lucky26_matrix_100.slice(0, 60).map(x => x.number);
     }
     if (n2List.length === 0 && appData.lucky26_matrix_100) {
-        n2List = appData.lucky26_matrix_100.slice(0, 28).map(x => x.number);
+        n2List = appData.lucky26_matrix_100.slice(0, 36).map(x => x.number);
     }
 
     // Render Dàn Gốc N1 (60 Số)

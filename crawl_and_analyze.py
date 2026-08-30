@@ -116,7 +116,7 @@ def get_gaussian_rhythm_score(nhip):
     elif 8 <= nhip <= 20: return 6.0
     else: return 1.0
 
-def get_super_filtered_dan(dan_set, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map=None, target_size=28):
+def get_super_filtered_dan(dan_set, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map=None, target_size=36):
     """
     Tạo Dàn Siêu Lọc (chỉ 25-30 số) cho N2 và N3:
     Dựa trên ma trận giao thoa từ các khung N1 trúng (Tần suất Đầu/Đuôi/Tổng xuất hiện ở N1).
@@ -921,15 +921,15 @@ def analyze_all(data_2026):
         h1 = de_n1 in pred_set_n1
         stl_h1 = de_n1 in stl_pair
         
-        # N2: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N1 (~40 số) -> Ép Dàn Siêu Lọc N2 (25-28 số)
+        # N2: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N1 (~40 số) -> Ép Dàn Siêu Lọc N2 (36 số)
         pred_set_n2_std = filter_dan_by_head_trend(pred_set_n1, de_n1)
-        pred_set_n2_super = get_super_filtered_dan(pred_set_n2_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=28)
+        pred_set_n2_super = get_super_filtered_dan(pred_set_n2_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=36)
         h2 = de_n2 in pred_set_n2_super
         stl_h2 = de_n2 in stl_pair
         
-        # N3: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N2 (~35 số) -> Ép Dàn Siêu Lọc N3 (25-28 số)
+        # N3: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N2 (~35 số) -> Ép Dàn Siêu Lọc N3 (36 số)
         pred_set_n3_std = filter_dan_by_head_trend(pred_set_n2_std, de_n2)
-        pred_set_n3_super = get_super_filtered_dan(pred_set_n3_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=28)
+        pred_set_n3_super = get_super_filtered_dan(pred_set_n3_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=36)
         h3 = de_n3 in pred_set_n3_super
         stl_h3 = de_n3 in stl_pair
         
@@ -1856,28 +1856,28 @@ def export_excel(data_2026, summary, filename='Thong_Ke_G7_Va_Top20_XSMB_2026.xl
         'STT': 'TỔNG KẾT KHUNG 3 NGÀY',
         'Ngày Bắt Đầu Khung': f"Tổng Khung: {summary['frame3_summary']['total_frames']} Khung",
         'N1 (Gốc 60 số)': f"Trúng N1: {summary['frame3_summary']['n1_hits']} Khung",
-        'N2 (Siêu Lọc 28 số)': f"Trúng N2: {summary['frame3_summary']['n2_super_hits']} Khung",
-        'N3 (Siêu Lọc 28 số)': f"Trúng N3: {summary['frame3_summary']['n3_super_hits']} Khung",
+        'N2 (Siêu Lọc 36 số)': f"Trúng N2: {summary['frame3_summary']['n2_super_hits']} Khung",
+        'N3 (Siêu Lọc 36 số)': f"Trúng N3: {summary['frame3_summary']['n3_super_hits']} Khung",
         'Tỷ Lệ Trúng N2/N3 (Khi N1 Trượt)': f"Trúng N2/N3 Siêu Lọc: {summary['frame3_summary']['n2_n3_super_hits']} Khung ({summary['frame3_summary']['n2_n3_super_rate_when_miss_n1']}%)",
         'Song Thủ Lô Rơi (N2/N3)': f"Trúng STL Rơi: {summary['frame3_summary']['stl_hits']} Khung ({summary['frame3_summary']['stl_rate']}%)",
         'Kết Quả Khung 3 Ngày': f"TỔNG TRÚNG: {summary['frame3_summary']['total_frame_hits']} Khung ({summary['frame3_summary']['frame_hit_rate']}%)",
         'Dàn N1 (60 Số)': '---',
-        'Dàn Siêu Lọc N2 (28 Số)': '---',
-        'Dàn Siêu Lọc N3 (28 Số)': '---'
+        'Dàn Siêu Lọc N2 (36 Số)': '---',
+        'Dàn Siêu Lọc N3 (36 Số)': '---'
     }]
     for rec in summary['frame3_records']:
         sheet7_rows.append({
             'STT': rec['stt'],
             'Ngày Bắt Đầu Khung': rec['start_date'],
             'N1 (Gốc 60 số)': f"{rec['de_n1']} ({rec['hit_n1']})",
-            'N2 (Siêu Lọc 28 số)': f"{rec['de_n2']} ({rec['hit_n2']})",
-            'N3 (Siêu Lọc 28 số)': f"{rec['de_n3']} ({rec['hit_n3']})",
+            'N2 (Siêu Lọc 36 số)': f"{rec['de_n2']} ({rec['hit_n2']})",
+            'N3 (Siêu Lọc 36 số)': f"{rec['de_n3']} ({rec['hit_n3']})",
             'Tỷ Lệ Trúng N2/N3 (Khi N1 Trượt)': '---',
             'Song Thủ Lô Rơi (N2/N3)': f"{rec['stl_pair']} ({rec['stl_hit']})",
             'Kết Quả Khung 3 Ngày': rec['frame_result'],
             'Dàn N1 (60 Số)': f"{rec['pred_n1']} ({rec['sz_n1']} số)",
-            'Dàn Siêu Lọc N2 (28 Số)': f"{rec['pred_n2']} ({rec['sz_n2']} số)",
-            'Dàn Siêu Lọc N3 (28 Số)': f"{rec['pred_n3']} ({rec['sz_n3']} số)"
+            'Dàn Siêu Lọc N2 (36 Số)': f"{rec['pred_n2']} ({rec['sz_n2']} số)",
+            'Dàn Siêu Lọc N3 (36 Số)': f"{rec['pred_n3']} ({rec['sz_n3']} số)"
         })
 
     # Sheet 10: TOP 3D & 4D
