@@ -709,7 +709,6 @@ function fallbackCopyText(text, successMsg) {
     }
     document.body.removeChild(textArea);
 }
-}
 
 function showToast(message) {
     let container = document.querySelector('.toast-container');
