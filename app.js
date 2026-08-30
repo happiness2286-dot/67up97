@@ -612,11 +612,11 @@ function setupEventListeners() {
 
     // Copy buttons
     document.getElementById('btnCopyN1')?.addEventListener('click', () => {
-        copyToClipboard(window.currentN1List || '', 'Đã copy Dàn 60 Số N1 vào bộ nhớ tạm!');
+        copyToClipboard(window.currentN1List || '', 'Đã copy Dàn 60 Số N1!');
     });
 
     document.getElementById('btnCopyN2')?.addEventListener('click', () => {
-        copyToClipboard(window.currentN2List || '', 'Đã copy Dàn Siêu Lọc 28 Số N2/N3 vào bộ nhớ tạm!');
+        copyToClipboard(window.currentN2List || '', 'Đã copy Dàn Siêu Lọc 36 Số N2/N3!');
     });
 
     document.getElementById('btnCopyTop20')?.addEventListener('click', () => {
@@ -624,7 +624,20 @@ function setupEventListeners() {
     });
 
     document.getElementById('btnCopyFiltered2D')?.addEventListener('click', () => {
-        copyToClipboard(window.current2DFilteredList || '', 'Đã copy Dàn 2D đã lọc!');
+        copyToClipboard(window.current2DFilteredList || '', 'Đã copy Dàn 2D Đã Lọc!');
+    });
+
+    document.getElementById('btnCopyDanVip')?.addEventListener('click', () => {
+        copyToClipboard(window.currentVipList || '', 'Đã copy Dàn VIP Đề Xuất!');
+    });
+
+    document.getElementById('btnResetFilter')?.addEventListener('click', () => {
+        const inputC = document.getElementById('filterChamInput');
+        const inputT = document.getElementById('filterTongInput');
+        if (inputC) inputC.value = '';
+        if (inputT) inputT.value = '';
+        filter2DMatrix();
+        showToast('🔄 Đã đặt lại bộ lọc!', 'success');
     });
 
     document.getElementById('btnCopyDan9')?.addEventListener('click', () => {
@@ -649,15 +662,53 @@ function setupEventListeners() {
 }
 
 function copyToClipboard(text, successMsg) {
-    if (!text) {
+    if (!text || text.trim() === '') {
         showToast('⚠️ Không có dữ liệu để copy', 'warn');
         return;
     }
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('📋 ' + successMsg, 'success');
-    }).catch(err => {
-        showToast('❌ Copy thất bại', 'error');
-    });
+    
+    const cleanText = text.trim();
+    
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(cleanText).then(() => {
+            showToast('📋 ' + successMsg, 'success');
+        }).catch(() => {
+            fallbackCopyText(cleanText, successMsg);
+        });
+    } else {
+        fallbackCopyText(cleanText, successMsg);
+    }
+}
+
+function fallbackCopyText(text, successMsg) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    textArea.style.width = "2em";
+    textArea.style.height = "2em";
+    textArea.style.padding = "0";
+    textArea.style.border = "none";
+    textArea.style.outline = "none";
+    textArea.style.boxShadow = "none";
+    textArea.style.background = "transparent";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showToast('📋 ' + successMsg, 'success');
+        } else {
+            showToast('⚠️ Vui lòng bôi đen chọn thủ công', 'warn');
+        }
+    } catch (err) {
+        showToast('⚠️ Lỗi copy: ' + err, 'warn');
+    }
+    document.body.removeChild(textArea);
+}
 }
 
 function showToast(message) {
