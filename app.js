@@ -16,6 +16,7 @@ async function initApp() {
         if (!response.ok) throw new Error('Không thể tải dữ liệu analysis_summary.json');
         appData = await response.json();
         
+        updateDynamicPredictionDates();
         renderHeaderAndHero();
         renderTabFrame3Day();
         renderTabTop20AndFilter();
@@ -28,6 +29,34 @@ async function initApp() {
         console.error('Lỗi nạp dữ liệu Mini App:', error);
         showToast('❌ Lỗi nạp dữ liệu: ' + error.message, 'error');
     }
+}
+
+function updateDynamicPredictionDates() {
+    if (!appData || !appData.last_date) return;
+    const s = appData.last_date;
+    const m = s.match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+    let d0 = new Date(2026, 7, 29);
+    if (m) {
+        d0 = new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
+    }
+    const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    
+    const n1 = new Date(d0); n1.setDate(n1.getDate() + 1);
+    const n2 = new Date(d0); n2.setDate(n2.getDate() + 2);
+    const n3 = new Date(d0); n3.setDate(n3.getDate() + 3);
+    
+    const fmtFull = (d) => `${days[d.getDay()]}, ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    const fmtShort = (d) => `${days[d.getDay()]} ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+    
+    const elN1 = document.getElementById('lblDateN1'); if (elN1) elN1.textContent = fmtShort(n1);
+    const elN2 = document.getElementById('lblDateN2'); if (elN2) elN2.textContent = fmtShort(n2);
+    const elN3 = document.getElementById('lblDateN3'); if (elN3) elN3.textContent = fmtShort(n3);
+    
+    const nextFullStr = fmtFull(n1);
+    ['lblTab2Date', 'lblTab3Date', 'lblTab4Date', 'lblTab5Date'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = nextFullStr;
+    });
 }
 
 // 1. RENDER HEADER & HERO STATS
