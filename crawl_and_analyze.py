@@ -236,8 +236,8 @@ def analyze_all(data_2026):
                 w_hits[k] += 1
                 
     sorted_weekly_g7 = sorted(w_hits.items(), key=lambda x: x[1], reverse=True)
-    top_weekly_keys = [x[0] for x in sorted_weekly_g7[:3]]
-    excluded_weekly_key = sorted_weekly_g7[3][0]
+    top_weekly_keys = [x[0] for x in sorted_weekly_g7[:4]]
+    excluded_weekly_key = None
 
     # 2. Multi-window frequencies (30, 60, 90 days)
     last_date = chrono[-1]['datetime'] if 'datetime' in chrono[-1] else parse_date(chrono[-1]['date'])
