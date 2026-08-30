@@ -2035,6 +2035,20 @@ def export_excel(data_2026, summary, filename='Thong_Ke_G7_Va_Top20_XSMB_2026.xl
             print(f"⚠️ Không thể lưu file Excel do bị khóa bởi phần mềm khác: {e}", flush=True)
 
 
+def auto_git_push():
+    try:
+        import subprocess
+        print("\n🚀 Đang tự động đẩy dữ liệu mới nhất lên GitHub (67up97)...", flush=True)
+        git_path = r"C:\Program Files\Git\cmd\git.exe"
+        subprocess.run([git_path, 'add', '.'], check=True)
+        date_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        subprocess.run([git_path, 'commit', '-m', f'Auto update daily prediction {date_str}'], capture_output=True, text=True)
+        subprocess.run([git_path, 'push', 'origin', 'main'], capture_output=True, text=True)
+        print("✅ ĐÃ ĐẨY DỮ LIỆU LÊN GITHUB THÀNH CÔNG! Web điện thoại (https://happiness2286-dot.github.io/67up97/) sẽ tự động cập nhật sau vài giây.", flush=True)
+    except Exception as e:
+        print(f"⚠️ Lưu ý khi đẩy GitHub: {e}", flush=True)
+
+
 if __name__ == '__main__':
     data = crawl_xsmb()
     if data:
@@ -2046,4 +2060,6 @@ if __name__ == '__main__':
             json.dump(summary, f, ensure_ascii=False, indent=2)
             
         export_excel(data, summary, filename='Thong_Ke_G7_Va_Top20_XSMB_2026.xlsx')
-        print("All daily analysis complete. Updated Unified Master Excel File (18 Sheets) & Dashboard successfully.")
+        print("All daily analysis complete. Updated Unified Master Excel File (18 Sheets) & Dashboard successfully.", flush=True)
+        
+        auto_git_push()
