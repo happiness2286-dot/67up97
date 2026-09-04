@@ -1,5 +1,5 @@
 @echo off
-title CAP NHAT DU LIEU XSMB & DAY LEN GITHUB 67UP97
+title CAP NHAT DU LIEU XSMB ^& DAY LEN GITHUB 67UP97
 echo ===================================================
 echo HE THONG DU DOAN XSMB AI 2026 - MODEL 67 UP TO 97%
 echo ===================================================
