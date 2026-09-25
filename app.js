@@ -23,6 +23,7 @@ async function initApp() {
         renderTabTop3DauDuoi();
         renderTabTop3D4D();
         renderTabStatsG7();
+        initRadarLive();
         
         setupEventListeners();
     } catch (error) {
@@ -729,3 +730,394 @@ function showToast(message) {
         setTimeout(() => toast.remove(), 300);
     }, 2500);
 }
+
+/* ==========================================================================
+   RADAR SOI LIVE G1-G5 CONTROLLER & RENDERER (CHUẨN IPHONE 11)
+   ========================================================================== */
+
+let radarData = null;
+let radarPollingTimer = null;
+let isRadarPollingActive = true;
+let currentRadarTableFilter = 'all';
+
+async function initRadarLive() {
+    await fetchAndRenderRadarLive();
+    startRadarLivePolling();
+    setupRadarEventListeners();
+}
+
+async function fetchAndRenderRadarLive(isSilent = false) {
+    try {
+        const res = await fetch('live_radar_state.json?t=' + Date.now());
+        if (!res.ok) throw new Error('Không thể tải file live_radar_state.json');
+        radarData = await res.json();
+        
+        renderRadarHeaderInfo();
+        renderLivePrizeChips();
+        renderRadarTopSummaries();
+        renderRadar5ColTable();
+        renderRadarFrame3Day();
+        
+        if (!isSilent) {
+            console.log('[Radar Live] Đã cập nhật thành công dữ liệu live');
+        }
+    } catch (err) {
+        console.warn('[Radar Live] Chưa tải được state live:', err);
+    }
+}
+
+function startRadarLivePolling() {
+    if (radarPollingTimer) clearInterval(radarPollingTimer);
+    radarPollingTimer = setInterval(() => {
+        if (isRadarPollingActive) {
+            fetchAndRenderRadarLive(true);
+        }
+    }, 5000);
+}
+
+function renderRadarHeaderInfo() {
+    if (!radarData) return;
+    
+    const elTargetDate = document.getElementById('radarPillTargetDate');
+    if (elTargetDate) elTargetDate.textContent = radarData.target_date || 'Thứ sáu 25-09-2026';
+
+    const elDateTitle = document.getElementById('radarLiveDateTitle');
+    if (elDateTitle) elDateTitle.textContent = (radarData.target_date || 'THỨ SÁU NGÀY 25–09–2026').toUpperCase();
+
+    const elPrevInfo = document.getElementById('radarPillPrevInfo');
+    if (elPrevInfo) elPrevInfo.innerHTML = `Đề <span style="color:#67E8F9; font-weight:900;">${radarData.prev_de || '96'}</span> (GĐB: ${radarData.prev_db || '78196'})`;
+
+    const elHead = document.getElementById('radarPillHead');
+    if (elHead && radarData.head_targets) {
+        elHead.textContent = `Đầu ${radarData.head_targets[0]} + Bóng ${radarData.head_targets[1]}`;
+    }
+
+    const elTail = document.getElementById('radarPillTail');
+    if (elTail && radarData.tail_targets) {
+        elTail.textContent = `Đuôi ${radarData.tail_targets[0]} + Bóng ${radarData.tail_targets[1]}`;
+    }
+
+    const elLastUpdated = document.getElementById('radarLastUpdated');
+    if (elLastUpdated) {
+        elLastUpdated.textContent = radarData.last_updated || new Date().toLocaleTimeString('vi-VN');
+    }
+
+    const elProgress = document.getElementById('radarProgressText');
+    if (elProgress) {
+        const filled = radarData.filled_count || 19;
+        const total = radarData.total_count || 19;
+        elProgress.textContent = `${filled}/${total} GIẢI ${filled >= total ? '(ĐÃ HOÀN TẤT)' : '(ĐANG QUAY...)'}`;
+    }
+}
+
+function buildChipHtml(valStr, prizeCode, hp) {
+    if (!valStr) {
+        return `<span class="prize-num-chip" style="opacity: 0.5;"><span style="letter-spacing: 2px;">• • • • •</span></span>`;
+    }
+    
+    let digitsHtml = '';
+    for (let idx = 1; idx <= valStr.length; idx++) {
+        const char = valStr[idx - 1];
+        const posKey = `${prizeCode}_${idx}`;
+        const info = hp[posKey];
+        
+        let cellClass = 'prize-digit-cell';
+        let tagHtml = '';
+        
+        if (info) {
+            const cycle = info.cycle || 1;
+            if (cycle >= 3) {
+                cellClass += ' streak-3d';
+                tagHtml = `<span class="digit-tag">${cycle}d</span>`;
+            } else if (cycle === 2) {
+                cellClass += ' streak-2d';
+                tagHtml = `<span class="digit-tag">2d</span>`;
+            } else {
+                cellClass += ' streak-1d';
+                tagHtml = `<span class="digit-tag">1d</span>`;
+            }
+        }
+        
+        digitsHtml += `
+            <span class="${cellClass}">
+                <span class="prize-digit-char">${char}</span>
+                ${tagHtml}
+            </span>
+        `;
+    }
+    
+    return `<span class="prize-num-chip">${digitsHtml}</span>`;
+}
+
+function renderLivePrizeChips() {
+    if (!radarData || !radarData.live_prizes) return;
+    const lp = radarData.live_prizes;
+    const hp = radarData.highlight_positions || {};
+
+    // G1
+    const elG1 = document.getElementById('liveG1Chips');
+    if (elG1) {
+        elG1.innerHTML = buildChipHtml(lp.g1, 'G1', hp);
+    }
+
+    // G2 (2.1, 2.2)
+    const elG2 = document.getElementById('liveG2Chips');
+    if (elG2) {
+        const g2List = Array.isArray(lp.g2) ? lp.g2 : [lp.g2];
+        elG2.innerHTML = g2List.map((val, idx) => buildChipHtml(val, `G2.${idx + 1}`, hp)).join('');
+    }
+
+    // G3 (3.1 -> 3.6)
+    const elG3 = document.getElementById('liveG3Chips');
+    if (elG3) {
+        const g3List = Array.isArray(lp.g3) ? lp.g3 : [];
+        elG3.innerHTML = g3List.map((val, idx) => buildChipHtml(val, `G3.${idx + 1}`, hp)).join('');
+    }
+
+    // G4 (4.1 -> 4.4)
+    const elG4 = document.getElementById('liveG4Chips');
+    if (elG4) {
+        const g4List = Array.isArray(lp.g4) ? lp.g4 : [];
+        elG4.innerHTML = g4List.map((val, idx) => buildChipHtml(val, `G4.${idx + 1}`, hp)).join('');
+    }
+
+    // G5 (5.1 -> 5.6)
+    const elG5 = document.getElementById('liveG5Chips');
+    if (elG5) {
+        const g5List = Array.isArray(lp.g5) ? lp.g5 : [];
+        elG5.innerHTML = g5List.map((val, idx) => buildChipHtml(val, `G5.${idx + 1}`, hp)).join('');
+    }
+}
+
+function renderRadarTopSummaries() {
+    if (!radarData) return;
+    
+    // Top 1 Bạch Thủ
+    const elTop1 = document.getElementById('radarTop1Display');
+    if (elTop1) elTop1.textContent = radarData.top_1 || '41';
+    
+    window.currentRadarBT = radarData.top_1 || '41';
+
+    // Top 4 Tứ Thủ
+    const elTop4 = document.getElementById('radarTop4Chips');
+    const top4List = radarData.top_4 || ['41', '14', '67', '31'];
+    window.currentRadarTT = top4List.join(', ');
+    if (elTop4) {
+        elTop4.innerHTML = top4List.map(num => `
+            <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-size: 15px; font-weight: 800; padding: 4px 12px; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 8px;">
+                ${num}
+            </span>
+        `).join('');
+    }
+
+    // Dàn 9 Số Cội Nguồn
+    const elDan9 = document.getElementById('radarDan9Chips');
+    const dan9List = radarData.dan_9_so || ['67', '61', '62', '37', '31', '32', '47', '41', '42'];
+    window.currentRadarDan9 = dan9List.join(', ');
+    if (elDan9) {
+        elDan9.innerHTML = dan9List.map(num => `
+            <span class="badge" style="background: rgba(167, 139, 250, 0.2); color: #C4B5FD; font-size: 13.5px; font-weight: 800; padding: 3px 8px; border: 1px solid rgba(167, 139, 250, 0.4); border-radius: 6px;">
+                ${num}
+            </span>
+        `).join('');
+    }
+
+    // Dàn Lót Hợp Lệ
+    const elDanLot = document.getElementById('radarDanLotDisplay');
+    const danLotList = radarData.dan_lot || [];
+    window.currentRadarLot = danLotList.join(', ');
+    if (elDanLot) {
+        elDanLot.textContent = danLotList.length > 0 ? danLotList.join(', ') : 'Tất cả các số lót hợp lệ đều trùng khớp trong khung 60s N1';
+    }
+    const lblCountLot = document.getElementById('lblCountLot');
+    if (lblCountLot) {
+        lblCountLot.textContent = `${danLotList.length} số`;
+    }
+}
+
+function renderRadar5ColTable() {
+    if (!radarData || !radarData.table_5cols) return;
+    const tbody = document.getElementById('tbody5Cols');
+    if (!tbody) return;
+
+    const list = radarData.table_5cols;
+    
+    // Đếm số lượng theo filter
+    let cntAll = list.length;
+    let cntTop = 0;
+    let cntLot = 0;
+    let cntDiscard = 0;
+
+    list.forEach(item => {
+        if (item.top_rank.includes('Top 1') || item.top_rank.includes('Top 4')) cntTop++;
+        else if (item.top_rank.includes('Lót')) cntLot++;
+        else cntDiscard++;
+    });
+
+    const elAll = document.getElementById('cntAll'); if (elAll) elAll.textContent = cntAll;
+    const elTop = document.getElementById('cntTop'); if (elTop) elTop.textContent = cntTop;
+    const elLot = document.getElementById('cntLot'); if (elLot) elLot.textContent = cntLot;
+    const elDis = document.getElementById('cntDiscard'); if (elDis) elDis.textContent = cntDiscard;
+
+    const filtered = list.filter(item => {
+        if (currentRadarTableFilter === 'top') return item.top_rank.includes('Top 1') || item.top_rank.includes('Top 4');
+        if (currentRadarTableFilter === 'lot') return item.top_rank.includes('Lót');
+        if (currentRadarTableFilter === 'discard') return item.top_rank.includes('Loại');
+        return true;
+    });
+
+    tbody.innerHTML = '';
+    filtered.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        let rankColor = '#94A3B8';
+        if (item.top_rank.includes('Top 1')) rankColor = '#FBBF24';
+        else if (item.top_rank.includes('Top 4')) rankColor = '#38BDF8';
+        else if (item.top_rank.includes('Lót')) rankColor = '#34D399';
+        else if (item.top_rank.includes('Loại')) rankColor = '#FB7185';
+
+        const isN1 = item.in_cap4;
+        const n1Badge = isN1 
+            ? `<span class="badge-n1-yes"><i class="fa-solid fa-check"></i> Có (N1)</span>`
+            : `<span class="badge-n1-no">Không</span>`;
+
+        const streakBadge = item.cycle_days >= 3
+            ? `<span class="badge badge-gold" style="font-size: 11px;">${item.cycle_days} ngày</span>`
+            : (item.cycle_days === 2 
+                ? `<span class="badge" style="background: rgba(56,189,248,0.2); color:#38BDF8; font-size:11px;">2 ngày</span>`
+                : `<span class="badge" style="background: rgba(100,116,139,0.2); color:#94A3B8; font-size:11px;">1 ngày</span>`);
+
+        tr.innerHTML = `
+            <td style="text-align: center; font-weight: 900; font-size: 17px; color: ${rankColor}; font-family: 'JetBrains Mono', monospace;">
+                ${item.num}
+            </td>
+            <td style="font-size: 12px; color: #CBD5E1;">
+                ${item.h_pos || ''} × ${item.t_pos || ''}
+            </td>
+            <td style="text-align: center;">
+                ${streakBadge}
+            </td>
+            <td style="text-align: center;">
+                ${n1Badge}
+            </td>
+            <td style="font-weight: 800; font-size: 12.5px; color: ${rankColor};">
+                ${item.top_rank}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    window.currentRadarTableText = filtered.map(x => `${x.num} | ${x.h_pos} x ${x.t_pos} | ${x.cycle_days}d | N1: ${x.in_cap4_str} | ${x.top_rank}`).join('\n');
+}
+
+function renderRadarFrame3Day() {
+    if (!radarData) return;
+    const ft = radarData.frame_transition || {};
+    
+    // Auto-Shift Banner
+    const elBanner = document.getElementById('radarAutoShiftBanner');
+    const elMsg = document.getElementById('radarAutoShiftMsg');
+    const elBadge = document.getElementById('radarAutoShiftBadge');
+    const rowN2 = document.getElementById('tierRowN2');
+
+    const lastRes = ft.last_result || '';
+    const isHit = lastRes.includes('ĐÃ TRÚNG N1') || lastRes.includes('ĐÃ TRÚNG');
+
+    if (elBanner) {
+        if (isHit) {
+            elBanner.className = 'auto-shift-banner banner-hit';
+            if (elMsg) elMsg.innerHTML = `<i class="fa-solid fa-circle-check" style="font-size: 16px;"></i> <span>${lastRes}</span>`;
+            if (elBadge) elBadge.textContent = 'ĐÃ TRÚNG N1 → RESET CẦU MỚI';
+            if (rowN2) rowN2.classList.remove('tier-active-glow');
+        } else {
+            elBanner.className = 'auto-shift-banner banner-active-n2';
+            if (elMsg) elMsg.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="font-size: 16px;"></i> <span>${lastRes}</span>`;
+            if (elBadge) elBadge.textContent = '🎯 ĐANG ĐÁNH N2 (36 SỐ)';
+            if (rowN2) rowN2.classList.add('tier-active-glow');
+        }
+    }
+
+    // Lists
+    const n1List = ft.dan_n1 || radarData.dan_tinh_4cap?.dan_60_cap4 || [];
+    const n2List = ft.dan_n2 || radarData.dan_tinh_4cap?.dan_cap2_38so || [];
+    const n3List = ft.dan_n3 || [];
+
+    window.currentRadarFrameN1 = n1List.join(', ');
+    window.currentRadarFrameN2 = n2List.join(', ');
+    window.currentRadarFrameN3 = n3List.join(', ');
+
+    const elN1 = document.getElementById('radarFrameN1List');
+    if (elN1) elN1.textContent = n1List.join(', ');
+
+    const elN2 = document.getElementById('radarFrameN2List');
+    if (elN2) elN2.textContent = n2List.join(', ');
+
+    const elN3 = document.getElementById('radarFrameN3List');
+    if (elN3) elN3.textContent = n3List.join(', ');
+}
+
+function setupRadarEventListeners() {
+    // Refresh Button
+    document.getElementById('btnRefreshRadar')?.addEventListener('click', async () => {
+        showToast('🔄 Đang làm mới dữ liệu Radar...', 'warn');
+        await fetchAndRenderRadarLive();
+        showToast('✅ Đã cập nhật kết quả Radar mới nhất!', 'success');
+    });
+
+    // Toggle Polling
+    document.getElementById('btnToggleRadarPolling')?.addEventListener('click', () => {
+        isRadarPollingActive = !isRadarPollingActive;
+        const lbl = document.getElementById('lblToggleText');
+        const badge = document.getElementById('radarLiveBadgeTxt');
+        if (lbl) lbl.textContent = `Tự Động Quét: ${isRadarPollingActive ? 'BẬT' : 'TẮT'}`;
+        if (badge) badge.textContent = isRadarPollingActive ? 'ĐANG THEO DÕI LIVE (5s/lần)' : 'TẠM DỪNG QUÉT';
+        showToast(isRadarPollingActive ? '🟢 Đã kích hoạt tự động quét live 5s/lần' : '⏸️ Đã tạm dừng tự động quét', 'info');
+    });
+
+    // Copy Bạch Thủ
+    document.getElementById('btnCopyRadarBT')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarBT || '41', 'Đã copy Bạch Thủ: ' + (window.currentRadarBT || '41'));
+    });
+
+    // Copy Tứ Thủ
+    document.getElementById('btnCopyRadarTT')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarTT || '', 'Đã copy Tứ Thủ: ' + (window.currentRadarTT || ''));
+    });
+
+    // Copy Dàn 9 Số
+    document.getElementById('btnCopyRadarDan9')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarDan9 || '', 'Đã copy Dàn 9 Số Cội Nguồn!');
+    });
+
+    // Copy Dàn Lót
+    document.getElementById('btnCopyRadarLot')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarLot || '', 'Đã copy Dàn Lót Hợp Lệ!');
+    });
+
+    // Copy All Table
+    document.getElementById('btnCopyTableAll')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarTableText || '', 'Đã copy Danh Sách Bảng Phân Tầng 5 Cột!');
+    });
+
+    // Copy Frame N1, N2, N3
+    document.getElementById('btnCopyFrameN1')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarFrameN1 || '', 'Đã copy Dàn 60 Số N1!');
+    });
+    document.getElementById('btnCopyFrameN2')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarFrameN2 || '', 'Đã copy Dàn Siêu Lọc 36 Số N2!');
+    });
+    document.getElementById('btnCopyFrameN3')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarFrameN3 || '', 'Đã copy Dàn Hỏa Lực 36 Số N3!');
+    });
+
+    // Filter Buttons for 5-col table
+    document.querySelectorAll('.table-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.table-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentRadarTableFilter = btn.getAttribute('data-filter') || 'all';
+            renderRadar5ColTable();
+        });
+    });
+}
+
