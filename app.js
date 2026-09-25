@@ -290,8 +290,7 @@ function renderHistoryTableRecords() {
         tbody.appendChild(tr);
     });
 
-    window.currentHistoryTableText = reversed.map(r => `Khung #${r.stt} | ${r.start_date} | N1: ${r.de_n1} | N2: ${r.de_n2} | N3: ${r.de_n3} | STL: ${r.stl_pair} | KQ: ${r.frame_result}`).join('
-');
+    window.currentHistoryTableText = reversed.map(r => `Khung #${r.stt} | ${r.start_date} | N1: ${r.de_n1} | N2: ${r.de_n2} | N3: ${r.de_n3} | STL: ${r.stl_pair} | KQ: ${r.frame_result}`).join('\n');
 }
 
 // EVENT LISTENERS & COPY ACTIONS
