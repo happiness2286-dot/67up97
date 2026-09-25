@@ -471,6 +471,9 @@ function renderRadarHeaderInfo() {
     const elTargetDate = document.getElementById('radarPillTargetDate');
     if (elTargetDate) elTargetDate.textContent = radarData.target_date || 'Thứ sáu 25-09-2026';
 
+    const elDynamicTarget = document.getElementById('lblRadarTargetDate');
+    if (elDynamicTarget) elDynamicTarget.textContent = (radarData.target_date || 'THỨ SÁU NGÀY 25–09–2026').toUpperCase();
+
     const elDateTitle = document.getElementById('radarLiveDateTitle');
     if (elDateTitle) elDateTitle.textContent = (radarData.target_date || 'THỨ SÁU NGÀY 25–09–2026').toUpperCase();
 

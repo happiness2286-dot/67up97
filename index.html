@@ -294,11 +294,25 @@
 
             <!-- PHẦN KẾT QUẢ KHI XONG G5.6: BẢNG PHÂN TẦNG 5 CỘT & 4 CẤP -->
             <div class="ranking-section-box">
-                <div class="prize-section-header">
-                    <h2>
-                        <i class="fa-solid fa-crown" style="color: #FBBF24;"></i>
-                        <span>KẾT QUẢ PHÂN TẦNG VÀ LỌC GIAO THOA (CHỐT HẠ KHI G5.6 HOÀN TẤT)</span>
-                    </h2>
+                <div class="prize-section-header" style="flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2>
+                            <i class="fa-solid fa-crown" style="color: #FBBF24;"></i>
+                            <span>KẾT QUẢ PHÂN TẦNG VÀ LỌC GIAO THOA (CHỐT HẠ KHI G5.6 HOÀN TẤT)</span>
+                        </h2>
+                        <div style="margin-top: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <span style="font-size: 13px; font-weight: 800; color: #E2E8F0; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-crosshairs" style="color: #FBBF24;"></i>
+                                ÁP DỤNG ĐÁNH CHO NGÀY:
+                            </span>
+                            <span class="badge" id="lblRadarTargetDate" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; border: 1px solid #38BDF8; font-size: 13.5px; font-weight: 800; padding: 3px 12px; border-radius: 6px; letter-spacing: 0.5px;">
+                                THỨ SÁU NGÀY 25-09-2026
+                            </span>
+                            <span style="font-size: 12px; color: #94A3B8; font-style: italic;">
+                                (Soi trực tiếp theo ngày — Ngày nào đánh ngày đấy)
+                            </span>
+                        </div>
+                    </div>
                     <span class="badge-done" style="background: rgba(245, 158, 11, 0.15); border-color: #F59E0B; color: #FBBF24;">
                         <i class="fa-solid fa-fire"></i> ĐÃ CHỐT HỎA LỰC
                     </span>
@@ -562,6 +576,6 @@
 
     </main>
 
-    <script src="app.js?v=20260925_FIX_ACTIVE_V2"></script>
+    <script src="app.js?v=20260925_DYNAMIC_DATE_V3"></script>
 </body>
 </html>
