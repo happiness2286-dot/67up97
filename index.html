@@ -320,17 +320,34 @@
 
                 <!-- 4 Thẻ Summary Top 1 chạm -->
                 <div class="top-summary-grid">
-                    <!-- Top 1 Bạch Thủ -->
+                    <!-- Top 1 Bạch Thủ & Lót Lộn Song Thủ Trụ -->
                     <div class="top-summary-card card-gold">
                         <div class="top-summary-title" style="color: #FBBF24;">
-                            <span>👑 BẠCH THỦ (NGÀY 3, 4)</span>
+                            <span>👑 BẠCH THỦ (HỘI TỤ ĐA TẦNG)</span>
                             <span class="badge badge-gold" style="font-size: 10px;">Hỏa Lực</span>
                         </div>
-                        <div class="big-number-display" id="radarTop1Display">41</div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;" id="radarTop1Pos">Vị trí: G5.5[1] × G2.1[1] (Ăn thông 3 ngày)</div>
-                        <button class="btn btn-gold btn-sm" id="btnCopyRadarBT" style="width: 100%;">
-                            <i class="fa-regular fa-copy"></i> Copy Bạch Thủ
-                        </button>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 6px; padding: 4px 0;">
+                            <div>
+                                <div style="font-size: 10.5px; color: #FDE68A; font-weight: 700; text-align: center;">BẠCH THỦ</div>
+                                <div class="big-number-display" id="radarTop1Display" style="margin: 0; line-height: 1;">42</div>
+                            </div>
+                            <div style="font-size: 18px; color: #94A3B8; font-weight: 800;">+</div>
+                            <div>
+                                <div style="font-size: 10.5px; color: #34D399; font-weight: 700; text-align: center;">LÓT LỘN TRỤ</div>
+                                <div class="big-number-display" id="radarLotLonDisplay" style="margin: 0; line-height: 1; color: #34D399; text-shadow: 0 0 15px rgba(16, 185, 129, 0.5);">24</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-align: center;" id="radarTop1Pos">
+                            Cặp Song Thủ: <strong id="lblSongThuTru" style="color: #FBBF24;">42 - 24</strong> (Bảo vệ 100% khi về lộn)
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn btn-gold btn-sm" id="btnCopyRadarBT" style="flex: 1; padding: 6px 4px; font-size: 11px; font-weight: 800;">
+                                <i class="fa-regular fa-copy"></i> Copy BT
+                            </button>
+                            <button class="btn btn-primary btn-sm" id="btnCopyRadarST" style="flex: 1; padding: 6px 4px; font-size: 11px; font-weight: 800; background: rgba(16, 185, 129, 0.25); color: #34D399; border: 1px solid #10B981;">
+                                <i class="fa-solid fa-shield-halved"></i> Copy Cặp ST
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Top 4 Tứ Thủ -->

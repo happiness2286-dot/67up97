@@ -685,15 +685,27 @@ function renderLivePrizeChips() {
 function renderRadarTopSummaries() {
     if (!radarData) return;
     
-    // Top 1 Bạch Thủ
+    // Top 1 Bạch Thủ & Lót Lộn Song Thủ Trụ
+    const top1 = radarData.top_1 || '32';
+    const lotLon = radarData.lot_lon || '23';
+    const songThu = radarData.song_thu_tru || [top1, lotLon];
+
     const elTop1 = document.getElementById('radarTop1Display');
-    if (elTop1) elTop1.textContent = radarData.top_1 || '41';
+    if (elTop1) elTop1.textContent = top1;
+
+    const elLotLon = document.getElementById('radarLotLonDisplay');
+    if (elLotLon) elLotLon.textContent = lotLon;
+
+    const elSongThuTru = document.getElementById('lblSongThuTru');
+    if (elSongThuTru) elSongThuTru.textContent = `${top1} - ${lotLon}`;
     
-    window.currentRadarBT = radarData.top_1 || '41';
+    window.currentRadarBT = top1;
+    window.currentRadarLotLon = lotLon;
+    window.currentRadarST = `${top1}, ${lotLon}`;
 
     // Top 4 Tứ Thủ
     const elTop4 = document.getElementById('radarTop4Chips');
-    const top4List = radarData.top_4 || ['41', '14', '67', '31'];
+    const top4List = radarData.top_4 || [top1, lotLon, '37', '82'];
     window.currentRadarTT = top4List.join(', ');
     if (elTop4) {
         elTop4.innerHTML = top4List.map(num => `
@@ -1059,6 +1071,11 @@ function setupRadarEventListeners() {
         copyToClipboard(window.currentRadarBT || '41', 'Đã copy Bạch Thủ: ' + (window.currentRadarBT || '41'));
     });
 
+    // Copy Song Thủ Trụ (Bạch Thủ + Lót Lộn)
+    document.getElementById('btnCopyRadarST')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarST || '', 'Đã copy Cặp Song Thủ Trụ: ' + (window.currentRadarST || ''));
+    });
+
     // Copy Tứ Thủ
     document.getElementById('btnCopyRadarTT')?.addEventListener('click', () => {
         copyToClipboard(window.currentRadarTT || '', 'Đã copy Tứ Thủ: ' + (window.currentRadarTT || ''));
@@ -1081,8 +1098,8 @@ function setupRadarEventListeners() {
 
     // Nút Chốt Gấp Trước 18h25 (1 Chạm)
     document.getElementById('btnQuickCopyAll')?.addEventListener('click', () => {
-        const text = `⚡ GÓI CHỐT GẤP XSMB LIVE (TRƯỚC 18H25):\n👑 BẠCH THỦ: ${window.currentRadarBT || ''}\n🔥 TỨ THỦ: ${window.currentRadarTT || ''}\n🌟 3 CÀNG BẠCH THỦ (3s): ${window.currentCangBT || ''}\n🌟 3 CÀNG TỨ THỦ (12s): ${window.currentCangTT || ''}\n🎯 DÀN 9S CỘI NGUỒN: ${window.currentRadarDan9 || ''}\n🛡️ DÀN LÓT BẢO HIỂM: ${window.currentRadarLot || ''}`;
-        copyToClipboard(text, '⚡ Đã copy GÓI CHỐT GẤP (Bạch Thủ + Tứ Thủ + 3 Càng + 9s) sẵn sàng dán tin nhắn!');
+        const text = `⚡ GÓI CHỐT GẤP XSMB LIVE (TRƯỚC 18H25):\n👑 BẠCH THỦ: ${window.currentRadarBT || ''}\n🛡️ LÓT LỘN TRỤ: ${window.currentRadarLotLon || ''} (Cặp Song Thủ: ${window.currentRadarST || ''})\n🔥 TỨ THỦ: ${window.currentRadarTT || ''}\n🌟 3 CÀNG BẠCH THỦ (3s): ${window.currentCangBT || ''}\n🌟 3 CÀNG TỨ THỦ (12s): ${window.currentCangTT || ''}\n🎯 DÀN 9S CỘI NGUỒN: ${window.currentRadarDan9 || ''}\n🛡️ DÀN LÓT BẢO HIỂM: ${window.currentRadarLot || ''}`;
+        copyToClipboard(text, '⚡ Đã copy GÓI CHỐT GẤP (Bạch Thủ + Lót Lộn + Tứ Thủ + 3 Càng + 9s) sẵn sàng dán tin nhắn!');
     });
 
     // Copy Dàn 9 Số

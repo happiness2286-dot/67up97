@@ -51,6 +51,35 @@ BONG_AM = {
     5: 8, 8: 5
 }
 
+def get_lot_lon(num_str):
+    """Tính con số đảo (lót lộn) của Bạch thủ, nếu kép thì lót bóng kép."""
+    if not num_str or len(num_str) < 2:
+        return ""
+    if num_str[0] != num_str[1]:
+        return f"{num_str[1]}{num_str[0]}"
+    d = int(num_str[0])
+    b = BONG_DUONG.get(d, (d + 5) % 10)
+    return f"{b}{b}"
+
+def extract_target_sums(prev_draw):
+    """Trích xuất tập Cầu Tổng G7 và Tổng Đề kỳ trước."""
+    target_sums = set()
+    if not prev_draw:
+        return target_sums
+    prev_de = prev_draw.get('de', '')
+    if prev_de and len(prev_de) >= 2 and prev_de.isdigit():
+        s_de = (int(prev_de[0]) + int(prev_de[1])) % 10
+        target_sums.add(s_de)
+        target_sums.add(BONG_DUONG.get(s_de, (s_de + 5) % 10))
+    prizes = prev_draw.get('prizes', {})
+    for k in ['G7.1', 'G7.2', 'G7.3', 'G7.4']:
+        val = prizes.get(k, '')
+        if val and len(val) >= 2 and val[-2:].isdigit():
+            t = (int(val[-2]) + int(val[-1])) % 10
+            target_sums.add(t)
+            target_sums.add(BONG_DUONG.get(t, (t + 5) % 10))
+    return target_sums
+
 def calc_cang_3d(g1_val, prev_de, top_1, top_4, dan_9_so):
     """Bắt Top 3 Càng 3D từ Tâm Càng Giải Nhất (G1) + Bóng Dương/Bóng Âm + Tổng Đề Kỳ Trước."""
     scores = {i: 0 for i in range(10)}
@@ -164,7 +193,7 @@ def parse_draws(html):
         de_val = db_val[-2:] if len(db_val) >= 2 else ""
 
         prizes = {}
-        config = [(1, 1), (2, 2), (3, 6), (4, 4), (5, 6)]
+        config = [(1, 1), (2, 2), (3, 6), (4, 4), (5, 6), (7, 4)]
         for g_num, total_subs in config:
             for sub_idx in range(total_subs):
                 g_code = f"G{g_num}" if g_num == 1 else f"G{g_num}.{sub_idx+1}"
@@ -186,7 +215,7 @@ def parse_draws(html):
 def get_positions(prizes):
     res = {}
     for code, val in prizes.items():
-        if not val: continue
+        if not val or code.startswith('G7'): continue
         for idx, char in enumerate(val, 1):
             res[f"{code}_{idx}"] = (char, f"{code} vị trí {idx}")
     return res
@@ -343,16 +372,20 @@ def scan_radar():
                         'in_cap4_str': "Có" if (num_str in cap4_set) else "Không"
                     }
 
-    found_list = list(combos_map.values())
-    found_list.sort(key=lambda x: (x['cycle_days'], x['score']), reverse=True)
+    # 1. Trích xuất thông tin G1 & Tâm G1 trực tiếp
+    live_p = target_draw['prizes']
+    p_g1 = live_p.get('G1', '')
+    p_g2 = [live_p.get('G2.1', ''), live_p.get('G2.2', '')]
+    p_g3 = [live_p.get(f'G3.{i}', '') for i in range(1, 7)]
+    p_g4 = [live_p.get(f'G4.{i}', '') for i in range(1, 5)]
+    p_g5 = [live_p.get(f'G5.{i}', '') for i in range(1, 7)]
+    filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
+    is_completed = (filled_prizes >= 19)
 
-    # Bạch thủ Top 1 & Tứ thủ Top 4
-    chidao_pool = [x for x in found_list if x['cycle_days'] >= 3]
-    top_pool = chidao_pool if chidao_pool else found_list
-    top_1 = top_pool[0]['num'] if top_pool else "41"
-    top_4 = [x['num'] for x in top_pool[:4]] if len(top_pool) >= 4 else ["41", "14", "67", "31"]
+    tam_g1 = p_g1[2] if (p_g1 and len(p_g1) >= 3 and p_g1.isdigit()) else ''
+    tam_g1_set = {tam_g1, str(BONG_DUONG.get(int(tam_g1), ''))} if tam_g1 else set()
 
-    # Load analysis_summary.json nếu có để đồng bộ Top 3 Đầu x Top 3 Đuôi động
+    # 2. Load analysis_summary.json để đồng bộ Top 3 Đầu x Top 3 Đuôi AI
     summary_data = {}
     if os.path.exists(SUMMARY_JSON_PATH):
         try:
@@ -361,7 +394,6 @@ def scan_radar():
         except Exception:
             pass
 
-    # Top 3 Đầu và Top 3 Đuôi động theo AI mới nhất
     head_digits = []
     if summary_data.get('top_predicted_heads'):
         head_digits = [h['head'].replace('Đầu ', '').strip() for h in summary_data['top_predicted_heads'][:3]]
@@ -376,6 +408,73 @@ def scan_radar():
 
     dan_9_so = sorted(list(set(f"{h}{t}" for h in head_digits for t in tail_digits)))
 
+    # 3. Trích xuất Cầu Tổng G7 & Tổng Đề kỳ trước
+    target_sums = extract_target_sums(prev_draw)
+
+    # 4. Tính Điểm Hội Tụ Đa Tầng (Multi-Criteria Convergence Score) cho từng con số
+    for item in combos_map.values():
+        num_str = item['num']
+        c_pair = item['cycle_days']
+        wt = item['weight']
+        
+        # A. Điểm nền Radar Vị trí G1-G5: chu kỳ 2 ngày nhịp đẹp: 30đ, chu kỳ 3d: 25đ, 1d: 15đ
+        cycle_pts = 30 if c_pair == 2 else (25 if c_pair >= 3 else 15)
+        base_radar = cycle_pts + wt * 20
+        
+        # B. Tiêu chí Giao Thoa 1: Khớp Dàn 9 Số Cội Nguồn AI (Top 3 Đầu x Top 3 Đuôi)
+        in_d9 = (num_str in dan_9_so)
+        d9_pts = 55 if in_d9 else 0
+        
+        # C. Tiêu chí Giao Thoa 2: Đồng bộ Chữ Số Tâm Càng G1 (vừa quay lúc 18h16)
+        in_tam = False
+        tam_pts = 0
+        if tam_g1_set and len(num_str) >= 2:
+            if num_str[0] in tam_g1_set or num_str[1] in tam_g1_set:
+                in_tam = True
+                tam_pts = 35 if (num_str[0] == tam_g1 or num_str[1] == tam_g1) else 25
+                
+        # D. Tiêu chí Giao Thoa 3: Khớp Cầu Tổng G7 & Tổng Đề kỳ trước
+        cur_sum = (int(num_str[0]) + int(num_str[1])) % 10 if (len(num_str) >= 2 and num_str.isdigit()) else -1
+        in_sum = (cur_sum in target_sums) if target_sums else False
+        sum_pts = 30 if in_sum else 0
+        
+        # E. Ràng buộc an toàn: Bắt buộc thuộc Dàn 60 Số N1 Đã Kiểm Định
+        in_n1 = item['in_cap4']
+        n1_pts = 35 if in_n1 else -200
+        
+        c_score = base_radar + d9_pts + tam_pts + sum_pts + n1_pts
+        item['consensus_score'] = c_score
+        item['in_d9'] = in_d9
+        item['in_tam'] = in_tam
+        item['in_sum'] = in_sum
+        
+        badges = []
+        if in_n1: badges.append("N1")
+        if in_d9: badges.append("Dàn 9s AI")
+        if in_tam: badges.append(f"Tâm G1 ({tam_g1})")
+        if in_sum: badges.append(f"Tổng G7 ({cur_sum})")
+        item['convergence_badges'] = badges
+
+    found_list = list(combos_map.values())
+    found_list.sort(key=lambda x: (x.get('consensus_score', 0), x['score']), reverse=True)
+
+    # 5. Xác định Bạch Thủ Top 1, Lót Lộn Song Thủ và Top 4 Tứ Thủ
+    n1_pool = [x for x in found_list if x['in_cap4']]
+    top_pool = n1_pool if n1_pool else found_list
+    top_1 = top_pool[0]['num'] if top_pool else "41"
+    lot_lon = get_lot_lon(top_1)
+    song_thu_tru = [top_1, lot_lon]
+
+    # Top 4 Tứ thủ tinh hoa: Bạch thủ + Lót lộn (nếu thuộc N1) + các con số có điểm hội tụ cao nhất kế tiếp
+    top_4 = [top_1]
+    if lot_lon in cap4_set and lot_lon not in top_4:
+        top_4.append(lot_lon)
+    for x in top_pool:
+        if x['num'] not in top_4:
+            top_4.append(x['num'])
+        if len(top_4) >= 4:
+            break
+
     dan_lot_valid = []
     table_5cols = []
 
@@ -383,6 +482,10 @@ def scan_radar():
         n = item['num']
         if n == top_1:
             item['top_rank'] = "👑 Top 1 (Bạch thủ)"
+        elif n == lot_lon:
+            item['top_rank'] = "🛡️ Lót Lộn (Song thủ)"
+            if n in cap4_set and n not in dan_lot_valid:
+                dan_lot_valid.append(n)
         elif n in top_4:
             item['top_rank'] = "🔥 Top 4 (Tứ thủ)"
         elif item['in_cap4']:
@@ -401,17 +504,6 @@ def scan_radar():
         if n not in dan_lot_valid:
             dan_lot_valid.append(n)
     dan_lot_valid = sorted(list(set(dan_lot_valid)))
-
-    # Đếm số giải đã quay
-    live_p = target_draw['prizes']
-    p_g1 = live_p.get('G1', '')
-    p_g2 = [live_p.get('G2.1', ''), live_p.get('G2.2', '')]
-    p_g3 = [live_p.get(f'G3.{i}', '') for i in range(1, 7)]
-    p_g4 = [live_p.get(f'G4.{i}', '') for i in range(1, 5)]
-    p_g5 = [live_p.get(f'G5.{i}', '') for i in range(1, 7)]
-
-    filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
-    is_completed = (filled_prizes >= 19)
 
     actual_de = target_draw.get('de', '')
     if actual_de:
@@ -442,9 +534,10 @@ def scan_radar():
     dan_tinh_4cap = {
         'target_date': target_draw['date'],
         'status_text': 'ĐANG CÓ HIỆU LỰC (VÀO TIỀN TRƯỚC 18H15)',
-        'bach_thu': top_1 if top_1 else '41',
-        'song_thu': [top_1, top_4[1]] if len(top_4) >= 2 else ['41', '14'],
-        'tu_thu': top_4 if len(top_4) >= 4 else ['41', '14', '67', '31'],
+        'bach_thu': top_1 if top_1 else '32',
+        'lot_lon': lot_lon if lot_lon else '23',
+        'song_thu': song_thu_tru,
+        'tu_thu': top_4 if len(top_4) >= 4 else ['32', '23', '37', '82'],
         'cang_3d': cang_info['top3_cang'],
         'dan_9_so': dan_9_so,
         'dan_cap2_38so': dan_cap2_38so,
@@ -486,6 +579,8 @@ def scan_radar():
         'status_text': status_text,
         'lock_badge': lock_badge,
         'top_1': top_1,
+        'lot_lon': lot_lon,
+        'song_thu_tru': song_thu_tru,
         'top_4': top_4,
         'cang_3d_live': cang_info,
         'dan_9_heads': head_digits,
@@ -504,11 +599,11 @@ def scan_radar():
     with open(STATE_JSON_PATH, 'w', encoding='utf-8') as f:
         json.dump(final_state, f, ensure_ascii=False, indent=2)
 
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] Đã cập nhật live_radar_state.json: {filled_prizes}/19 giải | Top 1: {top_1} | Top 4: {top_4} | Dàn 9: {len(dan_9_so)}s | Dàn Lót: {len(dan_lot_valid)}s | Lịch sử: {len(history_records)} kỳ")
+    print(f"[{datetime.now().strftime('%H:%M:%S')}] Đã cập nhật live_radar_state.json: {filled_prizes}/19 giải | Bạch Thủ: {top_1} (Lót lộn: {lot_lon}) | Tứ Thủ: {top_4} | Dàn 9s: {len(dan_9_so)}s | Dàn Lót: {len(dan_lot_valid)}s | Lịch sử: {len(history_records)} kỳ")
     return final_state
 
-def evaluate_radar_for_draw(sub_draws, cap4_set):
-    """Tính toán Bạch thủ Top 1, Tứ thủ Top 4 cho 1 kỳ cụ thể trong lịch sử."""
+def evaluate_radar_for_draw(sub_draws, cap4_set, summary_data=None):
+    """Tính toán Bạch thủ Top 1, Lót lộn Song thủ, Tứ thủ Top 4 theo thuật toán Hội Tụ Đa Tầng."""
     if len(sub_draws) < 2:
         return None
     target_draw = sub_draws[0]
@@ -524,6 +619,18 @@ def evaluate_radar_for_draw(sub_draws, cap4_set):
 
     target_pos = get_positions(target_draw['prizes'])
     prev_pos = get_positions(prev_draw['prizes'])
+
+    g1_val = target_draw.get('prizes', {}).get('G1', '')
+    tam_g1 = g1_val[2] if (g1_val and len(g1_val) >= 3 and g1_val.isdigit()) else ''
+    tam_g1_set = {tam_g1, str(BONG_DUONG.get(int(tam_g1), ''))} if tam_g1 else set()
+
+    t_date = target_draw.get('date', '')
+    top3_history_map = {r['date']: r for r in summary_data.get('history_top3_dau_duoi_records', [])} if summary_data else {}
+    t3_info = top3_history_map.get(t_date, {})
+    d9_str = t3_info.get('pred_9_nums', '')
+    d9_set = set([x.strip() for x in d9_str.split(',') if x.strip()]) if d9_str else set()
+
+    target_sums = extract_target_sums(prev_draw)
 
     def calc_streak_local(pos_key, is_head=True):
         streak = 1
@@ -562,27 +669,62 @@ def evaluate_radar_for_draw(sub_draws, cap4_set):
             cycle_pair = max(h['cycle'], t['cycle'])
             pairs = [(f"{c}{d}", 1.0), (f"{c}{db}", 0.85), (f"{cb}{d}", 0.85), (f"{cb}{db}", 0.7)]
             for num_str, wt in pairs:
-                score = cycle_pair * 40 + wt * 25 + (h['cycle'] + t['cycle']) * 10
-                if num_str not in combos_map or score > combos_map[num_str]['score']:
-                    combos_map[num_str] = {'num': num_str, 'cycle_days': cycle_pair, 'score': score}
+                cycle_pts = 30 if cycle_pair == 2 else (25 if cycle_pair >= 3 else 15)
+                base_radar = cycle_pts + wt * 20
+
+                in_d9 = (num_str in d9_set)
+                d9_pts = 55 if in_d9 else 0
+
+                in_tam = (tam_g1_set and (num_str[0] in tam_g1_set or num_str[1] in tam_g1_set))
+                tam_pts = 35 if (tam_g1 and (num_str[0] == tam_g1 or num_str[1] == tam_g1)) else (25 if in_tam else 0)
+
+                cur_sum = (int(num_str[0]) + int(num_str[1])) % 10 if (len(num_str) >= 2 and num_str.isdigit()) else -1
+                in_sum = (cur_sum in target_sums) if target_sums else False
+                sum_pts = 30 if in_sum else 0
+
+                in_n1 = (num_str in cap4_set)
+                n1_pts = 35 if in_n1 else -200
+
+                c_score = base_radar + d9_pts + tam_pts + sum_pts + n1_pts
+                if num_str not in combos_map or c_score > combos_map[num_str]['consensus_score']:
+                    combos_map[num_str] = {
+                        'num': num_str,
+                        'consensus_score': c_score,
+                        'cycle_days': cycle_pair,
+                        'in_cap4': in_n1,
+                        'score': cycle_pair * 40 + wt * 25
+                    }
 
     found = list(combos_map.values())
-    found.sort(key=lambda x: (x['cycle_days'], x['score']), reverse=True)
-    chidao = [x for x in found if x['cycle_days'] >= 3]
-    top_pool = chidao if chidao else found
+    found.sort(key=lambda x: (x.get('consensus_score', 0), x['score']), reverse=True)
+
+    n1_pool = [x for x in found if x['in_cap4']]
+    top_pool = n1_pool if n1_pool else found
     t1 = top_pool[0]['num'] if top_pool else ""
-    t4 = [x['num'] for x in top_pool[:4]] if len(top_pool) >= 4 else [x['num'] for x in top_pool]
+    lot_lon = get_lot_lon(t1)
+    song_thu = [t1, lot_lon] if lot_lon else [t1]
+
+    t4 = [t1] if t1 else []
+    if lot_lon and lot_lon in cap4_set and lot_lon not in t4:
+        t4.append(lot_lon)
+    for x in top_pool:
+        if x['num'] not in t4:
+            t4.append(x['num'])
+        if len(t4) >= 4:
+            break
 
     return {
         'top_1': t1,
+        'lot_lon': lot_lon,
+        'song_thu': song_thu,
         'top_4': t4,
         'found': found
     }
 
 def build_radar_history(draws, summary_data, max_records=30):
-    """Xây dựng bảng lịch sử kiểm chứng các kỳ quay (Top 1 Bạch Thủ, Top 4 Tứ Thủ, Dàn 9 Số, Dàn Lót)."""
+    """Xây dựng bảng lịch sử kiểm chứng các kỳ quay (Top 1 Bạch Thủ, Lót Lộn Song Thủ, Top 4 Tứ Thủ, Dàn 9 Số, Dàn Lót)."""
     cap4_set = set(DEFAULT_60_N1)
-    top3_history_map = {r['date']: r for r in summary_data.get('history_top3_dau_duoi_records', [])}
+    top3_history_map = {r['date']: r for r in summary_data.get('history_top3_dau_duoi_records', [])} if summary_data else {}
     records = []
 
     start_k = 0
@@ -596,11 +738,13 @@ def build_radar_history(draws, summary_data, max_records=30):
         if not actual_de or len(actual_de) < 2:
             continue
 
-        eval_res = evaluate_radar_for_draw(sub_draws, cap4_set)
+        eval_res = evaluate_radar_for_draw(sub_draws, cap4_set, summary_data)
         if not eval_res:
             continue
 
         t1 = eval_res['top_1']
+        lot_lon = eval_res.get('lot_lon', '')
+        song_thu = eval_res.get('song_thu', [t1])
         t4 = eval_res['top_4']
 
         t_date = target_draw.get('date', '')
@@ -623,6 +767,8 @@ def build_radar_history(draws, summary_data, max_records=30):
         dan_lot = sorted(list(set(dan_lot)))
 
         hit_t1 = (actual_de == t1) if t1 else False
+        hit_lot_lon = (actual_de == lot_lon) if lot_lon else False
+        hit_song_thu = (actual_de in song_thu) if song_thu else False
         hit_t4 = (actual_de in t4) if t4 else False
         hit_d9 = (actual_de in d9_list) if d9_list else False
         hit_lot = (actual_de in dan_lot) if dan_lot else False
@@ -642,7 +788,11 @@ def build_radar_history(draws, summary_data, max_records=30):
             'de': actual_de,
             'actual_3d': actual_3d,
             'top_1': t1,
+            'lot_lon': lot_lon,
+            'song_thu': song_thu,
             'hit_top_1': hit_t1,
+            'hit_lot_lon': hit_lot_lon,
+            'hit_song_thu': hit_song_thu,
             'top_4': t4,
             'hit_top_4': hit_t4,
             'dan_9_so': d9_list,
@@ -659,6 +809,7 @@ def build_radar_history(draws, summary_data, max_records=30):
 
     tot = len(records)
     t1_hits = sum(1 for r in records if r['hit_top_1'])
+    song_thu_hits = sum(1 for r in records if r.get('hit_song_thu'))
     t4_hits = sum(1 for r in records if r['hit_top_4'])
     d9_hits = sum(1 for r in records if r['hit_dan_9'])
     lot_hits = sum(1 for r in records if r['hit_dan_lot'])
@@ -670,6 +821,8 @@ def build_radar_history(draws, summary_data, max_records=30):
         'total_evals': tot,
         'top1_hits': t1_hits,
         'top1_rate': round(t1_hits / tot * 100, 2) if tot else 0,
+        'song_thu_hits': song_thu_hits,
+        'song_thu_rate': round(song_thu_hits / tot * 100, 2) if tot else 0,
         'top4_hits': t4_hits,
         'top4_rate': round(t4_hits / tot * 100, 2) if tot else 0,
         'dan9_hits': d9_hits,
