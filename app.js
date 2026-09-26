@@ -447,6 +447,7 @@ async function fetchAndRenderRadarLive(isSilent = false) {
         renderRadarTopSummaries();
         renderRadar5ColTable();
         renderRadarFrame3Day();
+        renderRadarHistoryTable();
         
         if (!isSilent) {
             console.log('[Radar Live] Đã cập nhật thành công dữ liệu live');
@@ -605,7 +606,7 @@ function renderRadarTopSummaries() {
 
     // Dàn 9 Số Cội Nguồn
     const elDan9 = document.getElementById('radarDan9Chips');
-    const dan9List = radarData.dan_9_so || ['67', '61', '62', '37', '31', '32', '47', '41', '42'];
+    const dan9List = radarData.dan_9_so || ['21', '22', '27', '31', '32', '37', '41', '42', '47'];
     window.currentRadarDan9 = dan9List.join(', ');
     if (elDan9) {
         elDan9.innerHTML = dan9List.map(num => `
@@ -613,6 +614,13 @@ function renderRadarTopSummaries() {
                 ${num}
             </span>
         `).join('');
+    }
+
+    const elDan9Sub = document.getElementById('radarDan9Subtitle');
+    if (elDan9Sub) {
+        const heads = radarData.dan_9_heads || ['3', '4', '2'];
+        const tails = radarData.dan_9_tails || ['2', '7', '1'];
+        elDan9Sub.textContent = `Top 3 Đầu [${heads.join(',')}] × Top 3 Đuôi [${tails.join(',')}]`;
     }
 
     // Dàn Lót Hợp Lệ
@@ -749,6 +757,122 @@ function renderRadarFrame3Day() {
     if (elN3) elN3.textContent = n3List.join(', ');
 }
 
+let currentRadarHistoryFilter = 'all';
+
+function renderRadarHistoryTable() {
+    if (!radarData) return;
+    const records = radarData.history_records || [];
+    const summary = radarData.history_summary || {};
+
+    // 4 Thẻ KPIs
+    const elTop1 = document.getElementById('kpiRadarTop1');
+    const elTop4 = document.getElementById('kpiRadarTop4');
+    const elDan9 = document.getElementById('kpiRadarDan9');
+    const elLot = document.getElementById('kpiRadarLot');
+
+    const tot = summary.total_evals || records.length || 0;
+    if (elTop1) elTop1.textContent = `${summary.top1_rate || 0}% (${summary.top1_hits || 0}/${tot} kỳ)`;
+    if (elTop4) elTop4.textContent = `${summary.top4_rate || 0}% (${summary.top4_hits || 0}/${tot} kỳ)`;
+    if (elDan9) elDan9.textContent = `${summary.dan9_rate || 0}% (${summary.dan9_hits || 0}/${tot} kỳ)`;
+    if (elLot) elLot.textContent = `${summary.lot_rate || 0}% (${summary.lot_hits || 0}/${tot} kỳ)`;
+
+    // Filter counts
+    const cntAll = records.length;
+    let cntTop1 = 0, cntTop4 = 0, cntDan9 = 0, cntLot = 0;
+    records.forEach(r => {
+        if (r.hit_top_1) cntTop1++;
+        if (r.hit_top_4) cntTop4++;
+        if (r.hit_dan_9) cntDan9++;
+        if (r.hit_dan_lot) cntLot++;
+    });
+
+    const elCntAll = document.getElementById('cntHistAll');
+    const elCntTop1 = document.getElementById('cntHistTop1');
+    const elCntTop4 = document.getElementById('cntHistTop4');
+    const elCntDan9 = document.getElementById('cntHistDan9');
+    const elCntLot = document.getElementById('cntHistLot');
+    if (elCntAll) elCntAll.textContent = cntAll;
+    if (elCntTop1) elCntTop1.textContent = cntTop1;
+    if (elCntTop4) elCntTop4.textContent = cntTop4;
+    if (elCntDan9) elCntDan9.textContent = cntDan9;
+    if (elCntLot) elCntLot.textContent = cntLot;
+
+    // Filter records
+    const filtered = records.filter(r => {
+        if (currentRadarHistoryFilter === 'hit_top1') return r.hit_top_1;
+        if (currentRadarHistoryFilter === 'hit_top4') return r.hit_top_4;
+        if (currentRadarHistoryFilter === 'hit_dan9') return r.hit_dan_9;
+        if (currentRadarHistoryFilter === 'hit_lot') return r.hit_dan_lot;
+        return true;
+    });
+
+    const tbody = document.getElementById('tbodyRadarHistory');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 18px;">Không có kỳ quay nào khớp với bộ lọc này.</td></tr>`;
+        return;
+    }
+
+    filtered.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        
+        // Status badges
+        const top1Badge = r.hit_top_1
+            ? `<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-weight: 800; border: 1px solid #10B981; font-size: 13px;">🎯 ${r.top_1}</span>`
+            : `<span style="color: #94A3B8; font-weight: 600;">${r.top_1 || '---'}</span> <span style="font-size: 10px; color: #EF4444;">❌</span>`;
+
+        const top4Badges = (r.top_4 || []).map(num => {
+            const isMatch = num === r.de;
+            return isMatch
+                ? `<span class="badge" style="background: rgba(16, 185, 129, 0.25); color: #34D399; font-weight: 800; border: 1px solid #10B981; padding: 2px 6px;">🎯 ${num}</span>`
+                : `<span class="badge" style="background: rgba(56, 189, 248, 0.1); color: #38BDF8; padding: 2px 5px; font-size: 11px;">${num}</span>`;
+        }).join(' ');
+
+        const d9Badges = (r.dan_9_so || []).map(num => {
+            const isMatch = num === r.de;
+            return isMatch
+                ? `<span class="badge" style="background: rgba(16, 185, 129, 0.25); color: #34D399; font-weight: 800; border: 1px solid #10B981; padding: 1px 4px;">🎯 ${num}</span>`
+                : `<span style="font-size: 11px; color: #CBD5E1; margin-right: 4px;">${num}</span>`;
+        }).join('');
+
+        const lotCount = (r.dan_lot || []).length;
+        const lotStatus = r.hit_dan_lot
+            ? `<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-weight: 800; border: 1px solid #10B981;">🎯 Trúng (${lotCount}s)</span>`
+            : `<span class="badge" style="background: rgba(100, 116, 139, 0.15); color: #94A3B8; font-size: 11px;">Trượt (${lotCount}s)</span>`;
+
+        tr.innerHTML = `
+            <td style="text-align: center; color: var(--text-muted); font-size: 11px;">${r.stt || idx + 1}</td>
+            <td style="font-weight: 700; color: #E2E8F0; font-size: 12.5px;">${r.date}</td>
+            <td style="text-align: center;">
+                <span class="badge badge-gold" style="font-size: 16px; font-weight: 900; padding: 3px 10px; font-family: 'JetBrains Mono', monospace;">
+                    ${r.de}
+                </span>
+            </td>
+            <td style="text-align: center; font-size: 13.5px; font-family: 'JetBrains Mono', monospace;">
+                ${top1Badge}
+            </td>
+            <td>
+                <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                    ${top4Badges || '<span style="color: #64748B;">---</span>'}
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; gap: 2px; flex-wrap: wrap; align-items: center; max-width: 230px;">
+                    ${d9Badges || '<span style="color: #64748B;">---</span>'}
+                </div>
+            </td>
+            <td style="text-align: center;">
+                ${lotStatus}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    window.currentRadarHistoryText = filtered.map(r => `${r.date} | Đề: ${r.de} | Top 1: ${r.top_1} (${r.hit_top_1 ? 'TRÚNG' : 'TRƯỢT'}) | Top 4: ${(r.top_4||[]).join(',')} (${r.hit_top_4 ? 'TRÚNG' : 'TRƯỢT'}) | Dàn 9s: ${(r.dan_9_so||[]).join(',')} (${r.hit_dan_9 ? 'TRÚNG' : 'TRƯỢT'}) | Lót: (${(r.dan_lot||[]).length}s: ${r.hit_dan_lot ? 'TRÚNG' : 'TRƯỢT'})`).join('\n');
+}
+
 function setupRadarEventListeners() {
     // Refresh Button
     document.getElementById('btnRefreshRadar')?.addEventListener('click', async () => {
@@ -803,13 +927,28 @@ function setupRadarEventListeners() {
         copyToClipboard(window.currentRadarFrameN3 || '', 'Đã copy Dàn Hỏa Lực 36 Số N3!');
     });
 
+    // Copy Radar History Table
+    document.getElementById('btnCopyRadarHistory')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarHistoryText || '', 'Đã copy Lịch Sử Kiểm Chứng Các Kỳ Radar Live!');
+    });
+
     // Filter Buttons for 5-col table
-    document.querySelectorAll('.table-filter-btn').forEach(btn => {
+    document.querySelectorAll('#radarTableFilterBar .table-filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.table-filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#radarTableFilterBar .table-filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentRadarTableFilter = btn.getAttribute('data-filter') || 'all';
             renderRadar5ColTable();
+        });
+    });
+
+    // Filter Buttons for Radar History table
+    document.querySelectorAll('#radarHistoryFilterBar .table-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#radarHistoryFilterBar .table-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentRadarHistoryFilter = btn.getAttribute('data-filter') || 'all';
+            renderRadarHistoryTable();
         });
     });
 }

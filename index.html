@@ -357,7 +357,7 @@
                         <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;" id="radarDan9Chips">
                             <!-- Injected by JS -->
                         </div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Top 3 Đầu [6,3,4] × Top 3 Đuôi [7,1,2]</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;" id="radarDan9Subtitle">Top 3 Đầu × Top 3 Đuôi</div>
                         <button class="btn btn-secondary btn-sm" id="btnCopyRadarDan9" style="width: 100%;">
                             <i class="fa-regular fa-copy"></i> Copy Dàn 9 Số
                         </button>
@@ -477,6 +477,73 @@
                     <div style="font-size: 12.5px; line-height: 1.6; color: #CBD5E1; word-break: break-all; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 8px;" id="radarFrameN3List">
                         <!-- Injected by JS -->
                     </div>
+                </div>
+            </div>
+
+            <!-- PHẦN 3: LỊCH SỬ KIỂM CHỨNG CÁC KỲ (BẠCH THỦ - TỨ THỦ - DÀN 9 SỐ - DÀN LÓT) -->
+            <div class="frame-manage-box" style="margin-top: 24px;">
+                <div class="prize-section-header">
+                    <h2>
+                        <i class="fa-solid fa-clock-rotate-left" style="color: #38BDF8;"></i>
+                        <span>PHẦN 3: LỊCH SỬ KIỂM CHỨNG CÁC KỲ QUAY (BẠCH THỦ - TỨ THỦ - DÀN 9 SỐ - DÀN LÓT)</span>
+                    </h2>
+                    <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; border: 1px solid #38BDF8; font-weight: 800;">
+                        30 Kỳ Gần Nhất
+                    </span>
+                </div>
+
+                <!-- 4 Thẻ KPI Tóm Tắt Tỷ Lệ Trúng Của Radar Live -->
+                <div class="radar-info-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 16px;">
+                    <div class="radar-info-pill">
+                        <div class="radar-info-label">👑 TỶ LỆ TRÚNG BẠCH THỦ (TOP 1)</div>
+                        <div class="radar-info-value" id="kpiRadarTop1" style="color: #FBBF24;">0% (0/0)</div>
+                    </div>
+                    <div class="radar-info-pill">
+                        <div class="radar-info-label">🔥 TỶ LỆ TRÚNG TỨ THỦ (TOP 4)</div>
+                        <div class="radar-info-value" id="kpiRadarTop4" style="color: #38BDF8;">0% (0/0)</div>
+                    </div>
+                    <div class="radar-info-pill">
+                        <div class="radar-info-label">🎯 TỶ LỆ DÀN 9 SỐ CỘI NGUỒN</div>
+                        <div class="radar-info-value" id="kpiRadarDan9" style="color: #C4B5FD;">0% (0/0)</div>
+                    </div>
+                    <div class="radar-info-pill">
+                        <div class="radar-info-label">🛡️ TỶ LỆ DÀN LÓT HỢP LỆ (TRONG N1)</div>
+                        <div class="radar-info-value" id="kpiRadarLot" style="color: #34D399;">0% (0/0)</div>
+                    </div>
+                </div>
+
+                <!-- Thanh lọc nhanh & Copy -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                    <div class="table-filter-bar" id="radarHistoryFilterBar">
+                        <button class="table-filter-btn active" data-filter="all">Tất Cả (<span id="cntHistAll">0</span>)</button>
+                        <button class="table-filter-btn" data-filter="hit_top1">👑 Trúng Bạch Thủ (<span id="cntHistTop1">0</span>)</button>
+                        <button class="table-filter-btn" data-filter="hit_top4">🔥 Trúng Tứ Thủ (<span id="cntHistTop4">0</span>)</button>
+                        <button class="table-filter-btn" data-filter="hit_dan9">🎯 Trúng Dàn 9 Số (<span id="cntHistDan9">0</span>)</button>
+                        <button class="table-filter-btn" data-filter="hit_lot">🛡️ Trúng Dàn Lót (<span id="cntHistLot">0</span>)</button>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="btnCopyRadarHistory" style="font-size: 11px;">
+                        <i class="fa-regular fa-copy"></i> Copy Toàn Bộ Lịch Sử
+                    </button>
+                </div>
+
+                <!-- Bảng Responsive Hiển Thị Chi Tiết Các Kỳ -->
+                <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                    <table class="custom-table" id="tableRadarHistory">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 50px;">STT</th>
+                                <th style="width: 170px;">Kỳ Quay (Ngày)</th>
+                                <th style="text-align: center; width: 80px;">Đề Về</th>
+                                <th style="width: 140px; text-align: center;">Bạch Thủ (Top 1)</th>
+                                <th style="width: 180px;">Tứ Thủ (Top 4)</th>
+                                <th style="width: 220px;">Dàn 9 Số Cội Nguồn</th>
+                                <th style="width: 140px; text-align: center;">Dàn Lót Hợp Lệ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyRadarHistory">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
