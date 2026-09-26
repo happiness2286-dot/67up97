@@ -380,17 +380,17 @@
                 </div>
 
                 <!-- THANH CHỐT GẤP TRƯỚC 18H25 -->
-                <div class="fast-lock-banner" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(239, 68, 68, 0.15) 100%); border: 1.5px solid rgba(245, 158, 11, 0.6); border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);">
+                <div class="fast-lock-banner" id="radarFastLockBanner" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(239, 68, 68, 0.15) 100%); border: 1.5px solid rgba(245, 158, 11, 0.6); border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(245, 158, 11, 0.25); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #FBBF24;">
-                            <i class="fa-solid fa-stopwatch-20"></i>
+                        <div id="fastLockIconBox" style="width: 42px; height: 42px; border-radius: 10px; background: rgba(245, 158, 11, 0.25); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #FBBF24;">
+                            <i class="fa-solid fa-lock" id="fastLockIcon"></i>
                         </div>
                         <div>
                             <div style="font-size: 14px; font-weight: 800; color: #FDE68A; display: flex; align-items: center; gap: 8px;">
-                                <span>HẠN CHÓT KHÓA SỔ: 18:24:59</span>
+                                <span id="lblFastLockTitle">HẠN CHỐT KHÓA DÀN: NGAY KHI HẾT GIẢI 5 (~18:24)</span>
                                 <span class="badge badge-gold" id="lblCountdownLock" style="font-size: 11px; padding: 2px 8px;">⚡ Đang mở</span>
                             </div>
-                            <div style="font-size: 12px; color: #CBD5E1;">Vừa hết G4 hoặc G5.1 (khoảng 18h23) → Bấm nút chốt nhanh gửi ngay để không trễ giờ!</div>
+                            <div id="lblFastLockSub" style="font-size: 12px; color: #CBD5E1;">Quay xong G5.6 (19/19 giải) → Hệ thống tự động khóa sổ & xuất ngay gói chốt để vào tiền trước 18h28!</div>
                         </div>
                     </div>
                     <button class="btn btn-gold" id="btnQuickCopyAll" style="font-size: 13.5px; font-weight: 800; padding: 10px 20px; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);">
@@ -400,14 +400,29 @@
 
                 <!-- KHỐI 3 CÀNG LIVE SIÊU CẤP -->
                 <div class="prize-section-box" style="border: 1px solid rgba(139, 92, 246, 0.35); background: linear-gradient(180deg, rgba(30, 27, 75, 0.4) 0%, rgba(15, 23, 42, 0.7) 100%); margin-bottom: 22px;">
-                    <div class="prize-section-header">
-                        <h2>
-                            <i class="fa-solid fa-gem" style="color: #C084FC;"></i>
-                            <span>TAM CÀNG 3D LIVE (TÂM G1 + BÓNG TỔNG ĐỀ) – CHỐT KÈM TRƯỚC 18H25</span>
-                        </h2>
-                        <span class="badge" style="background: rgba(168, 85, 247, 0.2); color: #C084FC; border: 1px solid #A855F7; font-weight: 800;" id="badgeCangTop3">
+                    <div class="prize-section-header" style="flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h2>
+                                <i class="fa-solid fa-gem" style="color: #C084FC;"></i>
+                                <span>TÂM CÀNG 3D LIVE (TÂM G1 + TỔNG ĐỀ) – ĐÁNH CHO GIẢI ĐẶC BIỆT HÔM NAY</span>
+                            </h2>
+                            <div style="margin-top: 5px; font-size: 12.5px; color: #DDD6FE; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <span class="badge" style="background: rgba(168, 85, 247, 0.25); color: #C084FC; border: 1px solid #A855F7; font-weight: 800;">
+                                    🎯 ĐÁNH KỲ QUAY: <span id="lblCangTargetDate" style="color: #FDE68A;">HÔM NAY</span>
+                                </span>
+                                <span style="font-size: 12px; color: #94A3B8;">(Bắt sau khi G1 quay lúc 18h16 → Khóa khi hết G5 → Đánh ngay GĐB 18h30)</span>
+                            </div>
+                        </div>
+                        <span class="badge" style="background: rgba(168, 85, 247, 0.2); color: #C084FC; border: 1px solid #A855F7; font-weight: 800; font-size: 13px;" id="badgeCangTop3">
                             Top 3 Càng: [---]
                         </span>
+                    </div>
+
+                    <!-- Ghi chú giải đáp rõ ràng câu hỏi: Tâm 3 càng live đánh cho ngày nào -->
+                    <div style="background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 12.5px; color: #E2E8F0; line-height: 1.5;">
+                        <span style="color: #FBBF24; font-weight: 800;"><i class="fa-solid fa-circle-question"></i> GIẢI ĐÁP: TÂM 3 CÀNG 3D LIVE ĐÁNH CHO NGÀY NÀO?</span><br>
+                        👉 <strong>ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT CỦA CHÍNH HÔM NAY</strong> (sẽ quay lúc 18h30 cùng ngày)!<br>
+                        Lý do: Khi đài quay xong <strong>Giải Nhất (18h16)</strong>, chữ số Tâm Càng G1 đã xuất hiện. Radar kết hợp Tổng Đề kỳ trước để bắt ra Top 3 Càng. Đến <strong>18h24 khi quay xong Giải 5 (G5)</strong>, hệ thống tự động khóa chốt ghép 3 Càng này với Bạch Thủ & Tứ Thủ để người chơi kịp <strong>vào tiền trước 18h28</strong>!
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 14px;">

@@ -145,10 +145,17 @@ def fetch_html(is_live=True, count=35):
 def parse_draws(html):
     blocks = html.split('<table class="table table-condensed kqcenter kqvertimarginw table-kq-border table-kq-hover-div table-bordered kqbackground table-kq-bold-border tb-phoi-border watermark table-striped" id="result_tab_mb">')
     draws = []
+    seen_dates = set()
     
     for b in blocks[1:]:
         date_m = re.search(r'id="result_date">([^<]+)</span>', b)
         date_str = date_m.group(1).strip() if date_m else ""
+        if not date_str:
+            continue
+        norm_date = re.sub(r'\s+', ' ', date_str).strip()
+        if norm_date in seen_dates:
+            continue
+        seen_dates.add(norm_date)
         
         db_m = re.search(r'id="rs_0_0"[^>]*>(\d{5})</div>', b)
         if not db_m:
@@ -406,8 +413,30 @@ def scan_radar():
     filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
     is_completed = (filled_prizes >= 19)
 
+    actual_de = target_draw.get('de', '')
+    if actual_de:
+        radar_status = "FINISHED_RESULT"
+        status_text = f"ĐÃ HOÀN TẤT KỲ QUAY (ĐỀ VỀ {actual_de})"
+        lock_badge = f"🎯 ĐÃ CÓ KẾT QUẢ ĐỀ: {actual_de}"
+    elif is_completed:
+        radar_status = "LOCKED_G5"
+        status_text = "🔒 ĐÃ CHỐT KHÓA KHI HẾT G5 (19/19 GIẢI) - VÀO TIỀN NGAY TRƯỚC 18H28!"
+        lock_badge = "🔒 ĐÃ KHÓA CHỐT DÀN (HẾT G5)"
+    elif filled_prizes > 0:
+        radar_status = "SCANNING_LIVE"
+        status_text = f"⚡ ĐANG QUAY TRỰC TIẾP ({filled_prizes}/19 GIẢI) - CHỐT KHI XONG G5"
+        lock_badge = f"⚡ ĐANG QUAY ({filled_prizes}/19)"
+    else:
+        radar_status = "BEFORE_DRAW"
+        status_text = "CHỜ GIỜ QUAY THƯỞNG (18H15) - DÀN TĨNH SẴN SÀNG"
+        lock_badge = "⏳ CHỜ GIỜ QUAY (18H15)"
+
     # Bắt Top 3 Càng 3D từ Tâm Càng G1 + Bóng Tổng Đề
     cang_info = calc_cang_3d(p_g1, prev_de, top_1, top_4, dan_9_so)
+    cang_info['target_date'] = target_draw['date']
+    cang_info['target_note'] = f"ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY ({target_draw['date']}) - Khóa sổ khi hết G5, vào tiền trước 18h28!"
+    cang_info['tam_g1_source'] = f"Tâm Càng G1 ({p_g1[2] if len(p_g1)>=3 else '---'} từ G1: {p_g1 or 'Chờ quay'})"
+    cang_info['prev_de_source'] = f"Tổng Đề hôm trước ({prev_de}): {(int(prev_de[0])+int(prev_de[1]))%10 if len(prev_de)>=2 else '---'}"
 
     # Dàn Tĩnh 4 Cấp trước 18h15
     dan_tinh_4cap = {
@@ -423,12 +452,11 @@ def scan_radar():
     }
 
     # Auto-Shift Khung 3 ngày
-    actual_de = target_draw.get('de', '')
     hit_n1 = (actual_de in DEFAULT_60_N1) if actual_de else False
     
     frame_transition = {
-        'last_result': f"Kỳ gần nhất ({target_draw['date']}) Đề về {actual_de}: {'🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI' if hit_n1 else '❌ TRƯỢT N1 → GIỮ NGUYÊN KHUNG, ĐÁNH N2 (36 SỐ) HÔM NAY'}",
-        'status_badge': 'ĐÃ TRÚNG N1 → RESET CẦU MỚI' if hit_n1 else 'ĐANG ĐÁNH N2 (36 SỐ)',
+        'last_result': f"Kỳ gần nhất ({target_draw['date']}) Đề về {actual_de or 'đang quay'}: {'🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI' if hit_n1 else ('❌ TRƯỢT N1 → GIỮ NGUYÊN KHUNG, ĐÁNH N2 (36 SỐ)' if actual_de else 'Đang chờ quay Giải Đặc Biệt')}",
+        'status_badge': 'ĐÃ TRÚNG N1 → RESET CẦU MỚI' if hit_n1 else ('ĐANG ĐÁNH N2 (36 SỐ)' if actual_de else 'ĐANG QUAY THƯỞNG'),
         'dan_n1': DEFAULT_60_N1,
         'dan_n2': ["02", "04", "07", "09", "12", "14", "17", "20", "23", "25", "27", "31", "32", "37", "40", "41", "42", "45", "47", "49", "61", "62", "67", "68", "70", "72", "75", "77", "81", "82", "84", "86", "87", "89", "91", "96"],
         'dan_n3': ["01", "03", "05", "08", "11", "13", "16", "18", "21", "24", "26", "28", "33", "35", "38", "43", "44", "48", "51", "53", "55", "58", "60", "63", "65", "69", "71", "73", "78", "80", "83", "85", "88", "92", "95", "97"]
@@ -454,6 +482,9 @@ def scan_radar():
         'filled_count': filled_prizes,
         'total_count': 19,
         'is_g5_finished': is_completed,
+        'radar_status': radar_status,
+        'status_text': status_text,
+        'lock_badge': lock_badge,
         'top_1': top_1,
         'top_4': top_4,
         'cang_3d_live': cang_info,
@@ -659,20 +690,56 @@ if __name__ == "__main__":
     parser.add_argument('--live', action='store_true', help="Chạy vòng lặp cào live liên tục mỗi 5-10 giây")
     parser.add_argument('--interval', type=int, default=7, help="Chu kỳ giây quét (mặc định 7s)")
     parser.add_argument('--duration', type=int, default=0, help="Thời gian tối đa chạy live tính bằng giây (0 = vô hạn)")
+    parser.add_argument('--auto_push', action='store_true', help="Tự động git push ngay khi chốt G5 và khi có GĐB")
     args = parser.parse_args()
+
+    def do_quick_git_push(commit_msg):
+        try:
+            import subprocess
+            git_path = r"C:\Program Files\Git\cmd\git.exe"
+            subprocess.run([git_path, 'add', 'live_radar_state.json'], check=True, capture_output=True)
+            subprocess.run([git_path, 'commit', '-m', commit_msg], capture_output=True, text=True)
+            subprocess.run([git_path, 'push', 'origin', 'main'], capture_output=True, text=True)
+            print(f"🚀 [GIT PUSH] {commit_msg} -> Đã đồng bộ lên GitHub thành công!", flush=True)
+        except Exception as ex:
+            print(f"⚠️ Không thể git push nhanh: {ex}", flush=True)
 
     if args.live:
         print(f"[*] Bắt đầu radar live polling mỗi {args.interval} giây (Thời lượng tối đa: {args.duration if args.duration else 'Vô hạn'}s)...")
         start_t = time.time()
+        g5_locked = False
+        final_completed = False
+
         while True:
             try:
                 res = scan_radar()
-                if res and res.get('is_g5_finished') and res.get('actual_de'):
-                    print(f"[*] Đã nhận diện đủ 19 giải & giải Đặc Biệt ({res.get('actual_de')}). Hoàn tất phiên quét Live!")
-                    if args.duration > 0 and (time.time() - start_t) > 60:
+                if res:
+                    # 1. BƯỚC CHỐT KHÓA NGAY KHI HẾT G5 (18h24)
+                    if res.get('is_g5_finished') and not g5_locked:
+                        g5_locked = True
+                        top1 = res.get('top_1')
+                        top4 = res.get('top_4')
+                        top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
+                        t_date = res.get('target_date', '')
+                        print(f"\n=======================================================", flush=True)
+                        print(f"🔒 [CHỐT KHÓA G5 - {datetime.now().strftime('%H:%M:%S')}] ĐÃ HOÀN TẤT 19/19 GIẢI G1->G5 KỲ {t_date}!", flush=True)
+                        print(f"👑 BẠCH THỦ TOP 1: {top1} | 🔥 TỨ THỦ: {top4}", flush=True)
+                        print(f"🌟 TOP 3 CÀNG: {top3_cang} (ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY QUAY LÚC 18H30)", flush=True)
+                        print(f"⏱️ HẠN CHỐT VÀO TIỀN: TRƯỚC 18H28!", flush=True)
+                        print(f"=======================================================\n", flush=True)
+                        if args.auto_push:
+                            do_quick_git_push(f"Lock Radar G5 {t_date} (BT {top1}, TT {top4})")
+
+                    # 2. BƯỚC ĐỐI CHIẾU KHI CÓ GIẢI ĐẶC BIỆT (sau 18h30)
+                    if res.get('actual_de'):
+                        print(f"\n🎯 [KẾT THÚC QUAY - {datetime.now().strftime('%H:%M:%S')}] Đã có Giải Đặc Biệt: {res.get('actual_de')}.", flush=True)
+                        final_completed = True
+                        if args.auto_push:
+                            do_quick_git_push(f"Finish XSMB {res.get('target_date')} (DB {res.get('actual_de')})")
                         break
             except Exception as e:
-                print(f"[!] Lỗi khi quét radar: {e}")
+                print(f"[!] Lỗi khi quét radar: {e}", flush=True)
+
             if args.duration > 0 and (time.time() - start_t) >= args.duration:
                 print(f"[*] Đã hết thời gian live {args.duration}s. Dừng quét!")
                 break

@@ -443,6 +443,7 @@ async function fetchAndRenderRadarLive(isSilent = false) {
         radarData = await res.json();
         
         renderRadarHeaderInfo();
+        renderFastLockBanner();
         renderLivePrizeChips();
         renderRadarTopSummaries();
         renderRadarCang3D();
@@ -451,7 +452,7 @@ async function fetchAndRenderRadarLive(isSilent = false) {
         renderRadarHistoryTable();
         
         if (!isSilent) {
-            console.log('[Radar Live] Đã cập nhật thành công dữ liệu live');
+            console.log('[Radar Live] Đã cập nhật thành công dữ liệu live:', radarData.target_date);
         }
     } catch (err) {
         console.warn('[Radar Live] Chưa tải được state live:', err);
@@ -460,27 +461,35 @@ async function fetchAndRenderRadarLive(isSilent = false) {
 
 function startRadarLivePolling() {
     if (radarPollingTimer) clearInterval(radarPollingTimer);
+    
+    // Tự động nhận diện khung giờ quay thưởng XSMB (18h14 - 18h35) để tăng tốc độ cào
+    const now = new Date();
+    const curHour = now.getHours();
+    const curMin = now.getMinutes();
+    const isLiveHour = (curHour === 18 && curMin >= 14 && curMin <= 35);
+    const intervalMs = isLiveHour ? 3000 : 5000;
+
     radarPollingTimer = setInterval(() => {
         if (isRadarPollingActive) {
             fetchAndRenderRadarLive(true);
         }
-    }, 5000);
+    }, intervalMs);
 }
 
 function renderRadarHeaderInfo() {
     if (!radarData) return;
     
     const elTargetDate = document.getElementById('radarPillTargetDate');
-    if (elTargetDate) elTargetDate.textContent = radarData.target_date || 'Thứ sáu 25-09-2026';
+    if (elTargetDate) elTargetDate.textContent = radarData.target_date || 'Hôm nay';
 
     const elDynamicTarget = document.getElementById('lblRadarTargetDate');
-    if (elDynamicTarget) elDynamicTarget.textContent = (radarData.target_date || 'THỨ SÁU NGÀY 25–09–2026').toUpperCase();
+    if (elDynamicTarget) elDynamicTarget.textContent = (radarData.target_date || 'HÔM NAY').toUpperCase();
 
     const elDateTitle = document.getElementById('radarLiveDateTitle');
-    if (elDateTitle) elDateTitle.textContent = (radarData.target_date || 'THỨ SÁU NGÀY 25–09–2026').toUpperCase();
+    if (elDateTitle) elDateTitle.textContent = (radarData.target_date || 'HÔM NAY').toUpperCase();
 
     const elPrevInfo = document.getElementById('radarPillPrevInfo');
-    if (elPrevInfo) elPrevInfo.innerHTML = `Đề <span style="color:#67E8F9; font-weight:900;">${radarData.prev_de || '96'}</span> (GĐB: ${radarData.prev_db || '78196'})`;
+    if (elPrevInfo) elPrevInfo.innerHTML = `Đề <span style="color:#67E8F9; font-weight:900;">${radarData.prev_de || '--'}</span> (${radarData.prev_date || 'Kỳ trước'})`;
 
     const elHead = document.getElementById('radarPillHead');
     if (elHead && radarData.head_targets) {
@@ -499,9 +508,98 @@ function renderRadarHeaderInfo() {
 
     const elProgress = document.getElementById('radarProgressText');
     if (elProgress) {
-        const filled = radarData.filled_count || 19;
+        const filled = radarData.filled_count || 0;
         const total = radarData.total_count || 19;
-        elProgress.textContent = `${filled}/${total} GIẢI ${filled >= total ? '(ĐÃ HOÀN TẤT)' : '(ĐANG QUAY...)'}`;
+        const actualDe = radarData.actual_de || '';
+        const isG5Done = radarData.is_g5_finished || (filled >= 19);
+
+        if (actualDe) {
+            elProgress.innerHTML = `<span style="color: #34D399; font-weight: 800;">19/19 GIẢI • ĐÃ CÓ ĐỀ ${actualDe} 🎯</span>`;
+        } else if (isG5Done) {
+            elProgress.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">19/19 GIẢI • 🔒 ĐÃ KHÓA CHỐT G5</span>`;
+        } else if (filled > 0) {
+            elProgress.innerHTML = `<span style="color: #38BDF8; font-weight: 800;">${filled}/${total} GIẢI (ĐANG QUAY...)</span>`;
+        } else {
+            elProgress.textContent = `0/${total} GIẢI (CHỜ 18H15)`;
+        }
+    }
+}
+
+function renderFastLockBanner() {
+    if (!radarData) return;
+    const banner = document.getElementById('radarFastLockBanner');
+    const titleEl = document.getElementById('lblFastLockTitle');
+    const subEl = document.getElementById('lblFastLockSub');
+    const badgeEl = document.getElementById('lblCountdownLock');
+    const iconEl = document.getElementById('fastLockIcon');
+    const iconBox = document.getElementById('fastLockIconBox');
+    const btnQuick = document.getElementById('btnQuickCopyAll');
+
+    const filled = radarData.filled_count || 0;
+    const isG5Done = radarData.is_g5_finished || (filled >= 19);
+    const actualDe = radarData.actual_de || '';
+
+    if (actualDe) {
+        if (banner) {
+            banner.style.borderColor = 'rgba(16, 185, 129, 0.7)';
+            banner.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 78, 59, 0.3) 100%)';
+        }
+        if (iconBox) {
+            iconBox.style.background = 'rgba(16, 185, 129, 0.25)';
+            iconBox.style.color = '#34D399';
+        }
+        if (iconEl) iconEl.className = 'fa-solid fa-circle-check';
+        if (badgeEl) {
+            badgeEl.className = 'badge';
+            badgeEl.style.background = 'rgba(16, 185, 129, 0.25)';
+            badgeEl.style.color = '#34D399';
+            badgeEl.style.border = '1px solid #10B981';
+            badgeEl.innerHTML = `🎯 ĐỀ VỀ: <strong>${actualDe}</strong>`;
+        }
+
+        const isBtHit = (radarData.top_1 === actualDe);
+        const isTtHit = (radarData.top_4 || []).includes(actualDe);
+        const isD9Hit = (radarData.dan_9_so || []).includes(actualDe);
+        const isLotHit = (radarData.dan_lot || []).includes(actualDe);
+
+        let hitStatus = [];
+        if (isBtHit) hitStatus.push('👑 TRÚNG BẠCH THỦ!');
+        else if (isTtHit) hitStatus.push('🔥 TRÚNG TỨ THỦ!');
+        else if (isD9Hit) hitStatus.push('🎯 TRÚNG DÀN 9S!');
+        else if (isLotHit) hitStatus.push('🛡️ TRÚNG DÀN LÓT!');
+        else hitStatus.push('KỲ QUAY ĐÃ HOÀN TẤT');
+
+        if (titleEl) titleEl.textContent = `🎯 KẾT QUẢ XSMB HÔM NAY: ĐỀ VỀ ${actualDe}`;
+        if (subEl) subEl.innerHTML = `<span style="color: #34D399; font-weight: 800;">${hitStatus.join(' • ')}</span> | Bạch thủ: ${radarData.top_1 || '--'} | Tứ thủ: ${(radarData.top_4||[]).join(', ')}`;
+        if (btnQuick) btnQuick.innerHTML = `<i class="fa-solid fa-copy"></i> SAO CHÉP KẾT QUẢ ĐỐI CHIẾU (${actualDe})`;
+    } else if (isG5Done) {
+        if (banner) {
+            banner.style.borderColor = 'rgba(245, 158, 11, 0.9)';
+            banner.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(180, 83, 9, 0.3) 100%)';
+            banner.style.boxShadow = '0 0 25px rgba(245, 158, 11, 0.35)';
+        }
+        if (iconBox) {
+            iconBox.style.background = 'rgba(245, 158, 11, 0.3)';
+            iconBox.style.color = '#FBBF24';
+        }
+        if (iconEl) iconEl.className = 'fa-solid fa-lock';
+        if (badgeEl) {
+            badgeEl.className = 'badge badge-gold';
+            badgeEl.innerHTML = `🔒 ĐÃ KHÓA CHỐT 100%`;
+        }
+        if (titleEl) titleEl.textContent = `🔒 ĐÃ CHỐT KHÓA DÀN (HẾT G5 - 19/19 GIẢI)!`;
+        if (subEl) subEl.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Hạn chốt trước 18h28 khi đài bắt đầu quay GĐB!`;
+        if (btnQuick) {
+            btnQuick.innerHTML = `<i class="fa-solid fa-bolt"></i> COPY GÓI CHỐT GẤP (VÀO TIỀN NGAY)`;
+        }
+    } else if (filled > 0) {
+        if (titleEl) titleEl.textContent = `⚡ ĐANG QUAY TRỰC TIẾP (${filled}/19 GIẢI)...`;
+        if (subEl) subEl.textContent = `Hệ thống tự động quét vị trí. Sẽ khóa chốt tức thì ngay khi quay xong G5.6 (19/19 giải) lúc ~18h24!`;
+        if (badgeEl) badgeEl.innerHTML = `⚡ Đang cập nhật`;
+    } else {
+        if (titleEl) titleEl.textContent = `HẠN CHỐT KHÓA DÀN: NGAY KHI HẾT GIẢI 5 (~18:24)`;
+        if (subEl) subEl.textContent = `Quay xong G5.6 (19/19 giải) → Hệ thống tự động khóa sổ & xuất ngay gói chốt để vào tiền trước 18h28!`;
+        if (badgeEl) badgeEl.innerHTML = `⏳ Chờ giờ quay (18h15)`;
     }
 }
 
@@ -649,18 +747,32 @@ function renderRadarCang3D() {
     window.currentCangTT = cangTT.join(', ');
     window.currentCangD9 = cangD9.join(', ');
 
-    const elBadge = document.getElementById('badgeCangTop3');
-    if (elBadge) {
-        elBadge.textContent = `Top 3 Càng: [${top3Cang.join(', ')}] (Tâm G1: ${c3.tam_g1 || '---'} | Tổng Đề: ${c3.tong_de || '---'})`;
+    const elCangDate = document.getElementById('lblCangTargetDate');
+    if (elCangDate) {
+        elCangDate.textContent = (radarData.target_date || 'HÔM NAY').toUpperCase();
     }
 
+    const elBadge = document.getElementById('badgeCangTop3');
+    if (elBadge) {
+        const tamStr = c3.tam_g1 ? `Tâm G1: ${c3.tam_g1}` : 'Chờ G1 quay (18h16)';
+        const tongStr = c3.tong_de ? `Tổng Đề: ${c3.tong_de}` : '';
+        elBadge.textContent = `Top 3 Càng: [${top3Cang.join(', ')}] (${tamStr} | ${tongStr})`;
+    }
+
+    // Hiển thị kiểm tra nổ 3 càng nếu đã có kết quả
+    const actual3D = radarData.actual_3d || (radarData.actual_de && radarData.live_prizes?.g1 ? '' : '');
+    
     const elBT = document.getElementById('cangBachThuChips');
     if (elBT) {
-        elBT.innerHTML = cangBT.map(num => `
-            <span class="badge badge-gold" style="font-size: 15px; font-weight: 900; padding: 4px 12px; font-family: 'JetBrains Mono', monospace; border-radius: 8px;">
-                ${num}
-            </span>
-        `).join('');
+        elBT.innerHTML = cangBT.map(num => {
+            const isHit = actual3D && num === actual3D;
+            const hitStyle = isHit ? 'background: #10B981 !important; color: #FFF !important; box-shadow: 0 0 15px #10B981;' : '';
+            return `
+                <span class="badge badge-gold" style="font-size: 15px; font-weight: 900; padding: 4px 12px; font-family: 'JetBrains Mono', monospace; border-radius: 8px; ${hitStyle}">
+                    ${isHit ? '🎯 ' : ''}${num}
+                </span>
+            `;
+        }).join('');
     }
 
     const elTT = document.getElementById('cangTuThuDisplay');
