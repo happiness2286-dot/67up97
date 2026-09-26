@@ -43,6 +43,53 @@ BONG_DUONG = {
     5: 0, 6: 1, 7: 2, 8: 3, 9: 4
 }
 
+BONG_AM = {
+    0: 7, 7: 0,
+    1: 4, 4: 1,
+    2: 9, 9: 2,
+    3: 6, 6: 3,
+    5: 8, 8: 5
+}
+
+def calc_cang_3d(g1_val, prev_de, top_1, top_4, dan_9_so):
+    """Bắt Top 3 Càng 3D từ Tâm Càng Giải Nhất (G1) + Bóng Dương/Bóng Âm + Tổng Đề Kỳ Trước."""
+    scores = {i: 0 for i in range(10)}
+    tam_g1 = -1
+    dau_g1 = -1
+    sum_de = -1
+
+    if g1_val and len(g1_val) >= 5 and g1_val.isdigit():
+        tam_g1 = int(g1_val[2])
+        dau_g1 = int(g1_val[0])
+        scores[tam_g1] += 45
+        scores[BONG_DUONG.get(tam_g1, (tam_g1+5)%10)] += 35
+        scores[BONG_AM.get(tam_g1, tam_g1)] += 25
+        scores[dau_g1] += 15
+
+    if prev_de and len(prev_de) >= 2 and prev_de.isdigit():
+        sum_de = (int(prev_de[0]) + int(prev_de[1])) % 10
+        scores[sum_de] += 35
+        scores[BONG_DUONG.get(sum_de, (sum_de+5)%10)] += 25
+        scores[BONG_AM.get(sum_de, sum_de)] += 15
+
+    sorted_cang = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    top3_cang = [str(x[0]) for x in sorted_cang[:3]]
+    top4_cang = [str(x[0]) for x in sorted_cang[:4]]
+
+    cang_bt_3s = [f"{c}{top_1}" for c in top3_cang] if top_1 else []
+    cang_tt_12s = [f"{c}{num}" for c in top3_cang for num in top_4] if top_4 else []
+    cang_d9_27s = [f"{c}{num}" for c in top3_cang for num in dan_9_so] if dan_9_so else []
+
+    return {
+        'tam_g1': str(tam_g1) if tam_g1 >= 0 else '',
+        'tong_de': str(sum_de) if sum_de >= 0 else '',
+        'top3_cang': top3_cang,
+        'top4_cang': top4_cang,
+        'cang_bt_3s': cang_bt_3s,
+        'cang_tt_12s': cang_tt_12s,
+        'cang_d9_27s': cang_d9_27s
+    }
+
 DEFAULT_60_N1 = [
     "01", "02", "03", "04", "05", "08", "09", "11", "12", "13", "15", "17", "18", "19", "21",
     "22", "23", "24", "26", "28", "29", "31", "32", "33", "34", "35", "37", "38", "39", "42",
@@ -359,6 +406,9 @@ def scan_radar():
     filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
     is_completed = (filled_prizes >= 19)
 
+    # Bắt Top 3 Càng 3D từ Tâm Càng G1 + Bóng Tổng Đề
+    cang_info = calc_cang_3d(p_g1, prev_de, top_1, top_4, dan_9_so)
+
     # Dàn Tĩnh 4 Cấp trước 18h15
     dan_tinh_4cap = {
         'target_date': target_draw['date'],
@@ -366,7 +416,7 @@ def scan_radar():
         'bach_thu': top_1 if top_1 else '41',
         'song_thu': [top_1, top_4[1]] if len(top_4) >= 2 else ['41', '14'],
         'tu_thu': top_4 if len(top_4) >= 4 else ['41', '14', '67', '31'],
-        'cang_3d': ['0', '2', '4', '5', '7'],
+        'cang_3d': cang_info['top3_cang'],
         'dan_9_so': dan_9_so,
         'dan_cap2_38so': dan_cap2_38so,
         'dan_60_cap4': DEFAULT_60_N1
@@ -406,6 +456,7 @@ def scan_radar():
         'is_g5_finished': is_completed,
         'top_1': top_1,
         'top_4': top_4,
+        'cang_3d_live': cang_info,
         'dan_9_heads': head_digits,
         'dan_9_tails': tail_digits,
         'dan_9_so': dan_9_so,
@@ -546,10 +597,19 @@ def build_radar_history(draws, summary_data, max_records=30):
         hit_lot = (actual_de in dan_lot) if dan_lot else False
         hit_n1 = (actual_de in cap4_set)
 
+        actual_db = target_draw.get('db', '')
+        actual_3d = actual_db[-3:] if len(actual_db) >= 3 else ''
+        past_g1 = target_draw.get('prizes', {}).get('G1', '')
+        prev_sub_de = sub_draws[1].get('de', '') if len(sub_draws) > 1 else ''
+        cang_hist = calc_cang_3d(past_g1, prev_sub_de, t1, t4, d9_list)
+        hit_cang_tt = (actual_3d in cang_hist['cang_tt_12s']) if (actual_3d and cang_hist['cang_tt_12s']) else False
+        hit_cang_bt = (actual_3d in cang_hist['cang_bt_3s']) if (actual_3d and cang_hist['cang_bt_3s']) else False
+
         records.append({
             'stt': len(records) + 1,
             'date': t_date,
             'de': actual_de,
+            'actual_3d': actual_3d,
             'top_1': t1,
             'hit_top_1': hit_t1,
             'top_4': t4,
@@ -560,7 +620,10 @@ def build_radar_history(draws, summary_data, max_records=30):
             'hit_dan_9': hit_d9,
             'dan_lot': dan_lot,
             'hit_dan_lot': hit_lot,
-            'hit_n1': hit_n1
+            'hit_n1': hit_n1,
+            'top3_cang': cang_hist['top3_cang'],
+            'hit_cang_tt': hit_cang_tt,
+            'hit_cang_bt': hit_cang_bt
         })
 
     tot = len(records)
@@ -569,6 +632,8 @@ def build_radar_history(draws, summary_data, max_records=30):
     d9_hits = sum(1 for r in records if r['hit_dan_9'])
     lot_hits = sum(1 for r in records if r['hit_dan_lot'])
     n1_hits = sum(1 for r in records if r['hit_n1'])
+    cang_tt_hits = sum(1 for r in records if r['hit_cang_tt'])
+    cang_bt_hits = sum(1 for r in records if r['hit_cang_bt'])
 
     summary = {
         'total_evals': tot,
@@ -581,7 +646,11 @@ def build_radar_history(draws, summary_data, max_records=30):
         'lot_hits': lot_hits,
         'lot_rate': round(lot_hits / tot * 100, 2) if tot else 0,
         'n1_hits': n1_hits,
-        'n1_rate': round(n1_hits / tot * 100, 2) if tot else 0
+        'n1_rate': round(n1_hits / tot * 100, 2) if tot else 0,
+        'cang_tt_hits': cang_tt_hits,
+        'cang_tt_rate': round(cang_tt_hits / tot * 100, 2) if tot else 0,
+        'cang_bt_hits': cang_bt_hits,
+        'cang_bt_rate': round(cang_bt_hits / tot * 100, 2) if tot else 0
     }
     return records, summary
 

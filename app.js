@@ -445,6 +445,7 @@ async function fetchAndRenderRadarLive(isSilent = false) {
         renderRadarHeaderInfo();
         renderLivePrizeChips();
         renderRadarTopSummaries();
+        renderRadarCang3D();
         renderRadar5ColTable();
         renderRadarFrame3Day();
         renderRadarHistoryTable();
@@ -636,6 +637,43 @@ function renderRadarTopSummaries() {
     }
 }
 
+function renderRadarCang3D() {
+    if (!radarData) return;
+    const c3 = radarData.cang_3d_live || {};
+    const top3Cang = c3.top3_cang || ['1', '5', '0'];
+    const cangBT = c3.cang_bt_3s || [];
+    const cangTT = c3.cang_tt_12s || [];
+    const cangD9 = c3.cang_d9_27s || [];
+
+    window.currentCangBT = cangBT.join(', ');
+    window.currentCangTT = cangTT.join(', ');
+    window.currentCangD9 = cangD9.join(', ');
+
+    const elBadge = document.getElementById('badgeCangTop3');
+    if (elBadge) {
+        elBadge.textContent = `Top 3 Càng: [${top3Cang.join(', ')}] (Tâm G1: ${c3.tam_g1 || '---'} | Tổng Đề: ${c3.tong_de || '---'})`;
+    }
+
+    const elBT = document.getElementById('cangBachThuChips');
+    if (elBT) {
+        elBT.innerHTML = cangBT.map(num => `
+            <span class="badge badge-gold" style="font-size: 15px; font-weight: 900; padding: 4px 12px; font-family: 'JetBrains Mono', monospace; border-radius: 8px;">
+                ${num}
+            </span>
+        `).join('');
+    }
+
+    const elTT = document.getElementById('cangTuThuDisplay');
+    if (elTT) {
+        elTT.textContent = cangTT.join(', ');
+    }
+
+    const elD9 = document.getElementById('cangDan9Display');
+    if (elD9) {
+        elD9.textContent = cangD9.join(', ');
+    }
+}
+
 function renderRadar5ColTable() {
     if (!radarData || !radarData.table_5cols) return;
     const tbody = document.getElementById('tbody5Cols');
@@ -764,26 +802,29 @@ function renderRadarHistoryTable() {
     const records = radarData.history_records || [];
     const summary = radarData.history_summary || {};
 
-    // 4 Thẻ KPIs
+    // 5 Thẻ KPIs
     const elTop1 = document.getElementById('kpiRadarTop1');
     const elTop4 = document.getElementById('kpiRadarTop4');
     const elDan9 = document.getElementById('kpiRadarDan9');
     const elLot = document.getElementById('kpiRadarLot');
+    const elCangTT = document.getElementById('kpiRadarCangTT');
 
     const tot = summary.total_evals || records.length || 0;
     if (elTop1) elTop1.textContent = `${summary.top1_rate || 0}% (${summary.top1_hits || 0}/${tot} kỳ)`;
     if (elTop4) elTop4.textContent = `${summary.top4_rate || 0}% (${summary.top4_hits || 0}/${tot} kỳ)`;
     if (elDan9) elDan9.textContent = `${summary.dan9_rate || 0}% (${summary.dan9_hits || 0}/${tot} kỳ)`;
     if (elLot) elLot.textContent = `${summary.lot_rate || 0}% (${summary.lot_hits || 0}/${tot} kỳ)`;
+    if (elCangTT) elCangTT.textContent = `${summary.cang_tt_rate || 0}% (${summary.cang_tt_hits || 0}/${tot} kỳ)`;
 
     // Filter counts
     const cntAll = records.length;
-    let cntTop1 = 0, cntTop4 = 0, cntDan9 = 0, cntLot = 0;
+    let cntTop1 = 0, cntTop4 = 0, cntDan9 = 0, cntLot = 0, cntCang = 0;
     records.forEach(r => {
         if (r.hit_top_1) cntTop1++;
         if (r.hit_top_4) cntTop4++;
         if (r.hit_dan_9) cntDan9++;
         if (r.hit_dan_lot) cntLot++;
+        if (r.hit_cang_tt || r.hit_cang_bt) cntCang++;
     });
 
     const elCntAll = document.getElementById('cntHistAll');
@@ -791,11 +832,13 @@ function renderRadarHistoryTable() {
     const elCntTop4 = document.getElementById('cntHistTop4');
     const elCntDan9 = document.getElementById('cntHistDan9');
     const elCntLot = document.getElementById('cntHistLot');
+    const elCntCang = document.getElementById('cntHistCang');
     if (elCntAll) elCntAll.textContent = cntAll;
     if (elCntTop1) elCntTop1.textContent = cntTop1;
     if (elCntTop4) elCntTop4.textContent = cntTop4;
     if (elCntDan9) elCntDan9.textContent = cntDan9;
     if (elCntLot) elCntLot.textContent = cntLot;
+    if (elCntCang) elCntCang.textContent = cntCang;
 
     // Filter records
     const filtered = records.filter(r => {
@@ -803,6 +846,7 @@ function renderRadarHistoryTable() {
         if (currentRadarHistoryFilter === 'hit_top4') return r.hit_top_4;
         if (currentRadarHistoryFilter === 'hit_dan9') return r.hit_dan_9;
         if (currentRadarHistoryFilter === 'hit_lot') return r.hit_dan_lot;
+        if (currentRadarHistoryFilter === 'hit_cang') return r.hit_cang_tt || r.hit_cang_bt;
         return true;
     });
 
@@ -811,7 +855,7 @@ function renderRadarHistoryTable() {
     tbody.innerHTML = '';
 
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 18px;">Không có kỳ quay nào khớp với bộ lọc này.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 18px;">Không có kỳ quay nào khớp với bộ lọc này.</td></tr>`;
         return;
     }
 
@@ -830,6 +874,10 @@ function renderRadarHistoryTable() {
                 : `<span class="badge" style="background: rgba(56, 189, 248, 0.1); color: #38BDF8; padding: 2px 5px; font-size: 11px;">${num}</span>`;
         }).join(' ');
 
+        const cangStatus = r.hit_cang_tt || r.hit_cang_bt
+            ? `<span class="badge badge-gold" style="font-size: 11px; font-weight: 900; padding: 2px 6px;">🌟 Nổ 3C (${r.actual_3d})</span>`
+            : `<span style="color: #94A3B8; font-size: 12px; font-family: 'JetBrains Mono', monospace;">${r.actual_3d || '---'}</span> <span style="font-size: 10px; color: #EF4444;">❌</span>`;
+
         const d9Badges = (r.dan_9_so || []).map(num => {
             const isMatch = num === r.de;
             return isMatch
@@ -844,22 +892,25 @@ function renderRadarHistoryTable() {
 
         tr.innerHTML = `
             <td style="text-align: center; color: var(--text-muted); font-size: 11px;">${r.stt || idx + 1}</td>
-            <td style="font-weight: 700; color: #E2E8F0; font-size: 12.5px;">${r.date}</td>
+            <td style="font-weight: 700; color: #E2E8F0; font-size: 12px;">${r.date}</td>
             <td style="text-align: center;">
-                <span class="badge badge-gold" style="font-size: 16px; font-weight: 900; padding: 3px 10px; font-family: 'JetBrains Mono', monospace;">
+                <span class="badge badge-gold" style="font-size: 15px; font-weight: 900; padding: 2px 8px; font-family: 'JetBrains Mono', monospace;">
                     ${r.de}
                 </span>
             </td>
-            <td style="text-align: center; font-size: 13.5px; font-family: 'JetBrains Mono', monospace;">
+            <td style="text-align: center; font-size: 13px; font-family: 'JetBrains Mono', monospace;">
                 ${top1Badge}
             </td>
             <td>
-                <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                <div style="display: flex; gap: 3px; flex-wrap: wrap; align-items: center;">
                     ${top4Badges || '<span style="color: #64748B;">---</span>'}
                 </div>
             </td>
+            <td style="text-align: center;">
+                ${cangStatus}
+            </td>
             <td>
-                <div style="display: flex; gap: 2px; flex-wrap: wrap; align-items: center; max-width: 230px;">
+                <div style="display: flex; gap: 2px; flex-wrap: wrap; align-items: center; max-width: 200px;">
                     ${d9Badges || '<span style="color: #64748B;">---</span>'}
                 </div>
             </td>
@@ -870,7 +921,7 @@ function renderRadarHistoryTable() {
         tbody.appendChild(tr);
     });
 
-    window.currentRadarHistoryText = filtered.map(r => `${r.date} | Đề: ${r.de} | Top 1: ${r.top_1} (${r.hit_top_1 ? 'TRÚNG' : 'TRƯỢT'}) | Top 4: ${(r.top_4||[]).join(',')} (${r.hit_top_4 ? 'TRÚNG' : 'TRƯỢT'}) | Dàn 9s: ${(r.dan_9_so||[]).join(',')} (${r.hit_dan_9 ? 'TRÚNG' : 'TRƯỢT'}) | Lót: (${(r.dan_lot||[]).length}s: ${r.hit_dan_lot ? 'TRÚNG' : 'TRƯỢT'})`).join('\n');
+    window.currentRadarHistoryText = filtered.map(r => `${r.date} | Đề: ${r.de} (3D: ${r.actual_3d}) | Top 1: ${r.top_1} (${r.hit_top_1 ? 'TRÚNG' : 'TRƯỢT'}) | Top 4: ${(r.top_4||[]).join(',')} (${r.hit_top_4 ? 'TRÚNG' : 'TRƯỢT'}) | 3 Càng: (${r.hit_cang_tt ? 'TRÚNG 3D' : 'TRƯỢT'}) | Dàn 9s: ${(r.dan_9_so||[]).join(',')} (${r.hit_dan_9 ? 'TRÚNG' : 'TRƯỢT'})`).join('\n');
 }
 
 function setupRadarEventListeners() {
@@ -899,6 +950,27 @@ function setupRadarEventListeners() {
     // Copy Tứ Thủ
     document.getElementById('btnCopyRadarTT')?.addEventListener('click', () => {
         copyToClipboard(window.currentRadarTT || '', 'Đã copy Tứ Thủ: ' + (window.currentRadarTT || ''));
+    });
+
+    // Copy 3 Càng Bạch Thủ
+    document.getElementById('btnCopyCangBT')?.addEventListener('click', () => {
+        copyToClipboard(window.currentCangBT || '', 'Đã copy 3 Càng Bạch Thủ: ' + (window.currentCangBT || ''));
+    });
+
+    // Copy 3 Càng Tứ Thủ (12 Con)
+    document.getElementById('btnCopyCangTT')?.addEventListener('click', () => {
+        copyToClipboard(window.currentCangTT || '', 'Đã copy 12 Con 3 Càng Tứ Thủ!');
+    });
+
+    // Copy 3 Càng Cội Nguồn (27 Con)
+    document.getElementById('btnCopyCangDan9')?.addEventListener('click', () => {
+        copyToClipboard(window.currentCangD9 || '', 'Đã copy 27 Con 3 Càng Cội Nguồn!');
+    });
+
+    // Nút Chốt Gấp Trước 18h25 (1 Chạm)
+    document.getElementById('btnQuickCopyAll')?.addEventListener('click', () => {
+        const text = `⚡ GÓI CHỐT GẤP XSMB LIVE (TRƯỚC 18H25):\n👑 BẠCH THỦ: ${window.currentRadarBT || ''}\n🔥 TỨ THỦ: ${window.currentRadarTT || ''}\n🌟 3 CÀNG BẠCH THỦ (3s): ${window.currentCangBT || ''}\n🌟 3 CÀNG TỨ THỦ (12s): ${window.currentCangTT || ''}\n🎯 DÀN 9S CỘI NGUỒN: ${window.currentRadarDan9 || ''}\n🛡️ DÀN LÓT BẢO HIỂM: ${window.currentRadarLot || ''}`;
+        copyToClipboard(text, '⚡ Đã copy GÓI CHỐT GẤP (Bạch Thủ + Tứ Thủ + 3 Càng + 9s) sẵn sàng dán tin nhắn!');
     });
 
     // Copy Dàn 9 Số
