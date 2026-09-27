@@ -570,8 +570,8 @@
   },
   "dan_9_heads": [
     "2",
-    "4",
-    "3"
+    "3",
+    "4"
   ],
   "dan_9_tails": [
     "2",
@@ -3621,35 +3621,35 @@
       "date": "Thứ bảy ngày 26-09-2026",
       "de": "32",
       "actual_3d": "132",
-      "top_1": "92",
-      "lot_lon": "29",
+      "top_1": "42",
+      "lot_lon": "24",
       "song_thu": [
-        "92",
-        "29"
+        "42",
+        "24"
       ],
       "hit_top_1": false,
       "hit_lot_lon": false,
       "hit_song_thu": false,
       "top_4": [
-        "92",
-        "29",
-        "23",
-        "28"
-      ],
-      "hit_top_4": false,
-      "dan_9_so": [
-        "92",
-        "23",
-        "28",
-        "24",
-        "29",
         "42",
-        "97",
+        "24",
         "32",
-        "82"
+        "37"
       ],
-      "pred_heads": "",
-      "pred_tails": "",
+      "hit_top_4": true,
+      "dan_9_so": [
+        "21",
+        "22",
+        "27",
+        "31",
+        "32",
+        "37",
+        "41",
+        "42",
+        "47"
+      ],
+      "pred_heads": "2, 4, 3",
+      "pred_tails": "2, 1, 7",
       "hit_dan_9": true,
       "dan_lot": [
         "01",
@@ -3668,17 +3668,16 @@
         "19",
         "21",
         "22",
-        "24",
+        "23",
         "26",
+        "28",
+        "29",
         "31",
-        "32",
         "33",
         "34",
         "35",
-        "37",
         "38",
         "39",
-        "42",
         "43",
         "44",
         "45",
@@ -3705,19 +3704,20 @@
         "87",
         "88",
         "91",
+        "92",
         "95",
         "96",
         "97",
         "99"
       ],
-      "hit_dan_lot": true,
+      "hit_dan_lot": false,
       "hit_n1": true,
       "top3_cang": [
         "2",
         "9",
         "1"
       ],
-      "hit_cang_tt": false,
+      "hit_cang_tt": true,
       "hit_cang_bt": false
     },
     {
@@ -6546,18 +6546,18 @@
     "top1_rate": 0.0,
     "song_thu_hits": 0,
     "song_thu_rate": 0.0,
-    "top4_hits": 0,
-    "top4_rate": 0.0,
+    "top4_hits": 1,
+    "top4_rate": 3.33,
     "dan9_hits": 1,
     "dan9_rate": 3.33,
-    "lot_hits": 23,
-    "lot_rate": 76.67,
+    "lot_hits": 22,
+    "lot_rate": 73.33,
     "n1_hits": 25,
     "n1_rate": 83.33,
-    "cang_tt_hits": 0,
-    "cang_tt_rate": 0.0,
+    "cang_tt_hits": 1,
+    "cang_tt_rate": 3.33,
     "cang_bt_hits": 0,
     "cang_bt_rate": 0.0
   },
-  "last_updated": "20:44:08 27/09/2026"
+  "last_updated": "20:45:24 27/09/2026"
 }
