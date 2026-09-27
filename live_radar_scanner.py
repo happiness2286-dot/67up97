@@ -235,8 +235,26 @@ def scan_radar():
                 return json.load(f)
         return None
 
-    target_draw = draws[0]
-    prev_draw = draws[1]
+    now = datetime.now()
+    ds_today = now.strftime('%d-%m-%Y')
+    thu_map = {0: 'Thứ hai', 1: 'Thứ ba', 2: 'Thứ tư', 3: 'Thứ năm', 4: 'Thứ sáu', 5: 'Thứ bảy', 6: 'Chủ nhật'}
+    today_label = f"{thu_map.get(now.weekday(), 'Hôm nay')} ngày {ds_today}"
+
+    # Kiểm tra xem draws[0] đã là kỳ quay của ngày hôm nay hay chưa
+    first_draw_date = draws[0].get('date', '')
+    if ds_today in first_draw_date:
+        target_draw = draws[0]
+        prev_draw = draws[1]
+    else:
+        # Website mketqua.net chưa tạo dòng hôm nay -> target_draw là hôm nay (chưa quay), prev_draw là draws[0] (kỳ hôm qua)
+        target_draw = {
+            'date': today_label,
+            'db': '',
+            'de': '',
+            'prizes': {}
+        }
+        prev_draw = draws[0]
+        draws = [target_draw] + draws
 
     prev_de = prev_draw['de']
     if not prev_de or len(prev_de) < 2:
@@ -273,55 +291,99 @@ def scan_radar():
     head_matches = []
     tail_matches = []
 
-    for pos_key, (char, raw_name) in prev_pos.items():
-        if char in head_targets:
-            streak = calc_streak(pos_key, is_head=True)
-            if pos_key in target_pos:
-                cur_char = target_pos[pos_key][0]
-                cur_bong = str(BONG_DUONG[int(cur_char)])
-                cat = "Chỉ đạo" if streak >= 3 else ("Lót" if streak == 2 else "Theo dõi")
-                color = "cycle_main" if streak >= 3 else ("cycle_lot" if streak == 2 else "cycle_watch")
-                suffix = f"{streak}d"
-                label = f"✅ CHỈ ĐẠO ({streak} ngày)" if streak >= 3 else (f"Lót ngày {streak}" if streak == 2 else "Theo dõi ngày 1 (Mới chạm)")
-                
+    if target_pos:
+        # Khi đang hoặc đã quay: Khớp số trực tiếp từ quả bóng vừa rơi
+        for pos_key, (char, raw_name) in prev_pos.items():
+            if char in head_targets:
+                streak = calc_streak(pos_key, is_head=True)
+                if pos_key in target_pos:
+                    cur_char = target_pos[pos_key][0]
+                    cur_bong = str(BONG_DUONG[int(cur_char)])
+                    cat = "Chỉ đạo" if streak >= 3 else ("Lót" if streak == 2 else "Theo dõi")
+                    color = "cycle_main" if streak >= 3 else ("cycle_lot" if streak == 2 else "cycle_watch")
+                    suffix = f"{streak}d"
+                    label = f"✅ CHỈ ĐẠO ({streak} ngày)" if streak >= 3 else (f"Lót ngày {streak}" if streak == 2 else "Theo dõi ngày 1 (Mới chạm)")
+                    
+                    info = {
+                        'pos_raw': raw_name,
+                        'role': 'head',
+                        'role_name': 'Đầu',
+                        'digit': cur_char,
+                        'digit_bong': cur_bong,
+                        'cycle': streak,
+                        'cycle_suffix': suffix,
+                        'category': cat,
+                        'label': label,
+                        'color_type': color,
+                        'tooltip': f"{raw_name}: Đầu {cur_char} ({suffix}) | {label}"
+                    }
+                    highlight_positions[pos_key] = info
+                    head_matches.append(info)
+
+            if char in tail_targets:
+                streak = calc_streak(pos_key, is_head=False)
+                if pos_key in target_pos:
+                    cur_char = target_pos[pos_key][0]
+                    cur_bong = str(BONG_DUONG[int(cur_char)])
+                    cat = "Chỉ đạo" if streak >= 3 else ("Lót" if streak == 2 else "Theo dõi")
+                    color = "cycle_main" if streak >= 3 else ("cycle_lot" if streak == 2 else "cycle_watch")
+                    suffix = f"{streak}d"
+                    label = f"✅ CHỈ ĐẠO ({streak} ngày)" if streak >= 3 else (f"Lót ngày {streak}" if streak == 2 else "Theo dõi ngày 1 (Mới chạm)")
+                    
+                    info = {
+                        'pos_raw': raw_name,
+                        'role': 'tail',
+                        'role_name': 'Đuôi',
+                        'digit': cur_char,
+                        'digit_bong': cur_bong,
+                        'cycle': streak,
+                        'cycle_suffix': suffix,
+                        'category': cat,
+                        'label': label,
+                        'color_type': color,
+                        'tooltip': f"{raw_name}: Đuôi {cur_char} ({suffix}) | {label}"
+                    }
+                    if pos_key in highlight_positions:
+                        if streak > highlight_positions[pos_key]['cycle']:
+                            highlight_positions[pos_key] = info
+                    else:
+                        highlight_positions[pos_key] = info
+                    tail_matches.append(info)
+    else:
+        # Trước 18h15 (chưa có bóng rơi): Lấy các vị trí nhịp đẹp từ kỳ trước làm vị trí đón đầu
+        for pos_key, (char, raw_name) in prev_pos.items():
+            if char in head_targets:
+                streak = calc_streak(pos_key, is_head=True)
                 info = {
                     'pos_raw': raw_name,
                     'role': 'head',
-                    'role_name': 'Đầu',
-                    'digit': cur_char,
-                    'digit_bong': cur_bong,
+                    'role_name': 'Đầu (chờ bóng)',
+                    'digit': char,
+                    'digit_bong': str(BONG_DUONG[int(char)]),
                     'cycle': streak,
-                    'cycle_suffix': suffix,
-                    'category': cat,
-                    'label': label,
-                    'color_type': color,
-                    'tooltip': f"{raw_name}: Đầu {cur_char} ({suffix}) | {label}"
+                    'cycle_suffix': f"{streak}d",
+                    'category': "Chỉ đạo" if streak >= 2 else "Theo dõi",
+                    'label': f"Vị trí đón đầu ({streak}d)",
+                    'color_type': "cycle_main" if streak >= 2 else "cycle_watch",
+                    'tooltip': f"{raw_name}: Đang chờ giờ quay 18h15"
                 }
                 highlight_positions[pos_key] = info
                 head_matches.append(info)
 
-        if char in tail_targets:
-            streak = calc_streak(pos_key, is_head=False)
-            if pos_key in target_pos:
-                cur_char = target_pos[pos_key][0]
-                cur_bong = str(BONG_DUONG[int(cur_char)])
-                cat = "Chỉ đạo" if streak >= 3 else ("Lót" if streak == 2 else "Theo dõi")
-                color = "cycle_main" if streak >= 3 else ("cycle_lot" if streak == 2 else "cycle_watch")
-                suffix = f"{streak}d"
-                label = f"✅ CHỈ ĐẠO ({streak} ngày)" if streak >= 3 else (f"Lót ngày {streak}" if streak == 2 else "Theo dõi ngày 1 (Mới chạm)")
-                
+            if char in tail_targets:
+                streak = calc_streak(pos_key, is_head=False)
                 info = {
                     'pos_raw': raw_name,
                     'role': 'tail',
-                    'role_name': 'Đuôi',
-                    'digit': cur_char,
-                    'digit_bong': cur_bong,
+                    'role_name': 'Đuôi (chờ bóng)',
+                    'digit': char,
+                    'digit_bong': str(BONG_DUONG[int(char)]),
                     'cycle': streak,
-                    'cycle_suffix': suffix,
-                    'category': cat,
-                    'label': label,
-                    'color_type': color,
-                    'tooltip': f"{raw_name}: Đuôi {cur_char} ({suffix}) | {label}"
+                    'cycle_suffix': f"{streak}d",
+                    'category': "Chỉ đạo" if streak >= 2 else "Theo dõi",
+                    'label': f"Vị trí đón đuôi ({streak}d)",
+                    'color_type': "cycle_main" if streak >= 2 else "cycle_watch",
+                    'tooltip': f"{raw_name}: Đang chờ giờ quay 18h15"
                 }
                 if pos_key in highlight_positions:
                     if streak > highlight_positions[pos_key]['cycle']:
@@ -852,8 +914,11 @@ if __name__ == "__main__":
             git_path = r"C:\Program Files\Git\cmd\git.exe"
             subprocess.run([git_path, 'add', 'live_radar_state.json'], check=True, capture_output=True)
             subprocess.run([git_path, 'commit', '-m', commit_msg], capture_output=True, text=True)
-            subprocess.run([git_path, 'push', 'origin', 'main'], capture_output=True, text=True)
-            print(f"🚀 [GIT PUSH] {commit_msg} -> Đã đồng bộ lên GitHub thành công!", flush=True)
+            res = subprocess.run([git_path, 'push', 'origin', 'main'], capture_output=True, text=True)
+            if res.returncode == 0:
+                print(f"🚀 [GIT PUSH] {commit_msg} -> Đã đồng bộ lên GitHub thành công!", flush=True)
+            else:
+                print(f"⚠️ [GIT PUSH THẤT BẠI]: {res.stderr.strip()}", flush=True)
         except Exception as ex:
             print(f"⚠️ Không thể git push nhanh: {ex}", flush=True)
 
@@ -862,18 +927,35 @@ if __name__ == "__main__":
         start_t = time.time()
         g5_locked = False
         final_completed = False
+        last_pushed_filled = -1
+        last_pushed_time = 0
 
         while True:
             try:
                 res = scan_radar()
                 if res:
-                    # 1. BƯỚC CHỐT KHÓA NGAY KHI HẾT G5 (18h24)
+                    cur_filled = res.get('filled_count', 0)
+                    t_date = res.get('target_date', '')
+                    actual_de = res.get('actual_de', '')
+                    today_str = datetime.now().strftime("%d-%m-%Y")
+                    is_today = (today_str in t_date)
+                    now_t = time.time()
+
+                    # 1. BƯỚC ĐẨY LIVE TRONG KHI QUAY (Có thêm giải mới xuất hiện hoặc cách nhau >= 25s)
+                    if args.auto_push and cur_filled > 0 and not actual_de:
+                        if (cur_filled != last_pushed_filled) or (now_t - last_pushed_time >= 25):
+                            last_pushed_filled = cur_filled
+                            last_pushed_time = now_t
+                            p1 = res.get('live_prizes', {}).get('g1', '')
+                            tam_g1_str = f" (G1: {p1} - Tâm {p1[2]})" if (p1 and len(p1) >= 3) else ""
+                            do_quick_git_push(f"⚡ Live XSMB {t_date}: {cur_filled}/19 giải{tam_g1_str}")
+
+                    # 2. BƯỚC CHỐT KHÓA NGAY KHI HẾT G5 (18h24 - đủ 19/19 giải)
                     if res.get('is_g5_finished') and not g5_locked:
                         g5_locked = True
                         top1 = res.get('top_1')
                         top4 = res.get('top_4')
                         top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
-                        t_date = res.get('target_date', '')
                         print(f"\n=======================================================", flush=True)
                         print(f"🔒 [CHỐT KHÓA G5 - {datetime.now().strftime('%H:%M:%S')}] ĐÃ HOÀN TẤT 19/19 GIẢI G1->G5 KỲ {t_date}!", flush=True)
                         print(f"👑 BẠCH THỦ TOP 1: {top1} | 🔥 TỨ THỦ: {top4}", flush=True)
@@ -881,14 +963,15 @@ if __name__ == "__main__":
                         print(f"⏱️ HẠN CHỐT VÀO TIỀN: TRƯỚC 18H28!", flush=True)
                         print(f"=======================================================\n", flush=True)
                         if args.auto_push:
-                            do_quick_git_push(f"Lock Radar G5 {t_date} (BT {top1}, TT {top4})")
+                            do_quick_git_push(f"🔒 CHỐT KHÓA G5 {t_date} (BT {top1}, TT {top4})")
+                            last_pushed_time = now_t
 
-                    # 2. BƯỚC ĐỐI CHIẾU KHI CÓ GIẢI ĐẶC BIỆT (sau 18h30)
-                    if res.get('actual_de'):
-                        print(f"\n🎯 [KẾT THÚC QUAY - {datetime.now().strftime('%H:%M:%S')}] Đã có Giải Đặc Biệt: {res.get('actual_de')}.", flush=True)
+                    # 3. BƯỚC ĐỐI CHIẾU KHI CÓ GIẢI ĐẶC BIỆT CỦA CHÍNH HÔM NAY (Sau 18h30)
+                    if is_today and actual_de and res.get('is_g5_finished'):
+                        print(f"\n🎯 [KẾT THÚC QUAY - {datetime.now().strftime('%H:%M:%S')}] Đã có Giải Đặc Biệt hôm nay: {actual_de}.", flush=True)
                         final_completed = True
                         if args.auto_push:
-                            do_quick_git_push(f"Finish XSMB {res.get('target_date')} (DB {res.get('actual_de')})")
+                            do_quick_git_push(f"🎯 Finish XSMB {t_date} (ĐB {actual_de})")
                         break
             except Exception as e:
                 print(f"[!] Lỗi khi quét radar: {e}", flush=True)

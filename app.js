@@ -436,9 +436,32 @@ async function initRadarLive() {
     setupRadarEventListeners();
 }
 
+let lastKnownCommitSha = null;
+
 async function fetchAndRenderRadarLive(isSilent = false) {
     try {
-        const res = await fetch('live_radar_state.json?t=' + Date.now());
+        let url = 'live_radar_state.json?t=' + Date.now();
+
+        // Nếu chạy trên GitHub Pages, thử lấy commit SHA mới nhất từ GitHub API để đọc tức thì không trễ CDN
+        if (window.location.hostname.includes('github.io')) {
+            try {
+                const apiRes = await fetch('https://api.github.com/repos/happiness2286-dot/67up97/commits/main', {
+                    headers: { 'Accept': 'application/vnd.github.v3+json' },
+                    cache: 'no-store'
+                });
+                if (apiRes.ok) {
+                    const commitData = await apiRes.json();
+                    if (commitData && commitData.sha) {
+                        lastKnownCommitSha = commitData.sha;
+                        url = `https://raw.githubusercontent.com/happiness2286-dot/67up97/${commitData.sha}/live_radar_state.json`;
+                    }
+                }
+            } catch (apiErr) {
+                // Tự động fallback về file tĩnh tương đối
+            }
+        }
+
+        const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error('Không thể tải file live_radar_state.json');
         radarData = await res.json();
         
