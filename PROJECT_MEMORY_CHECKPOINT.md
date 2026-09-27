@@ -1,4 +1,4 @@
-# BỘ NHỚ CHỐT DỰ ÁN XSMB AI 67UP97 (CHECKPOINT: 26/09/2026)
+# BỘ NHỚ CHỐT DỰ ÁN XSMB AI 67UP97 (CHECKPOINT: 27/09/2026)
 
 ## 📌 1. THÔNG TIN CHUNG
 * **Tên Dự Án**: XSMB AI PREDICTION 2026 - MODEL 67 UP TO 97%
@@ -36,6 +36,9 @@
 
 ---
 
-## 🤖 5. HỆ THỐNG TỰ ĐỘNG HÓA WINDOWS TASK SCHEDULER
-* **Task Name**: `XSMB_AI_AutoUpdate_18h15` (Chạy PowerShell UTF-8 ẩn `AUTO_CRON_18H15.ps1`).
-* **Lịch Chạy**: Tự động kích hoạt hàng ngày lúc **18:14**, lặp lại quét live liên tục mỗi 30s-60s trong suốt khung giờ quay thưởng 18h14 - 18h35, tự động commit và push GitHub.
+## 🚀 5. KHẮC PHỤC TRIỆT ĐỂ LỖ HỔNG LIVE (AUDIT & FIX 27/09/2026)
+1. **Lỗi Thoát Sớm (Premature Exit Bug)**: Đã sửa logic kiểm tra ngày `ds_today`. Không còn bị nhầm kết quả hôm qua là hôm nay đã xong rồi tự tắt sớm lúc 18h14.
+2. **Cơ Chế Push Từng Giải**: Scanner tự động push GitHub ngay khi có giải mới (G1, G2, G3, G4...) hoặc mỗi 25s, đảm bảo mini app nhảy số đồng bộ cùng đài quay.
+3. **Bypass Cache GitHub Pages**: `app.js` tự động lấy commit SHA mới nhất qua GitHub API để đọc tức thì dữ liệu từ raw GitHub (độ trễ 0s).
+4. **Chuẩn Hóa Task Scheduler**: Đã đăng ký `XSMB_AI_AutoUpdate_18h15` trỏ chuẩn xác 100% vào `67_up_95\AUTO_CRON_18H15.ps1` với quyền `-WakeToRun`.
+5. **Nút Chạy Trực Tiếp Thủ Công**: Thêm file `CHAY_LIVE_TRUC_TIEP_18H14.bat` để người dùng có thể click chạy xem màn hình đen trực tiếp nếu muốn.
