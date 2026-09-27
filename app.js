@@ -11,22 +11,51 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initApp() {
+    setupGlobalManualRefresh();
+    await loadDashboardData();
+    initRadarLive();
+    setupEventListeners();
+}
+
+async function loadDashboardData() {
     try {
-        const response = await fetch('analysis_summary.json?t=' + Date.now());
+        const response = await fetch('analysis_summary.json?t=' + Date.now(), { cache: 'no-store' });
         if (!response.ok) throw new Error('Không thể tải dữ liệu analysis_summary.json');
         appData = await response.json();
         
         updateDynamicPredictionDates();
         renderHeaderAndHero();
         renderTabFrame3Day();
-        initRadarLive();
         renderTabHistoryStats();
-        
-        setupEventListeners();
     } catch (error) {
         console.error('Lỗi nạp dữ liệu Mini App:', error);
         showToast('❌ Lỗi nạp dữ liệu: ' + error.message, 'error');
     }
+}
+
+function setupGlobalManualRefresh() {
+    const btn = document.getElementById('btnHeaderManualRefresh');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+        const icon = document.getElementById('headerRefreshIcon');
+        if (icon) icon.classList.add('spin-animate');
+        btn.disabled = true;
+        showToast('🔄 Đang làm mới dữ liệu toàn hệ thống...', 'warn');
+        try {
+            await Promise.allSettled([
+                loadDashboardData(),
+                fetchAndRenderRadarLive(true)
+            ]);
+            showToast('✅ Đã làm mới dữ liệu thành công!', 'success');
+        } catch (e) {
+            showToast('⚠️ Không thể tải dữ liệu mới', 'error');
+        } finally {
+            setTimeout(() => {
+                if (icon) icon.classList.remove('spin-animate');
+                btn.disabled = false;
+            }, 600);
+        }
+    });
 }
 
 function updateDynamicPredictionDates() {

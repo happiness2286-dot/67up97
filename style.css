@@ -1136,3 +1136,42 @@ body {
     }
 }
 
+/* ==========================================================================
+   MANUAL REFRESH BUTTON (ALL TABS & HEADER)
+   ========================================================================== */
+.btn-header-refresh {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.3) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.6);
+    color: #38BDF8;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+}
+
+.btn-header-refresh:hover {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.35) 0%, rgba(14, 165, 233, 0.5) 100%);
+    border-color: #38BDF8;
+    transform: translateY(-1px);
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
+}
+
+.btn-header-refresh:active {
+    transform: translateY(1px);
+}
+
+.spin-animate {
+    animation: refreshSpin 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes refreshSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
