@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 ~$*.xlsx
 .DS_Store
+backup/
+cron_history.log
+*.png

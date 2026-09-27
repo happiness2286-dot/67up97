@@ -336,6 +336,12 @@ function setupEventListeners() {
         });
     });
 
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+        const targetBtn = document.querySelector(`.tab-btn[data-tab="${hash}"]`);
+        if (targetBtn) targetBtn.click();
+    }
+
     // Window Selector Buttons in Tab 5
     document.querySelectorAll('.window-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -563,12 +569,12 @@ function renderRadarHeaderInfo() {
         const filled = radarData.filled_count || 0;
         const total = radarData.total_count || 19;
         const actualDe = radarData.actual_de || '';
-        const isG5Done = radarData.is_g5_finished || (filled >= 19);
+        const isG5Done = radarData.is_g5_finished || (filled >= 19) || radarData.is_g5_5_done || radarData.is_locked;
 
         if (actualDe) {
             elProgress.innerHTML = `<span style="color: #34D399; font-weight: 800;">19/19 GIẢI • ĐÃ CÓ ĐỀ ${actualDe} 🎯</span>`;
         } else if (isG5Done) {
-            elProgress.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">19/19 GIẢI • 🔒 ĐÃ KHÓA CHỐT G5</span>`;
+            elProgress.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">🔒 ĐÃ KHÓA CHỐT DÀN (G5.5)</span>`;
         } else if (filled > 0) {
             elProgress.innerHTML = `<span style="color: #38BDF8; font-weight: 800;">${filled}/${total} GIẢI (ĐANG QUAY...)</span>`;
         } else {
@@ -588,7 +594,7 @@ function renderFastLockBanner() {
     const btnQuick = document.getElementById('btnQuickCopyAll');
 
     const filled = radarData.filled_count || 0;
-    const isG5Done = radarData.is_g5_finished || (filled >= 19);
+    const isG5Done = radarData.is_g5_finished || (filled >= 19) || radarData.is_g5_5_done || radarData.is_locked;
     const actualDe = radarData.actual_de || '';
 
     if (actualDe) {
@@ -622,6 +628,8 @@ function renderFastLockBanner() {
         else hitStatus.push('KỲ QUAY ĐÃ HOÀN TẤT');
 
         if (titleEl) titleEl.textContent = `🎯 KẾT QUẢ XSMB HÔM NAY: ĐỀ VỀ ${actualDe}`;
+        const bannerEl = document.getElementById('banner');
+        if (bannerEl) bannerEl.innerHTML = `🎯 KẾT QUẢ XSMB HÔM NAY: ĐỀ VỀ ${actualDe}`;
         if (subEl) subEl.innerHTML = `<span style="color: #34D399; font-weight: 800;">${hitStatus.join(' • ')}</span> | Bạch thủ: ${radarData.top_1 || '--'} | Tứ thủ: ${(radarData.top_4||[]).join(', ')}`;
         if (btnQuick) btnQuick.innerHTML = `<i class="fa-solid fa-copy"></i> SAO CHÉP KẾT QUẢ ĐỐI CHIẾU (${actualDe})`;
     } else if (isG5Done) {
@@ -637,34 +645,44 @@ function renderFastLockBanner() {
         if (iconEl) iconEl.className = 'fa-solid fa-lock';
         if (badgeEl) {
             badgeEl.className = 'badge badge-gold';
-            badgeEl.innerHTML = `🔒 ĐÃ KHÓA CHỐT 100%`;
+            badgeEl.innerHTML = `🔒 ĐÃ KHÓA CHỐT (G5.5)`;
         }
-        if (titleEl) titleEl.textContent = `🔒 ĐÃ CHỐT KHÓA DÀN (HẾT G5 - 19/19 GIẢI)!`;
-        if (subEl) subEl.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Hạn chốt trước 18h28 khi đài bắt đầu quay GĐB!`;
+        const bannerTitle = '🔒 ĐÃ KHÓA CHỐT DÀN (G5.5) - VÀO TIỀN TRƯỚC 18H28!';
+        if (titleEl) titleEl.textContent = bannerTitle;
+        const bannerEl = document.getElementById('banner');
+        if (bannerEl) bannerEl.innerHTML = bannerTitle;
+        if (subEl) subEl.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Chốt ngay khi có G5.5 (hoặc backup 18h24). Hạn vào tiền trước 18h28!`;
         if (btnQuick) {
             btnQuick.innerHTML = `<i class="fa-solid fa-bolt"></i> COPY GÓI CHỐT GẤP (VÀO TIỀN NGAY)`;
         }
     } else if (filled > 0) {
-        if (titleEl) titleEl.textContent = `⚡ ĐANG QUAY TRỰC TIẾP (${filled}/19 GIẢI)...`;
-        if (subEl) subEl.textContent = `Hệ thống tự động quét vị trí. Sẽ khóa chốt tức thì ngay khi quay xong G5.6 (19/19 giải) lúc ~18h24!`;
+        const liveTitle = `⚡ ĐANG QUAY TRỰC TIẾP (${filled}/19 GIẢI)...`;
+        if (titleEl) titleEl.textContent = liveTitle;
+        const bannerEl = document.getElementById('banner');
+        if (bannerEl) bannerEl.textContent = liveTitle;
+        if (subEl) subEl.textContent = `Hệ thống tự động quét vị trí. Sẽ khóa chốt tức thì ngay khi xuất hiện G5.5 (hoặc backup 18h24)!`;
         if (badgeEl) badgeEl.innerHTML = `⚡ Đang cập nhật`;
     } else {
-        if (titleEl) titleEl.textContent = `HẠN CHỐT KHÓA DÀN: NGAY KHI HẾT GIẢI 5 (~18:24)`;
-        if (subEl) subEl.textContent = `Quay xong G5.6 (19/19 giải) → Hệ thống tự động khóa sổ & xuất ngay gói chốt để vào tiền trước 18h28!`;
+        const waitTitle = `HẠN CHỐT KHÓA DÀN: NGAY KHI CÓ G5.5 (~18:22 - 18:24)`;
+        if (titleEl) titleEl.textContent = waitTitle;
+        const bannerEl = document.getElementById('banner');
+        if (bannerEl) bannerEl.textContent = waitTitle;
+        if (subEl) subEl.textContent = `Có G5.5 xuất hiện (hoặc backup 18h24) → Hệ thống tự động khóa sổ & xuất ngay gói chốt để vào tiền trước 18h28!`;
         if (badgeEl) badgeEl.innerHTML = `⏳ Chờ giờ quay (18h15)`;
     }
 }
 
 function buildChipHtml(valStr, prizeCode, hp) {
+    const giaiAttr = (prizeCode || '').replace(/^G/i, '');
     if (!valStr) {
-        return `<span class="prize-num-chip" style="opacity: 0.5;"><span style="letter-spacing: 2px;">• • • • •</span></span>`;
+        return `<span class="prize-num-chip" data-giai="${giaiAttr}" style="opacity: 0.5;"><span style="letter-spacing: 2px;"></span></span>`;
     }
     
     let digitsHtml = '';
     for (let idx = 1; idx <= valStr.length; idx++) {
         const char = valStr[idx - 1];
         const posKey = `${prizeCode}_${idx}`;
-        const info = hp[posKey];
+        const info = hp ? hp[posKey] : null;
         
         let cellClass = 'prize-digit-cell';
         let tagHtml = '';
@@ -691,8 +709,49 @@ function buildChipHtml(valStr, prizeCode, hp) {
         `;
     }
     
-    return `<span class="prize-num-chip">${digitsHtml}</span>`;
+    return `<span class="prize-num-chip" data-giai="${giaiAttr}">${digitsHtml}</span>`;
 }
+
+// =======================================================
+// LOGIC KHÓA CHỐT DÀN TỰ ĐỘNG TẠI G5.5 HOẶC MỐC 18H24
+// =======================================================
+let isLocked = false;
+
+function checkLock() {
+    // Kiểm tra G5.5
+    const g5_5 = document.querySelector('[data-giai="5.5"]');
+    const now = new Date();
+    const lockTime = new Date();
+    lockTime.setHours(18, 24, 0, 0);
+
+    const hasG5_5 = Boolean(g5_5 && g5_5.textContent.replace(/[•\s]/g, '') !== '');
+    const isPast18h24 = (now >= lockTime);
+    const serverLocked = Boolean(window.radarData && (window.radarData.is_g5_5_done || window.radarData.is_g5_finished || window.radarData.is_locked));
+
+    if ((hasG5_5 || isPast18h24 || serverLocked) && !isLocked) {
+        const bannerMsg = '🔒 ĐÃ KHÓA CHỐT DÀN (G5.5) - VÀO TIỀN TRƯỚC 18H28!';
+        const banner = document.getElementById('banner');
+        if (banner) {
+            banner.innerHTML = bannerMsg;
+        }
+        const titleEl = document.getElementById('lblFastLockTitle');
+        if (titleEl) {
+            titleEl.textContent = bannerMsg;
+        }
+        const badgeEl = document.getElementById('lblCountdownLock');
+        if (badgeEl) {
+            badgeEl.className = 'badge badge-gold';
+            badgeEl.innerHTML = '🔒 ĐÃ KHÓA CHỐT (G5.5)';
+        }
+        const subEl = document.getElementById('lblFastLockSub');
+        if (subEl) {
+            subEl.innerHTML = '<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Đã chốt dàn tại G5.5 (hoặc backup 18h24). Vào tiền trước 18h28!';
+        }
+        isLocked = true;
+        console.log('🔒 Đã chốt dàn lúc:', now.toLocaleTimeString('vi-VN'));
+    }
+}
+setInterval(checkLock, 1000); // Kiểm tra mỗi 1 giây
 
 function renderLivePrizeChips() {
     if (!radarData || !radarData.live_prizes) return;
@@ -767,13 +826,41 @@ function renderRadarTopSummaries() {
         `).join('');
     }
 
-    // Dàn 9 Số Cội Nguồn
+    // Dàn 9 Số Cội Nguồn & 8 Số Đảo Bảo Hiểm (Tổng 17 Số)
     const elDan9 = document.getElementById('radarDan9Chips');
+    const elDan9Dao = document.getElementById('radarDan9DaoChips');
     const dan9List = radarData.dan_9_so || ['21', '22', '27', '31', '32', '37', '41', '42', '47'];
-    window.currentRadarDan9 = dan9List.join(', ');
+
+    // Tự động tính 8 số đảo (loại trừ kép palindrome như 22, và loại trừ số đã có trong dàn gốc)
+    const dan9DaoList = [];
+    dan9List.forEach(num => {
+        if (num && num.length >= 2) {
+            const rev = num[1] + num[0];
+            if (num[0] !== num[1] && !dan9List.includes(rev) && !dan9DaoList.includes(rev)) {
+                dan9DaoList.push(rev);
+            }
+        }
+    });
+
+    const total17List = [...dan9List, ...dan9DaoList];
+    window.currentRadarDan9Goc = dan9List.join(', ');
+    window.currentRadarDan9Dao = dan9DaoList.join(', ');
+    window.currentRadarDan9All = total17List.join(', ');
+    window.currentRadarDan9 = window.currentRadarDan9All; // Giữ tương thích 100% logic hiện có
+
+    // Tầng 1: 9 số gốc (Màu vàng gold rực rỡ)
     if (elDan9) {
         elDan9.innerHTML = dan9List.map(num => `
-            <span class="badge" style="background: rgba(167, 139, 250, 0.2); color: #C4B5FD; font-size: 13.5px; font-weight: 800; padding: 3px 8px; border: 1px solid rgba(167, 139, 250, 0.4); border-radius: 6px;">
+            <span class="badge badge-gold" style="font-size: 13.5px; font-weight: 900; padding: 3px 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
+                ${num}
+            </span>
+        `).join('');
+    }
+
+    // Tầng 2: 8 số đảo (Màu xanh nhạt bảo hiểm)
+    if (elDan9Dao) {
+        elDan9Dao.innerHTML = dan9DaoList.map(num => `
+            <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-size: 13.5px; font-weight: 800; padding: 3px 8px; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
                 ${num}
             </span>
         `).join('');
@@ -783,7 +870,12 @@ function renderRadarTopSummaries() {
     if (elDan9Sub) {
         const heads = radarData.dan_9_heads || ['3', '4', '2'];
         const tails = radarData.dan_9_tails || ['2', '7', '1'];
-        elDan9Sub.textContent = `Top 3 Đầu [${heads.join(',')}] × Top 3 Đuôi [${tails.join(',')}]`;
+        elDan9Sub.innerHTML = `Tầng 1: Gốc (${dan9List.length}s) | Tầng 2: Đảo (${dan9DaoList.length}s bảo hiểm)<br><span style="color: #64748B;">Top 3 Đầu [${heads.join(',')}] × Top 3 Đuôi [${tails.join(',')}]</span>`;
+    }
+
+    const elCountDan9 = document.getElementById('lblCountDan9');
+    if (elCountDan9) {
+        elCountDan9.textContent = `${total17List.length} SỐ`;
     }
 
     // Dàn Lót Hợp Lệ
@@ -1056,9 +1148,14 @@ function renderRadarHistoryTable() {
 
         const d9Badges = (r.dan_9_so || []).map(num => {
             const isMatch = num === r.de;
-            return isMatch
-                ? `<span class="badge" style="background: rgba(16, 185, 129, 0.25); color: #34D399; font-weight: 800; border: 1px solid #10B981; padding: 1px 4px;">🎯 ${num}</span>`
-                : `<span style="font-size: 11px; color: #CBD5E1; margin-right: 4px;">${num}</span>`;
+            const isDao = !isMatch && (r.de && r.de.length === 2 && r.de[1] + r.de[0] === num);
+            if (isMatch) {
+                return `<span class="badge" style="background: rgba(16, 185, 129, 0.25); color: #34D399; font-weight: 800; border: 1px solid #10B981; padding: 1px 4px; margin-right: 3px;">🎯 ${num}</span>`;
+            } else if (isDao) {
+                return `<span class="badge" style="background: rgba(56, 189, 248, 0.25); color: #38BDF8; font-weight: 800; border: 1px solid #38BDF8; padding: 1px 4px; margin-right: 3px;" title="Trúng số đảo ${r.de}">🔄 ${num}</span>`;
+            } else {
+                return `<span style="font-size: 11px; color: #CBD5E1; margin-right: 4px;">${num}</span>`;
+            }
         }).join('');
 
         const lotCount = (r.dan_lot || []).length;
@@ -1154,9 +1251,17 @@ function setupRadarEventListeners() {
         copyToClipboard(text, '⚡ Đã copy GÓI CHỐT GẤP (Bạch Thủ + Lót Lộn + Tứ Thủ + 3 Càng + 9s) sẵn sàng dán tin nhắn!');
     });
 
-    // Copy Dàn 9 Số
+    // Copy Dàn Cội Nguồn: Gốc (9s), Đảo (8s), Tất Cả (17s)
+    document.getElementById('btnCopyDan9Goc')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarDan9Goc || '', 'Đã copy Dàn Gốc (9 Số): ' + (window.currentRadarDan9Goc || ''));
+    });
+
+    document.getElementById('btnCopyDan9Dao')?.addEventListener('click', () => {
+        copyToClipboard(window.currentRadarDan9Dao || '', 'Đã copy Dàn Đảo Bảo Hiểm (8 Số): ' + (window.currentRadarDan9Dao || ''));
+    });
+
     document.getElementById('btnCopyRadarDan9')?.addEventListener('click', () => {
-        copyToClipboard(window.currentRadarDan9 || '', 'Đã copy Dàn 9 Số Cội Nguồn!');
+        copyToClipboard(window.currentRadarDan9All || window.currentRadarDan9 || '', 'Đã copy Toàn Bộ Dàn Cội Nguồn & Đảo (17 Số)!');
     });
 
     // Copy Dàn Lót

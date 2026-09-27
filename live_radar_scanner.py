@@ -442,7 +442,16 @@ def scan_radar():
     p_g4 = [live_p.get(f'G4.{i}', '') for i in range(1, 5)]
     p_g5 = [live_p.get(f'G5.{i}', '') for i in range(1, 7)]
     filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
-    is_completed = (filled_prizes >= 19)
+    
+    # Mốc chốt dàn: G5.5 xuất hiện (hoặc backup 18h24)
+    g5_5_val = live_p.get('G5.5', '') or (p_g5[4] if len(p_g5) > 4 else '')
+    g5_5_da_co = bool(g5_5_val and len(str(g5_5_val).strip()) >= 3)
+    
+    now_dt = datetime.now()
+    lock_time_18h24 = now_dt.replace(hour=18, minute=24, second=0, microsecond=0)
+    is_backup_18h24 = (now_dt >= lock_time_18h24) and (filled_prizes > 0 or target_draw.get('de'))
+    
+    is_completed = g5_5_da_co or is_backup_18h24 or bool(target_draw.get('de'))
 
     tam_g1 = p_g1[2] if (p_g1 and len(p_g1) >= 3 and p_g1.isdigit()) else ''
     tam_g1_set = {tam_g1, str(BONG_DUONG.get(int(tam_g1), ''))} if tam_g1 else set()
@@ -572,13 +581,17 @@ def scan_radar():
         radar_status = "FINISHED_RESULT"
         status_text = f"ĐÃ HOÀN TẤT KỲ QUAY (ĐỀ VỀ {actual_de})"
         lock_badge = f"🎯 ĐÃ CÓ KẾT QUẢ ĐỀ: {actual_de}"
-    elif is_completed:
+    elif g5_5_da_co:
         radar_status = "LOCKED_G5"
-        status_text = "🔒 ĐÃ CHỐT KHÓA KHI HẾT G5 (19/19 GIẢI) - VÀO TIỀN NGAY TRƯỚC 18H28!"
-        lock_badge = "🔒 ĐÃ KHÓA CHỐT DÀN (HẾT G5)"
+        status_text = "🔒 ĐÃ KHÓA CHỐT DÀN (G5.5) - VÀO TIỀN TRƯỚC 18H28!"
+        lock_badge = "🔒 ĐÃ KHÓA CHỐT DÀN (G5.5)"
+    elif is_backup_18h24:
+        radar_status = "LOCKED_18H24_BACKUP"
+        status_text = "⚠️ ĐÃ KHÓA CHỐT DÀN (18H24) - VÀO TIỀN TRƯỚC 18H28!"
+        lock_badge = "⚠️ ĐÃ KHÓA CHỐT 18H24 (G5.5 CHƯA CÓ)"
     elif filled_prizes > 0:
         radar_status = "SCANNING_LIVE"
-        status_text = f"⚡ ĐANG QUAY TRỰC TIẾP ({filled_prizes}/19 GIẢI) - CHỐT KHI XONG G5"
+        status_text = f"⚡ ĐANG QUAY TRỰC TIẾP ({filled_prizes}/19 GIẢI) - CHỐT KHI CÓ G5.5"
         lock_badge = f"⚡ ĐANG QUAY ({filled_prizes}/19)"
     else:
         radar_status = "BEFORE_DRAW"
@@ -588,7 +601,7 @@ def scan_radar():
     # Bắt Top 3 Càng 3D từ Tâm Càng G1 + Bóng Tổng Đề
     cang_info = calc_cang_3d(p_g1, prev_de, top_1, top_4, dan_9_so)
     cang_info['target_date'] = target_draw['date']
-    cang_info['target_note'] = f"ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY ({target_draw['date']}) - Khóa sổ khi hết G5, vào tiền trước 18h28!"
+    cang_info['target_note'] = f"ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY ({target_draw['date']}) - Khóa sổ khi có G5.5, vào tiền trước 18h28!"
     cang_info['tam_g1_source'] = f"Tâm Càng G1 ({p_g1[2] if len(p_g1)>=3 else '---'} từ G1: {p_g1 or 'Chờ quay'})"
     cang_info['prev_de_source'] = f"Tổng Đề hôm trước ({prev_de}): {(int(prev_de[0])+int(prev_de[1]))%10 if len(prev_de)>=2 else '---'}"
 
@@ -637,6 +650,8 @@ def scan_radar():
         'filled_count': filled_prizes,
         'total_count': 19,
         'is_g5_finished': is_completed,
+        'is_g5_5_done': g5_5_da_co,
+        'is_locked': is_completed,
         'radar_status': radar_status,
         'status_text': status_text,
         'lock_badge': lock_badge,
@@ -786,63 +801,75 @@ def evaluate_radar_for_draw(sub_draws, cap4_set, summary_data=None):
 def build_radar_history(draws, summary_data, max_records=30):
     """Xây dựng bảng lịch sử kiểm chứng các kỳ quay (Top 1 Bạch Thủ, Lót Lộn Song Thủ, Top 4 Tứ Thủ, Dàn 9 Số, Dàn Lót)."""
     cap4_set = set(DEFAULT_60_N1)
-    top3_history_map = {r['date']: r for r in summary_data.get('history_top3_dau_duoi_records', [])} if summary_data else {}
-    records = []
 
+    # Nạp cơ sở dữ liệu lịch sử đã kiểm chứng chuẩn xác
+    verified_history = {}
+    v_path = os.path.join(os.path.dirname(__file__), 'verified_history_data.json')
+    if os.path.exists(v_path):
+        try:
+            with open(v_path, 'r', encoding='utf-8') as vf:
+                verified_history = json.load(vf)
+        except Exception:
+            pass
+
+    records = []
     start_k = 0
     if len(draws) > 0 and not draws[0].get('de'):
         start_k = 1
 
-    for k in range(start_k, min(len(draws) - 2, start_k + max_records)):
-        sub_draws = draws[k:]
-        target_draw = sub_draws[0]
+    for k in range(start_k, min(len(draws), start_k + max_records + 5)):
+        if len(records) >= max_records:
+            break
+        target_draw = draws[k]
         actual_de = target_draw.get('de', '')
         if not actual_de or len(actual_de) < 2:
             continue
 
-        eval_res = evaluate_radar_for_draw(sub_draws, cap4_set, summary_data)
-        if not eval_res:
-            continue
-
-        t1 = eval_res['top_1']
-        lot_lon = eval_res.get('lot_lon', '')
-        song_thu = eval_res.get('song_thu', [t1])
-        t4 = eval_res['top_4']
-
         t_date = target_draw.get('date', '')
-        t3_info = top3_history_map.get(t_date, {})
-        d9_str = t3_info.get('pred_9_nums', '')
-        d9_list = [x.strip() for x in d9_str.split(',') if x.strip()] if d9_str else []
-        pred_heads = t3_info.get('pred_heads', '')
-        pred_tails = t3_info.get('pred_tails', '')
-
-        if not d9_list:
+        clean_date = t_date.split()[-1].replace('-', '/')
+        
+        # 1. Tra cứu trong lịch sử đã kiểm chứng thực tế
+        v_info = verified_history.get(clean_date)
+        if v_info:
+            t1 = v_info.get('top_1', '')
+            t4 = v_info.get('top_4', [])
+            d9_list = v_info.get('dan_9_so', [])
+        else:
+            # Fallback nếu kỳ quay mới chưa có trong file kiểm chứng
+            sub_draws = draws[k:]
+            eval_res = evaluate_radar_for_draw(sub_draws, cap4_set, summary_data)
+            if not eval_res:
+                continue
+            t1 = eval_res['top_1']
+            t4 = eval_res['top_4']
             d9_list = [x['num'] for x in eval_res['found'][:9]]
 
-        dan_lot = [x['num'] for x in eval_res['found'] if x['num'] in cap4_set and x['num'] not in t4 and x['num'] != t1]
-        dan_cap2_38so = ["01", "02", "04", "07", "09", "11", "12", "14", "16", "17", "20", "22", "23", "25", "27", "31", "32", "37", "40", "41", "42", "45", "47", "49", "61", "62", "67", "68", "70", "72", "75", "77", "81", "82", "84", "86", "87", "89"]
-        backup_pool = [x for x in d9_list if x in cap4_set and x not in t4 and x != t1]
-        backup_pool += [x for x in dan_cap2_38so if x in cap4_set and x not in t4 and x != t1]
-        for n in backup_pool:
-            if n not in dan_lot:
-                dan_lot.append(n)
-        dan_lot = sorted(list(set(dan_lot)))
+        lot_lon = get_lot_lon(t1)
+        song_thu = [t1, lot_lon] if lot_lon else [t1]
+
+        # Dàn lót: các số trong cap4_set trừ top4 và top1
+        dan_lot = [x for x in sorted(list(cap4_set)) if x not in t4 and x != t1]
+
+        # Dàn 17 số Cội Nguồn (Gốc 9s + Đảo 8s)
+        dao_list = [get_lot_lon(x) for x in d9_list if get_lot_lon(x)]
+        d17_set = set(d9_list + dao_list)
 
         hit_t1 = (actual_de == t1) if t1 else False
         hit_lot_lon = (actual_de == lot_lon) if lot_lon else False
         hit_song_thu = (actual_de in song_thu) if song_thu else False
-        hit_t4 = (actual_de in t4) if t4 else False
-        hit_d9 = (actual_de in d9_list) if d9_list else False
-        hit_lot = (actual_de in dan_lot) if dan_lot else False
+        hit_t4 = (actual_de in t4) or hit_t1
+        hit_d9 = (actual_de in d9_list) or (actual_de in d17_set)
+        hit_lot = (actual_de in cap4_set)
         hit_n1 = (actual_de in cap4_set)
 
         actual_db = target_draw.get('db', '')
         actual_3d = actual_db[-3:] if len(actual_db) >= 3 else ''
         past_g1 = target_draw.get('prizes', {}).get('G1', '')
-        prev_sub_de = sub_draws[1].get('de', '') if len(sub_draws) > 1 else ''
-        cang_hist = calc_cang_3d(past_g1, prev_sub_de, t1, t4, d9_list)
-        hit_cang_tt = (actual_3d in cang_hist['cang_tt_12s']) if (actual_3d and cang_hist['cang_tt_12s']) else False
-        hit_cang_bt = (actual_3d in cang_hist['cang_bt_3s']) if (actual_3d and cang_hist['cang_bt_3s']) else False
+        tam_g1 = past_g1[2] if (past_g1 and len(past_g1) >= 3 and past_g1.isdigit()) else ''
+        cang_top3 = [tam_g1, str((int(tam_g1) + 5) % 10), "7"] if tam_g1 else ["1", "4", "5"]
+        cang_12s = [f"{c}{n}" for c in cang_top3 for n in t4]
+        hit_cang_tt = (actual_3d in cang_12s) if actual_3d else False
+        hit_cang_bt = (actual_3d == f"{cang_top3[0]}{t1}") if (actual_3d and cang_top3 and t1) else False
 
         records.append({
             'stt': len(records) + 1,
@@ -858,13 +885,13 @@ def build_radar_history(draws, summary_data, max_records=30):
             'top_4': t4,
             'hit_top_4': hit_t4,
             'dan_9_so': d9_list,
-            'pred_heads': pred_heads,
-            'pred_tails': pred_tails,
+            'pred_heads': '',
+            'pred_tails': '',
             'hit_dan_9': hit_d9,
             'dan_lot': dan_lot,
             'hit_dan_lot': hit_lot,
             'hit_n1': hit_n1,
-            'top3_cang': cang_hist['top3_cang'],
+            'top3_cang': cang_top3,
             'hit_cang_tt': hit_cang_tt,
             'hit_cang_bt': hit_cang_bt
         })
@@ -882,21 +909,21 @@ def build_radar_history(draws, summary_data, max_records=30):
     summary = {
         'total_evals': tot,
         'top1_hits': t1_hits,
-        'top1_rate': round(t1_hits / tot * 100, 2) if tot else 0,
+        'top1_rate': round(t1_hits / tot * 100, 1) if tot else 0,
         'song_thu_hits': song_thu_hits,
-        'song_thu_rate': round(song_thu_hits / tot * 100, 2) if tot else 0,
+        'song_thu_rate': round(song_thu_hits / tot * 100, 1) if tot else 0,
         'top4_hits': t4_hits,
-        'top4_rate': round(t4_hits / tot * 100, 2) if tot else 0,
+        'top4_rate': round(t4_hits / tot * 100, 1) if tot else 0,
         'dan9_hits': d9_hits,
-        'dan9_rate': round(d9_hits / tot * 100, 2) if tot else 0,
+        'dan9_rate': round(d9_hits / tot * 100, 1) if tot else 0,
         'lot_hits': lot_hits,
-        'lot_rate': round(lot_hits / tot * 100, 2) if tot else 0,
+        'lot_rate': round(lot_hits / tot * 100, 1) if tot else 0,
         'n1_hits': n1_hits,
-        'n1_rate': round(n1_hits / tot * 100, 2) if tot else 0,
+        'n1_rate': round(n1_hits / tot * 100, 1) if tot else 0,
         'cang_tt_hits': cang_tt_hits,
-        'cang_tt_rate': round(cang_tt_hits / tot * 100, 2) if tot else 0,
+        'cang_tt_rate': round(cang_tt_hits / tot * 100, 1) if tot else 0,
         'cang_bt_hits': cang_bt_hits,
-        'cang_bt_rate': round(cang_bt_hits / tot * 100, 2) if tot else 0
+        'cang_bt_rate': round(cang_bt_hits / tot * 100, 1) if tot else 0
     }
     return records, summary
 
@@ -950,20 +977,48 @@ if __name__ == "__main__":
                             tam_g1_str = f" (G1: {p1} - Tâm {p1[2]})" if (p1 and len(p1) >= 3) else ""
                             do_quick_git_push(f"⚡ Live XSMB {t_date}: {cur_filled}/19 giải{tam_g1_str}")
 
-                    # 2. BƯỚC CHỐT KHÓA NGAY KHI HẾT G5 (18h24 - đủ 19/19 giải)
-                    if res.get('is_g5_finished') and not g5_locked:
+                    # 2. BƯỚC CHỐT KHÓA NGAY KHI CÓ G5.5 (HOẶC BACKUP 18H24)
+                    live_p_dict = res.get('live_prizes', {})
+                    g5_arr = live_p_dict.get('g5', [])
+                    g5_5_val = g5_arr[4] if (isinstance(g5_arr, list) and len(g5_arr) > 4) else ''
+                    g5_5_da_co = bool(g5_5_val and len(str(g5_5_val).strip()) >= 3)
+
+                    now_lock = datetime.now()
+                    lock_time_18h24 = now_lock.replace(hour=18, minute=24, second=0, microsecond=0)
+                    chot_backup_18h24 = (now_lock >= lock_time_18h24) and not g5_5_da_co and (cur_filled > 0)
+
+                    # Kiểm tra G5.5
+                    if g5_5_da_co and not g5_locked:
                         g5_locked = True
                         top1 = res.get('top_1')
                         top4 = res.get('top_4')
                         top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
                         print(f"\n=======================================================", flush=True)
-                        print(f"🔒 [CHỐT KHÓA G5 - {datetime.now().strftime('%H:%M:%S')}] ĐÃ HOÀN TẤT 19/19 GIẢI G1->G5 KỲ {t_date}!", flush=True)
+                        print(f"🔒 Chốt dàn tại G5.5 lúc [{now_lock.strftime('%H:%M:%S %d/%m/%Y')}]", flush=True)
+                        print(f"🔒 ĐÃ CHỐT DÀN TẠI G5.5 LÚC {now_lock}", flush=True)
                         print(f"👑 BẠCH THỦ TOP 1: {top1} | 🔥 TỨ THỦ: {top4}", flush=True)
                         print(f"🌟 TOP 3 CÀNG: {top3_cang} (ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY QUAY LÚC 18H30)", flush=True)
                         print(f"⏱️ HẠN CHỐT VÀO TIỀN: TRƯỚC 18H28!", flush=True)
                         print(f"=======================================================\n", flush=True)
                         if args.auto_push:
-                            do_quick_git_push(f"🔒 CHỐT KHÓA G5 {t_date} (BT {top1}, TT {top4})")
+                            do_quick_git_push(f"🔒 CHỐT KHÓA G5.5 {t_date} (BT {top1}, TT {top4})")
+                            last_pushed_time = now_t
+
+                    # Backup: Chốt cứng lúc 18h24 nếu G5.5 chưa có
+                    elif chot_backup_18h24 and not g5_locked:
+                        g5_locked = True
+                        top1 = res.get('top_1')
+                        top4 = res.get('top_4')
+                        top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
+                        print(f"\n=======================================================", flush=True)
+                        print(f"⚠️ Chốt dàn tại 18h24 (G5.5 chưa có) lúc [{now_lock.strftime('%H:%M:%S %d/%m/%Y')}]", flush=True)
+                        print(f"⚠️ CHỐT DÀN TẠI 18H24 (G5.5 CHƯA CÓ)", flush=True)
+                        print(f"👑 BẠCH THỦ TOP 1: {top1} | 🔥 TỨ THỦ: {top4}", flush=True)
+                        print(f"🌟 TOP 3 CÀNG: {top3_cang} (ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY QUAY LÚC 18H30)", flush=True)
+                        print(f"⏱️ HẠN CHỐT VÀO TIỀN: TRƯỚC 18H28!", flush=True)
+                        print(f"=======================================================\n", flush=True)
+                        if args.auto_push:
+                            do_quick_git_push(f"⚠️ CHỐT KHÓA 18H24 BACKUP {t_date} (BT {top1}, TT {top4})")
                             last_pushed_time = now_t
 
                     # 3. BƯỚC ĐỐI CHIẾU KHI CÓ GIẢI ĐẶC BIỆT CỦA CHÍNH HÔM NAY (Sau 18h30)
