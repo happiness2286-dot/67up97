@@ -10,8 +10,8 @@
 
 ## ⚡ 2. CƠ CHẾ RADAR SOI LIVE G1-G5 (TAB 2)
 1. **Khung Giờ Quét Live**: 18h14 đến 18h35 hàng ngày.
-2. **Khóa Chốt G5 Tức Thì**:
-   - Khi cào nhận đủ **19/19 giải (từ G1 đến G5.6 lúc ~18h24)**, hệ thống tự động khóa trạng thái `LOCKED_G5`.
+2. **Khóa Chốt G5.5 Tức Thì**:
+   - Khi cào nhận được giải **G5.5 (hoặc backup cứng lúc 18h24)**, hệ thống tự động khóa trạng thái `LOCKED_G5`.
    - Lập tức tính toán và xuất các dàn để người dùng vào tiền trước **18h28** (trước khi quay GĐB).
 3. **Tâm 3 Càng 3D Live**:
    - Lấy số tâm của G1 (nổ 18h16) làm càng, kết hợp với các dàn số.
