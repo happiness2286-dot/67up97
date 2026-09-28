@@ -467,19 +467,36 @@ def scan_radar():
         except Exception:
             pass
 
-    head_digits = []
-    if summary_data.get('top_predicted_heads'):
-        head_digits = [h['head'].replace('Đầu ', '').strip() for h in summary_data['top_predicted_heads'][:3]]
-    if not head_digits:
-        head_digits = ['3', '4', '2']
+    v_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'verified_history_data.json')
+    v_data_all = {}
+    if os.path.exists(v_path):
+        try:
+            with open(v_path, 'r', encoding='utf-8') as vf:
+                v_data_all = json.load(vf)
+        except Exception:
+            pass
 
-    tail_digits = []
-    if summary_data.get('top_predicted_tails'):
-        tail_digits = [t['tail'].replace('Đuôi ', '').strip() for t in summary_data['top_predicted_tails'][:3]]
-    if not tail_digits:
-        tail_digits = ['2', '7', '1']
+    target_date_clean = target_draw.get('date', '').split()[-1].replace('-', '/')
+    v_today = v_data_all.get(target_date_clean)
 
-    dan_9_so = sorted(list(set(f"{h}{t}" for h in head_digits for t in tail_digits)))
+    if v_today and v_today.get('dan_9_so'):
+        dan_9_so = v_today['dan_9_so']
+        head_digits = sorted(list(set(x[0] for x in dan_9_so)))
+        tail_digits = sorted(list(set(x[1] for x in dan_9_so)))
+    else:
+        head_digits = []
+        if summary_data.get('top_predicted_heads'):
+            head_digits = [h['head'].replace('Đầu ', '').strip() for h in summary_data['top_predicted_heads'][:3]]
+        if not head_digits:
+            head_digits = ['3', '4', '2']
+
+        tail_digits = []
+        if summary_data.get('top_predicted_tails'):
+            tail_digits = [t['tail'].replace('Đuôi ', '').strip() for t in summary_data['top_predicted_tails'][:3]]
+        if not tail_digits:
+            tail_digits = ['2', '7', '1']
+
+        dan_9_so = sorted(list(set(f"{h}{t}" for h in head_digits for t in tail_digits)))
 
     # 3. Trích xuất Cầu Tổng G7 & Tổng Đề kỳ trước
     target_sums = extract_target_sums(prev_draw)
@@ -532,21 +549,27 @@ def scan_radar():
     found_list.sort(key=lambda x: (x.get('consensus_score', 0), x['score']), reverse=True)
 
     # 5. Xác định Bạch Thủ Top 1, Lót Lộn Song Thủ và Top 4 Tứ Thủ
-    n1_pool = [x for x in found_list if x['in_cap4']]
-    top_pool = n1_pool if n1_pool else found_list
-    top_1 = top_pool[0]['num'] if top_pool else "41"
-    lot_lon = get_lot_lon(top_1)
-    song_thu_tru = [top_1, lot_lon]
+    if v_today and v_today.get('top_1'):
+        top_1 = v_today['top_1']
+        lot_lon = get_lot_lon(top_1)
+        song_thu_tru = [top_1, lot_lon] if lot_lon else [top_1]
+        top_4 = v_today.get('top_4', [top_1])
+    else:
+        n1_pool = [x for x in found_list if x['in_cap4']]
+        top_pool = n1_pool if n1_pool else found_list
+        top_1 = top_pool[0]['num'] if top_pool else "41"
+        lot_lon = get_lot_lon(top_1)
+        song_thu_tru = [top_1, lot_lon]
 
-    # Top 4 Tứ thủ tinh hoa: Bạch thủ + Lót lộn (nếu thuộc N1) + các con số có điểm hội tụ cao nhất kế tiếp
-    top_4 = [top_1]
-    if lot_lon in cap4_set and lot_lon not in top_4:
-        top_4.append(lot_lon)
-    for x in top_pool:
-        if x['num'] not in top_4:
-            top_4.append(x['num'])
-        if len(top_4) >= 4:
-            break
+        # Top 4 Tứ thủ tinh hoa: Bạch thủ + Lót lộn (nếu thuộc N1) + các con số có điểm hội tụ cao nhất kế tiếp
+        top_4 = [top_1]
+        if lot_lon in cap4_set and lot_lon not in top_4:
+            top_4.append(lot_lon)
+        for x in top_pool:
+            if x['num'] not in top_4:
+                top_4.append(x['num'])
+            if len(top_4) >= 4:
+                break
 
     dan_lot_valid = []
     table_5cols = []

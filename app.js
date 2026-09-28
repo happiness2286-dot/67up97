@@ -524,7 +524,10 @@ async function fetchData() {
 }
 
 function startPolling(mockDate = null) {
-    if (pollingInterval) clearInterval(pollingInterval);
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+    }
     const now = mockDate || (window.__mockDate ? new Date(window.__mockDate) : new Date());
     const hour = now.getHours();
     const minute = now.getMinutes();
@@ -532,8 +535,32 @@ function startPolling(mockDate = null) {
         pollingInterval = setInterval(fetchData, 3000);
         console.log(`[Polling Real-time] Đang trong khung giờ quay thưởng 18h14 - 18h35 (${hour}h${minute}). Đã kích hoạt polling mỗi 3 giây.`);
     }
+    window.pollingInterval = pollingInterval;
+    return pollingInterval;
 }
+
+window.fetchData = fetchData;
+window.startPolling = startPolling;
 startPolling();
+
+// Định kỳ kiểm tra (mỗi 10 giây) để tự động kích hoạt polling nếu người dùng giữ mở tab trước 18h14
+setInterval(() => {
+    const now = window.__mockDate ? new Date(window.__mockDate) : new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    if (hour === 18 && minute >= 14 && minute <= 35) {
+        if (!pollingInterval) {
+            startPolling();
+        }
+    } else {
+        if (pollingInterval && !window.__mockDate) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+            window.pollingInterval = null;
+            console.log('[Polling Real-time] Ngoài khung giờ 18h14 - 18h35, đã dừng polling.');
+        }
+    }
+}, 10000);
 
 function startRadarLivePolling() {
     startPolling();

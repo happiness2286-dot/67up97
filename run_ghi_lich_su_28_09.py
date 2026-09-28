@@ -15,7 +15,7 @@ print("--- BẮT ĐẦU CHẠY GHI_LICH_SU CHO NGÀY 28/09/2026 ---")
 record = ghi_lich_su(
     ngay="28/09/2026",
     de="15",
-    ket_qua="trung_n1",
+    ket_qua="trung_lot",
     top1="96",
     top4=["96", "69", "91", "39"],
     dan_n1=dan_n1,
