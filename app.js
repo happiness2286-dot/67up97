@@ -517,21 +517,26 @@ async function fetchAndRenderRadarLive(isSilent = false) {
     }
 }
 
-function startRadarLivePolling() {
-    if (radarPollingTimer) clearInterval(radarPollingTimer);
-    
-    // Tự động nhận diện khung giờ quay thưởng XSMB (18h14 - 18h35) để tăng tốc độ cào
-    const now = new Date();
-    const curHour = now.getHours();
-    const curMin = now.getMinutes();
-    const isLiveHour = (curHour === 18 && curMin >= 14 && curMin <= 35);
-    const intervalMs = isLiveHour ? 3000 : 5000;
+let pollingInterval;
 
-    radarPollingTimer = setInterval(() => {
-        if (isRadarPollingActive) {
-            fetchAndRenderRadarLive(true);
-        }
-    }, intervalMs);
+async function fetchData() {
+    await fetchAndRenderRadarLive(true);
+}
+
+function startPolling(mockDate = null) {
+    if (pollingInterval) clearInterval(pollingInterval);
+    const now = mockDate || (window.__mockDate ? new Date(window.__mockDate) : new Date());
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    if (hour === 18 && minute >= 14 && minute <= 35) {
+        pollingInterval = setInterval(fetchData, 3000);
+        console.log(`[Polling Real-time] Đang trong khung giờ quay thưởng 18h14 - 18h35 (${hour}h${minute}). Đã kích hoạt polling mỗi 3 giây.`);
+    }
+}
+startPolling();
+
+function startRadarLivePolling() {
+    startPolling();
 }
 
 function renderRadarHeaderInfo() {
