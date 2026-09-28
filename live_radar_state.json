@@ -35,8 +35,8 @@
       "3012",
       "2139",
       "9110",
-      "0408",
-      "4557"
+      "0108",
+      ""
     ]
   },
   "highlight_positions": {
@@ -429,22 +429,9 @@
       "label": "Theo dõi ngày 1 (Mới chạm)",
       "color_type": "cycle_watch",
       "tooltip": "G5.4 vị trí 2: Đuôi 1 (1d) | Theo dõi ngày 1 (Mới chạm)"
-    },
-    "G5.6_2": {
-      "pos_raw": "G5.6 vị trí 2",
-      "role": "tail",
-      "role_name": "Đuôi",
-      "digit": "5",
-      "digit_bong": "0",
-      "cycle": 1,
-      "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
-      "tooltip": "G5.6 vị trí 2: Đuôi 5 (1d) | Theo dõi ngày 1 (Mới chạm)"
     }
   },
-  "filled_count": 19,
+  "filled_count": 18,
   "total_count": 19,
   "is_g5_finished": true,
   "is_g5_5_done": true,
@@ -6119,5 +6106,5 @@
     "cang_bt_hits": 1,
     "cang_bt_rate": 3.3
   },
-  "last_updated": "18:26:27 28/09/2026"
+  "last_updated": "18:26:38 28/09/2026"
 }
