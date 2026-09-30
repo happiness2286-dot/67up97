@@ -5,3 +5,5 @@ __pycache__/
 backup/
 cron_history.log
 *.png
+*.lock
+*.tmp

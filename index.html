@@ -207,11 +207,11 @@
                 <div class="prize-section-header">
                     <h2>
                         <i class="fa-solid fa-list-check" style="color: #38BDF8;"></i>
-                        <span>PHẦN 1: KẾT QUẢ QUAY TRỰC TIẾP ( <span id="radarLiveDateTitle" style="color: #67E8F9;">THỨ SÁU NGÀY 25–09–2026</span> )</span>
+                        <span>PHẦN 1: KẾT QUẢ QUAY TRỰC TIẾP ( <span id="radarLiveDateTitle" style="color: #67E8F9;">HÔM NAY</span> )</span>
                     </h2>
                     <span class="prize-progress-badge" id="radarLiveProgressBadge">
                         <i class="fa-solid fa-circle-check"></i>
-                        <span id="radarProgressText">19/19 GIẢI (ĐÃ HOÀN TẤT)</span>
+                        <span id="radarProgressText">0/26 GIẢI (CHỜ 18H15)</span>
                     </span>
                 </div>
 
@@ -221,7 +221,7 @@
                         <div class="prize-row-header-mobile">
                             <div class="prize-row-name">Giải 1</div>
                             <div class="prize-row-status" id="statusG1">
-                                <span class="badge-done"><i class="fa-solid fa-circle-check"></i> Đã quay</span>
+                                <span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>
                             </div>
                         </div>
                         <div class="prize-row-chips" id="liveG1Chips">
@@ -234,7 +234,7 @@
                         <div class="prize-row-header-mobile">
                             <div class="prize-row-name">Giải 2 (2.1 - 2.2)</div>
                             <div class="prize-row-status" id="statusG2">
-                                <span class="badge-done"><i class="fa-solid fa-circle-check"></i> Đã quay</span>
+                                <span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>
                             </div>
                         </div>
                         <div class="prize-row-chips" id="liveG2Chips">
@@ -247,7 +247,7 @@
                         <div class="prize-row-header-mobile">
                             <div class="prize-row-name">Giải 3 (3.1 → 3.6)</div>
                             <div class="prize-row-status" id="statusG3">
-                                <span class="badge-done"><i class="fa-solid fa-circle-check"></i> Đã quay</span>
+                                <span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>
                             </div>
                         </div>
                         <div class="prize-row-chips" id="liveG3Chips">
@@ -260,7 +260,7 @@
                         <div class="prize-row-header-mobile">
                             <div class="prize-row-name">Giải 4 (4.1 → 4.4)</div>
                             <div class="prize-row-status" id="statusG4">
-                                <span class="badge-done"><i class="fa-solid fa-circle-check"></i> Đã quay</span>
+                                <span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>
                             </div>
                         </div>
                         <div class="prize-row-chips" id="liveG4Chips">
@@ -273,7 +273,7 @@
                         <div class="prize-row-header-mobile">
                             <div class="prize-row-name">Giải 5 (5.1 → 5.6)</div>
                             <div class="prize-row-status" id="statusG5">
-                                <span class="badge-done"><i class="fa-solid fa-circle-check"></i> Đã quay</span>
+                                <span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>
                             </div>
                         </div>
                         <div class="prize-row-chips" id="liveG5Chips">
@@ -281,28 +281,41 @@
                         </div>
                     </div>
 
-                    <!-- Giải 6 & 7 (Bỏ qua hoàn toàn) -->
+                    <!-- Giải 6 -->
                     <div class="prize-row">
                         <div class="prize-row-header-mobile">
-                            <div class="prize-row-name">Giải 6 & 7</div>
-                            <div class="prize-row-status">
-                                <span class="badge-skipped"><i class="fa-solid fa-ban"></i> Bỏ qua</span>
+                            <div class="prize-row-name">Giải 6 (6.1 → 6.3)</div>
+                            <div class="prize-row-status" id="statusG6">
+                                <span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>
                             </div>
                         </div>
-                        <div class="prize-row-chips">
-                            <div class="prize-skip-text">[Không cần - Bỏ qua hoàn toàn]</div>
+                        <div class="prize-row-chips" id="liveG6Chips">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Giải 7 -->
+                    <div class="prize-row">
+                        <div class="prize-row-header-mobile">
+                            <div class="prize-row-name">Giải 7 (7.1 → 7.4)</div>
+                            <div class="prize-row-status" id="statusG7">
+                                <span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>
+                            </div>
+                        </div>
+                        <div class="prize-row-chips" id="liveG7Chips">
+                            <!-- Injected by JS -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- PHẦN KẾT QUẢ KHI XONG G5.5: BẢNG PHÂN TẦNG 5 CỘT & 4 CẤP -->
+            <!-- PHẦN KẾT QUẢ KHI XONG G5.6: BẢNG PHÂN TẦNG 5 CỘT & 4 CẤP -->
             <div class="ranking-section-box">
                 <div class="prize-section-header" style="flex-wrap: wrap; gap: 10px;">
                     <div>
                         <h2>
                             <i class="fa-solid fa-crown" style="color: #FBBF24;"></i>
-                            <span>KẾT QUẢ PHÂN TẦNG VÀ LỌC GIAO THOA (CHỐT HẠ KHI G5.5 HOÀN TẤT)</span>
+                            <span id="lblSection2Title">KẾT QUẢ PHÂN TẦNG VÀ LỌC GIAO THOA (CHỐT HẠ KHI HẾT G5.6)</span>
                         </h2>
                         <div style="margin-top: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
                             <span style="font-size: 13px; font-weight: 800; color: #E2E8F0; display: inline-flex; align-items: center; gap: 6px;">
@@ -310,15 +323,15 @@
                                 ÁP DỤNG ĐÁNH CHO NGÀY:
                             </span>
                             <span class="badge" id="lblRadarTargetDate" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; border: 1px solid #38BDF8; font-size: 13.5px; font-weight: 800; padding: 3px 12px; border-radius: 6px; letter-spacing: 0.5px;">
-                                THỨ SÁU NGÀY 25-09-2026
+                                HÔM NAY
                             </span>
                             <span style="font-size: 12px; color: #94A3B8; font-style: italic;">
                                 (Soi trực tiếp theo ngày — Ngày nào đánh ngày đấy)
                             </span>
                         </div>
                     </div>
-                    <span class="badge-done" style="background: rgba(245, 158, 11, 0.15); border-color: #F59E0B; color: #FBBF24;">
-                        <i class="fa-solid fa-fire"></i> ĐÃ CHỐT HỎA LỰC
+                    <span class="badge-done" id="lblCountdownLock" style="background: rgba(245, 158, 11, 0.15); border-color: #F59E0B; color: #FBBF24;">
+                        <i class="fa-solid fa-clock"></i> ⏳ Chờ 18h15
                     </span>
                 </div>
 
@@ -333,16 +346,16 @@
                         <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 6px; padding: 4px 0;">
                             <div>
                                 <div style="font-size: 10.5px; color: #FDE68A; font-weight: 700; text-align: center;">BẠCH THỦ</div>
-                                <div class="big-number-display" id="radarTop1Display" style="margin: 0; line-height: 1;">42</div>
+                                <div class="big-number-display" id="radarTop1Display" style="margin: 0; line-height: 1;">---</div>
                             </div>
                             <div style="font-size: 18px; color: #94A3B8; font-weight: 800;">+</div>
                             <div>
                                 <div style="font-size: 10.5px; color: #34D399; font-weight: 700; text-align: center;">LÓT LỘN TRỤ</div>
-                                <div class="big-number-display" id="radarLotLonDisplay" style="margin: 0; line-height: 1; color: #34D399; text-shadow: 0 0 15px rgba(16, 185, 129, 0.5);">24</div>
+                                <div class="big-number-display" id="radarLotLonDisplay" style="margin: 0; line-height: 1; color: #34D399; text-shadow: 0 0 15px rgba(16, 185, 129, 0.5);">---</div>
                             </div>
                         </div>
                         <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-align: center;" id="radarTop1Pos">
-                            Cặp Song Thủ: <strong id="lblSongThuTru" style="color: #FBBF24;">42 - 24</strong> (Bảo vệ 100% khi về lộn)
+                            Cặp Song Thủ: <strong id="lblSongThuTru" style="color: #FBBF24;">---</strong>
                         </div>
                         <div style="display: flex; gap: 6px;">
                             <button class="btn btn-gold btn-sm" id="btnCopyRadarBT" style="flex: 1; padding: 6px 4px; font-size: 11px; font-weight: 800;">

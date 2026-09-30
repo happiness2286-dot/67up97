@@ -1175,3 +1175,40 @@ body {
     to { transform: rotate(360deg); }
 }
 
+/* ==========================================================================
+   DYNAMIC RADAR ANIMATIONS (LỖI 4: PHÂN BIỆT DÀN ĐỘNG VS DÀN CỨNG)
+   ========================================================================== */
+.dynamic-pulse {
+    animation: dynamicPulseAnim 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    border-color: rgba(56, 189, 248, 0.8) !important;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4) !important;
+}
+
+@keyframes dynamicPulseAnim {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.6));
+    }
+    50% {
+        opacity: 0.65;
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9));
+    }
+}
+
+.badge-dynamic-live {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.4) 100%) !important;
+    border: 1px solid #38BDF8 !important;
+    color: #38BDF8 !important;
+    animation: dynamicPulseAnim 2s infinite ease-in-out;
+}
+
+.badge-locked-hard {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.4) 100%) !important;
+    border: 1px solid #F59E0B !important;
+    color: #FBBF24 !important;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.3) !important;
+}
+
+

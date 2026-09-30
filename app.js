@@ -465,6 +465,12 @@ let radarPollingTimer = null;
 let isRadarPollingActive = true;
 let currentRadarTableFilter = 'all';
 
+function setRadarData(data) {
+    radarData = data;
+    window.radarData = data;
+}
+window.setRadarData = setRadarData;
+
 async function initRadarLive() {
     await fetchAndRenderRadarLive();
     startRadarLivePolling();
@@ -498,7 +504,7 @@ async function fetchAndRenderRadarLive(isSilent = false) {
 
         const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error('Không thể tải file live_radar_state.json');
-        radarData = await res.json();
+        setRadarData(await res.json());
         
         renderRadarHeaderInfo();
         renderFastLockBanner();
@@ -516,6 +522,16 @@ async function fetchAndRenderRadarLive(isSilent = false) {
         console.warn('[Radar Live] Chưa tải được state live:', err);
     }
 }
+
+window.renderRadarHeaderInfo = renderRadarHeaderInfo;
+window.renderFastLockBanner = renderFastLockBanner;
+window.renderLivePrizeChips = renderLivePrizeChips;
+window.renderRadarTopSummaries = renderRadarTopSummaries;
+window.renderRadarCang3D = renderRadarCang3D;
+window.renderRadar5ColTable = renderRadar5ColTable;
+window.renderRadarFrame3Day = renderRadarFrame3Day;
+window.renderRadarHistoryTable = renderRadarHistoryTable;
+window.fetchAndRenderRadarLive = fetchAndRenderRadarLive;
 
 let pollingInterval;
 
@@ -599,16 +615,17 @@ function renderRadarHeaderInfo() {
     const elProgress = document.getElementById('radarProgressText');
     if (elProgress) {
         const filled = radarData.filled_count || 0;
-        const total = radarData.total_count || 19;
+        const total = radarData.total_count || 26;
         const actualDe = radarData.actual_de || '';
-        const isG5Done = radarData.is_g5_finished || (filled >= 19) || radarData.is_g5_5_done || radarData.is_locked;
+        const isG5Done = radarData.is_g5_6_done || radarData.is_locked || (filled >= 26);
+        const isDynamic = (radarData.dan_type === 'DYNAMIC' || radarData.radar_status === 'DYNAMIC');
 
         if (actualDe) {
-            elProgress.innerHTML = `<span style="color: #34D399; font-weight: 800;">19/19 GIẢI • ĐÃ CÓ ĐỀ ${actualDe} 🎯</span>`;
+            elProgress.innerHTML = `<span style="color: #34D399; font-weight: 800;">${filled}/${total} GIẢI • ĐÃ CÓ ĐỀ ${actualDe} 🎯</span>`;
         } else if (isG5Done) {
-            elProgress.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">🔒 ĐÃ KHÓA CHỐT DÀN (G5.5)</span>`;
-        } else if (filled > 0) {
-            elProgress.innerHTML = `<span style="color: #38BDF8; font-weight: 800;">${filled}/${total} GIẢI (ĐANG QUAY...)</span>`;
+            elProgress.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">🔒 ĐÃ KHÓA CHỐT DÀN (HẾT G5.6)</span>`;
+        } else if (isDynamic || filled > 0) {
+            elProgress.innerHTML = `<span style="color: #38BDF8; font-weight: 800;">⚡ DÀN ĐỘNG: ${filled}/${total} GIẢI (ĐANG DÒ CẦU...)</span>`;
         } else {
             elProgress.textContent = `0/${total} GIẢI (CHỜ 18H15)`;
         }
@@ -626,8 +643,15 @@ function renderFastLockBanner() {
     const btnQuick = document.getElementById('btnQuickCopyAll');
 
     const filled = radarData.filled_count || 0;
-    const isG5Done = radarData.is_g5_finished || (filled >= 19) || radarData.is_g5_5_done || radarData.is_locked;
+    const total = radarData.total_count || 26;
+    const isLocked = radarData.is_locked || (radarData.dan_type === 'LOCKED') || radarData.is_g5_6_done;
+    const isDynamic = (radarData.dan_type === 'DYNAMIC' || radarData.radar_status === 'DYNAMIC');
+    const isBeforeDraw = (radarData.radar_status === 'BEFORE_DRAW' || radarData.dan_type === 'NONE' || (filled === 0 && !radarData.actual_de));
     const actualDe = radarData.actual_de || '';
+
+    if (banner) {
+        banner.classList.remove('dynamic-pulse');
+    }
 
     if (actualDe) {
         if (banner) {
@@ -664,7 +688,7 @@ function renderFastLockBanner() {
         if (bannerEl) bannerEl.innerHTML = `🎯 KẾT QUẢ XSMB HÔM NAY: ĐỀ VỀ ${actualDe}`;
         if (subEl) subEl.innerHTML = `<span style="color: #34D399; font-weight: 800;">${hitStatus.join(' • ')}</span> | Bạch thủ: ${radarData.top_1 || '--'} | Tứ thủ: ${(radarData.top_4||[]).join(', ')}`;
         if (btnQuick) btnQuick.innerHTML = `<i class="fa-solid fa-copy"></i> SAO CHÉP KẾT QUẢ ĐỐI CHIẾU (${actualDe})`;
-    } else if (isG5Done) {
+    } else if (isLocked) {
         if (banner) {
             banner.style.borderColor = 'rgba(245, 158, 11, 0.9)';
             banner.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(180, 83, 9, 0.3) 100%)';
@@ -676,31 +700,64 @@ function renderFastLockBanner() {
         }
         if (iconEl) iconEl.className = 'fa-solid fa-lock';
         if (badgeEl) {
-            badgeEl.className = 'badge badge-gold';
-            badgeEl.innerHTML = `🔒 ĐÃ KHÓA CHỐT (G5.5)`;
+            badgeEl.className = 'badge badge-gold badge-locked-hard';
+            badgeEl.innerHTML = `🔒 DÀN CỨNG - ĐÃ CHỐT HẠ`;
         }
-        const bannerTitle = '🔒 ĐÃ KHÓA CHỐT DÀN (G5.5) - VÀO TIỀN TRƯỚC 18H28!';
+        const bannerTitle = '🔒 DÀN CỨNG - ĐÃ CHỐT HẠ (HẾT G5.6) - VÀO TIỀN TRƯỚC 18H28!';
         if (titleEl) titleEl.textContent = bannerTitle;
         const bannerEl = document.getElementById('banner');
         if (bannerEl) bannerEl.innerHTML = bannerTitle;
-        if (subEl) subEl.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Chốt ngay khi có G5.5 (hoặc backup 18h24). Hạn vào tiền trước 18h28!`;
+        if (subEl) subEl.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Đã chốt hạ sau khi hết Giải 5.6. Hạn chót vào tiền trước 18h28!`;
         if (btnQuick) {
             btnQuick.innerHTML = `<i class="fa-solid fa-bolt"></i> COPY GÓI CHỐT GẤP (VÀO TIỀN NGAY)`;
         }
-    } else if (filled > 0) {
-        const liveTitle = `⚡ ĐANG QUAY TRỰC TIẾP (${filled}/19 GIẢI)...`;
+    } else if (isDynamic || filled > 0) {
+        if (banner) {
+            banner.style.borderColor = 'rgba(56, 189, 248, 0.8)';
+            banner.style.background = 'linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(14, 165, 233, 0.25) 100%)';
+            banner.classList.add('dynamic-pulse');
+        }
+        if (iconBox) {
+            iconBox.style.background = 'rgba(56, 189, 248, 0.25)';
+            iconBox.style.color = '#38BDF8';
+        }
+        if (iconEl) iconEl.className = 'fa-solid fa-bolt';
+        const liveTitle = `⚡ DÀN ĐỘNG - ĐANG DÒ CẦU TRỰC TIẾP (${filled}/${total} GIẢI)...`;
         if (titleEl) titleEl.textContent = liveTitle;
         const bannerEl = document.getElementById('banner');
         if (bannerEl) bannerEl.textContent = liveTitle;
-        if (subEl) subEl.textContent = `Hệ thống tự động quét vị trí. Sẽ khóa chốt tức thì ngay khi xuất hiện G5.5 (hoặc backup 18h24)!`;
-        if (badgeEl) badgeEl.innerHTML = `⚡ Đang cập nhật`;
+        if (subEl) subEl.innerHTML = `<span style="color: #38BDF8; font-weight: 800;">Dàn số đang biến thiên theo lồng quay (G7, G6, G5).</span> Hệ thống sẽ tự động <strong>CHỐT DÀN CỨNG</strong> ngay khi có kết quả G5.6!`;
+        if (badgeEl) {
+            badgeEl.className = 'badge badge-dynamic-live';
+            badgeEl.innerHTML = `⚡ DÀN ĐỘNG (${filled}/${total})`;
+        }
+        if (btnQuick) {
+            btnQuick.innerHTML = `<i class="fa-solid fa-eye"></i> DÀN ĐANG DÒ - CHỜ HẾT G5.6 ĐỂ CHỐT`;
+        }
     } else {
-        const waitTitle = `HẠN CHỐT KHÓA DÀN: NGAY KHI CÓ G5.5 (~18:22 - 18:24)`;
+        if (banner) {
+            banner.style.borderColor = 'rgba(100, 116, 139, 0.4)';
+            banner.style.background = 'linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%)';
+        }
+        if (iconBox) {
+            iconBox.style.background = 'rgba(100, 116, 139, 0.2)';
+            iconBox.style.color = '#94A3B8';
+        }
+        if (iconEl) iconEl.className = 'fa-solid fa-clock';
+        const waitTitle = `⏳ CHỜ GIỜ QUAY THƯỞNG (18H15) - CHƯA CÓ BÓNG RƠI`;
         if (titleEl) titleEl.textContent = waitTitle;
         const bannerEl = document.getElementById('banner');
         if (bannerEl) bannerEl.textContent = waitTitle;
-        if (subEl) subEl.textContent = `Có G5.5 xuất hiện (hoặc backup 18h24) → Hệ thống tự động khóa sổ & xuất ngay gói chốt để vào tiền trước 18h28!`;
-        if (badgeEl) badgeEl.innerHTML = `⏳ Chờ giờ quay (18h15)`;
+        if (subEl) subEl.textContent = `Lúc 18h15 bóng bắt đầu rơi (G7, G6, G5) -> Dàn Động kích hoạt. Khi có kết quả HẾT G5.6 (~18h24) -> Khóa Chốt Dàn Cứng để vào tiền trước 18h28!`;
+        if (badgeEl) {
+            badgeEl.className = 'badge';
+            badgeEl.style.background = 'rgba(100, 116, 139, 0.2)';
+            badgeEl.style.color = '#94A3B8';
+            badgeEl.innerHTML = `⏳ Chờ 18h15`;
+        }
+        if (btnQuick) {
+            btnQuick.innerHTML = `<i class="fa-solid fa-hourglass-start"></i> CHƯA ĐẾN GIỜ QUAY`;
+        }
     }
 }
 
@@ -745,26 +802,28 @@ function buildChipHtml(valStr, prizeCode, hp) {
 }
 
 // =======================================================
-// LOGIC KHÓA CHỐT DÀN TỰ ĐỘNG TẠI G5.5 HOẶC MỐC 18H24
 // =======================================================
-let isLocked = false;
+// LOGIC KHÓA CHỐT DÀN TỰ ĐỘNG TẠI HẾT G5.6 HOẶC MỐC 18H24 (Fix Lỗi 2 & 4)
+// =======================================================
+let isRadarLockedState = false;
 
 function checkLock() {
-    // Kiểm tra G5.5
-    const g5_5 = document.querySelector('[data-giai="5.5"]');
+    // Kiểm tra Hết Giải 5.6 (data-giai="5.6")
+    const g5_6 = document.querySelector('[data-giai="5.6"]');
     const now = new Date();
     const lockTime = new Date();
     lockTime.setHours(18, 24, 0, 0);
 
-    const hasG5_5 = Boolean(g5_5 && g5_5.textContent.replace(/[•\s]/g, '') !== '');
+    const hasG5_6 = Boolean(g5_6 && g5_6.textContent.replace(/[•\s]/g, '') !== '');
     const isPast18h24 = (now >= lockTime);
-    const serverLocked = Boolean(window.radarData && (window.radarData.is_g5_5_done || window.radarData.is_g5_finished || window.radarData.is_locked));
+    const serverLocked = Boolean(window.radarData && (window.radarData.is_g5_6_done || window.radarData.is_locked || window.radarData.dan_type === 'LOCKED'));
 
-    if ((hasG5_5 || isPast18h24 || serverLocked) && !isLocked) {
-        const bannerMsg = '🔒 ĐÃ KHÓA CHỐT DÀN (G5.5) - VÀO TIỀN TRƯỚC 18H28!';
+    if ((hasG5_6 || isPast18h24 || serverLocked) && !isRadarLockedState) {
+        const bannerMsg = '🔒 DÀN CỨNG - ĐÃ CHỐT HẠ (HẾT G5.6) - VÀO TIỀN TRƯỚC 18H28!';
         const banner = document.getElementById('banner');
         if (banner) {
             banner.innerHTML = bannerMsg;
+            banner.classList.remove('dynamic-pulse');
         }
         const titleEl = document.getElementById('lblFastLockTitle');
         if (titleEl) {
@@ -772,15 +831,15 @@ function checkLock() {
         }
         const badgeEl = document.getElementById('lblCountdownLock');
         if (badgeEl) {
-            badgeEl.className = 'badge badge-gold';
-            badgeEl.innerHTML = '🔒 ĐÃ KHÓA CHỐT (G5.5)';
+            badgeEl.className = 'badge badge-gold badge-locked-hard';
+            badgeEl.innerHTML = '🔒 DÀN CỨNG (HẾT G5.6)';
         }
         const subEl = document.getElementById('lblFastLockSub');
         if (subEl) {
-            subEl.innerHTML = '<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Đã chốt dàn tại G5.5 (hoặc backup 18h24). Vào tiền trước 18h28!';
+            subEl.innerHTML = '<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Đã chốt hạ sau khi hết Giải 5.6 (hoặc backup 18h24). Vào tiền trước 18h28!';
         }
-        isLocked = true;
-        console.log('🔒 Đã chốt dàn lúc:', now.toLocaleTimeString('vi-VN'));
+        isRadarLockedState = true;
+        console.log('🔒 Đã chốt dàn cứng lúc:', now.toLocaleTimeString('vi-VN'));
     }
 }
 setInterval(checkLock, 1000); // Kiểm tra mỗi 1 giây
@@ -790,10 +849,21 @@ function renderLivePrizeChips() {
     const lp = radarData.live_prizes;
     const hp = radarData.highlight_positions || {};
 
+    const updateStatus = (id, hasVal) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (hasVal) {
+            el.innerHTML = '<span class="badge-done"><i class="fa-solid fa-circle-check"></i> Đã quay</span>';
+        } else {
+            el.innerHTML = '<span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>';
+        }
+    };
+
     // G1
     const elG1 = document.getElementById('liveG1Chips');
     if (elG1) {
         elG1.innerHTML = buildChipHtml(lp.g1, 'G1', hp);
+        updateStatus('statusG1', Boolean(lp.g1 && lp.g1.trim()));
     }
 
     // G2 (2.1, 2.2)
@@ -801,6 +871,7 @@ function renderLivePrizeChips() {
     if (elG2) {
         const g2List = Array.isArray(lp.g2) ? lp.g2 : [lp.g2];
         elG2.innerHTML = g2List.map((val, idx) => buildChipHtml(val, `G2.${idx + 1}`, hp)).join('');
+        updateStatus('statusG2', g2List.some(v => Boolean(v && v.trim())));
     }
 
     // G3 (3.1 -> 3.6)
@@ -808,6 +879,7 @@ function renderLivePrizeChips() {
     if (elG3) {
         const g3List = Array.isArray(lp.g3) ? lp.g3 : [];
         elG3.innerHTML = g3List.map((val, idx) => buildChipHtml(val, `G3.${idx + 1}`, hp)).join('');
+        updateStatus('statusG3', g3List.some(v => Boolean(v && v.trim())));
     }
 
     // G4 (4.1 -> 4.4)
@@ -815,6 +887,7 @@ function renderLivePrizeChips() {
     if (elG4) {
         const g4List = Array.isArray(lp.g4) ? lp.g4 : [];
         elG4.innerHTML = g4List.map((val, idx) => buildChipHtml(val, `G4.${idx + 1}`, hp)).join('');
+        updateStatus('statusG4', g4List.some(v => Boolean(v && v.trim())));
     }
 
     // G5 (5.1 -> 5.6)
@@ -822,48 +895,115 @@ function renderLivePrizeChips() {
     if (elG5) {
         const g5List = Array.isArray(lp.g5) ? lp.g5 : [];
         elG5.innerHTML = g5List.map((val, idx) => buildChipHtml(val, `G5.${idx + 1}`, hp)).join('');
+        updateStatus('statusG5', g5List.some(v => Boolean(v && v.trim())));
+    }
+
+    // G6 (6.1 -> 6.3) - Fix Lỗi 3
+    const elG6 = document.getElementById('liveG6Chips');
+    if (elG6) {
+        const g6List = Array.isArray(lp.g6) ? lp.g6 : [];
+        elG6.innerHTML = g6List.map((val, idx) => buildChipHtml(val, `G6.${idx + 1}`, hp)).join('');
+        updateStatus('statusG6', g6List.some(v => Boolean(v && v.trim())));
+    }
+
+    // G7 (7.1 -> 7.4) - Fix Lỗi 3
+    const elG7 = document.getElementById('liveG7Chips');
+    if (elG7) {
+        const g7List = Array.isArray(lp.g7) ? lp.g7 : [];
+        elG7.innerHTML = g7List.map((val, idx) => buildChipHtml(val, `G7.${idx + 1}`, hp)).join('');
+        updateStatus('statusG7', g7List.some(v => Boolean(v && v.trim())));
     }
 }
 
 function renderRadarTopSummaries() {
     if (!radarData) return;
     
-    // Top 1 Bạch Thủ & Lót Lộn Song Thủ Trụ
-    const top1 = radarData.top_1 || '32';
-    const lotLon = radarData.lot_lon || '23';
-    const songThu = radarData.song_thu_tru || [top1, lotLon];
+    const isBeforeDraw = (radarData.radar_status === 'BEFORE_DRAW' || radarData.dan_type === 'NONE' || (radarData.filled_count === 0 && !radarData.actual_de));
+    const isDynamic = (radarData.dan_type === 'DYNAMIC' || radarData.radar_status === 'DYNAMIC');
+    const isLocked = (radarData.radar_status === 'LOCKED' || radarData.dan_type === 'LOCKED' || radarData.is_locked);
 
     const elTop1 = document.getElementById('radarTop1Display');
-    if (elTop1) elTop1.textContent = top1;
-
     const elLotLon = document.getElementById('radarLotLonDisplay');
-    if (elLotLon) elLotLon.textContent = lotLon;
-
     const elSongThuTru = document.getElementById('lblSongThuTru');
-    if (elSongThuTru) elSongThuTru.textContent = `${top1} - ${lotLon}`;
-    
+    const elTop4 = document.getElementById('radarTop4Chips');
+    const elDan9 = document.getElementById('radarDan9Chips');
+    const elDan9Dao = document.getElementById('radarDan9DaoChips');
+    const elDan9Sub = document.getElementById('radarDan9Subtitle');
+    const elDanLot = document.getElementById('radarDanLotDisplay');
+    const lblCountLot = document.getElementById('lblCountLot');
+    const elCountDan9 = document.getElementById('lblCountDan9');
+    const section2Title = document.getElementById('lblSection2Title');
+
+    if (isBeforeDraw) {
+        if (elTop1) {
+            elTop1.textContent = '---';
+            elTop1.classList.remove('dynamic-pulse');
+        }
+        if (elLotLon) {
+            elLotLon.textContent = '---';
+            elLotLon.classList.remove('dynamic-pulse');
+        }
+        if (elSongThuTru) elSongThuTru.textContent = 'Chờ giờ quay (18h15)';
+        if (elTop4) {
+            elTop4.innerHTML = `<span style="color: #64748B; font-size: 14px; font-weight: 700; padding: 4px 10px;">⏳ Chưa có bóng rơi...</span>`;
+        }
+        if (elDan9) {
+            elDan9.innerHTML = `<span style="color: #64748B; font-size: 13px;">Chờ giờ quay 18h15...</span>`;
+        }
+        if (elDan9Dao) elDan9Dao.innerHTML = '';
+        if (elDan9Sub) {
+            elDan9Sub.innerHTML = `<span style="color: #64748B;">Chưa có giải quay (18h15 bắt đầu xổ G7, G6, G5)</span>`;
+        }
+        if (elCountDan9) elCountDan9.textContent = `0 SỐ`;
+        if (elDanLot) elDanLot.textContent = 'Chưa đến giờ quay (18h15). Dàn sẽ hiển thị động khi có bóng rơi.';
+        if (lblCountLot) lblCountLot.textContent = '0 số';
+        if (section2Title) section2Title.textContent = 'KẾT QUẢ DÀN SỐ (BÓNG RƠI 18H15 BẮT ĐẦU DÒ CẦU ĐỘNG)';
+        return;
+    }
+
+    // Top 1 Bạch Thủ & Lót Lộn Song Thủ Trụ
+    const top1 = radarData.top_1 || '';
+    const lotLon = radarData.lot_lon || '';
+    const songThu = radarData.song_thu_tru || (top1 ? [top1, lotLon].filter(Boolean) : []);
+
+    if (elTop1) {
+        elTop1.textContent = top1 || '---';
+        if (isDynamic) elTop1.classList.add('dynamic-pulse');
+        else elTop1.classList.remove('dynamic-pulse');
+    }
+
+    if (elLotLon) {
+        elLotLon.textContent = lotLon || '---';
+        if (isDynamic) elLotLon.classList.add('dynamic-pulse');
+        else elLotLon.classList.remove('dynamic-pulse');
+    }
+
+    if (elSongThuTru) {
+        elSongThuTru.textContent = top1 ? `${top1} - ${lotLon} ${isDynamic ? '(⚡ Động)' : '(🔒 Chốt hạ)'}` : 'Đang dò cầu...';
+    }
+
     window.currentRadarBT = top1;
     window.currentRadarLotLon = lotLon;
-    window.currentRadarST = `${top1}, ${lotLon}`;
+    window.currentRadarST = songThu.join(', ');
 
     // Top 4 Tứ Thủ
-    const elTop4 = document.getElementById('radarTop4Chips');
-    const top4List = radarData.top_4 || [top1, lotLon, '37', '82'];
+    const top4List = radarData.top_4 || (top1 ? [top1] : []);
     window.currentRadarTT = top4List.join(', ');
     if (elTop4) {
-        elTop4.innerHTML = top4List.map(num => `
-            <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-size: 15px; font-weight: 800; padding: 4px 12px; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 8px;">
-                ${num}
-            </span>
-        `).join('');
+        if (top4List.length === 0) {
+            elTop4.innerHTML = `<span style="color: #64748B;">Đang tính toán theo bóng rơi...</span>`;
+        } else {
+            const pulseClass = isDynamic ? ' dynamic-pulse' : '';
+            elTop4.innerHTML = top4List.map(num => `
+                <span class="badge${pulseClass}" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-size: 15px; font-weight: 800; padding: 4px 12px; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 8px;">
+                    ${num}
+                </span>
+            `).join('');
+        }
     }
 
     // Dàn 9 Số Cội Nguồn & 8 Số Đảo Bảo Hiểm (Tổng 17 Số)
-    const elDan9 = document.getElementById('radarDan9Chips');
-    const elDan9Dao = document.getElementById('radarDan9DaoChips');
-    const dan9List = radarData.dan_9_so || ['21', '22', '27', '31', '32', '37', '41', '42', '47'];
-
-    // Tự động tính 8 số đảo (loại trừ kép palindrome như 22, và loại trừ số đã có trong dàn gốc)
+    const dan9List = radarData.dan_9_so || [];
     const dan9DaoList = [];
     dan9List.forEach(num => {
         if (num && num.length >= 2) {
@@ -878,62 +1018,72 @@ function renderRadarTopSummaries() {
     window.currentRadarDan9Goc = dan9List.join(', ');
     window.currentRadarDan9Dao = dan9DaoList.join(', ');
     window.currentRadarDan9All = total17List.join(', ');
-    window.currentRadarDan9 = window.currentRadarDan9All; // Giữ tương thích 100% logic hiện có
+    window.currentRadarDan9 = window.currentRadarDan9All;
 
-    // Tầng 1: 9 số gốc (Màu vàng gold rực rỡ)
+    // Tầng 1: 9 số gốc
     if (elDan9) {
-        elDan9.innerHTML = dan9List.map(num => `
-            <span class="badge badge-gold" style="font-size: 13.5px; font-weight: 900; padding: 3px 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
-                ${num}
-            </span>
-        `).join('');
+        if (dan9List.length === 0) {
+            elDan9.innerHTML = `<span style="color: #64748B;">Đang dò cầu động...</span>`;
+        } else {
+            elDan9.innerHTML = dan9List.map(num => `
+                <span class="badge badge-gold" style="font-size: 13.5px; font-weight: 900; padding: 3px 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
+                    ${num}
+                </span>
+            `).join('');
+        }
     }
 
-    // Tầng 2: 8 số đảo (Màu xanh nhạt bảo hiểm)
+    // Tầng 2: 8 số đảo
     if (elDan9Dao) {
-        elDan9Dao.innerHTML = dan9DaoList.map(num => `
-            <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-size: 13.5px; font-weight: 800; padding: 3px 8px; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
-                ${num}
-            </span>
-        `).join('');
+        if (dan9DaoList.length === 0) {
+            elDan9Dao.innerHTML = '';
+        } else {
+            elDan9Dao.innerHTML = dan9DaoList.map(num => `
+                <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-size: 13.5px; font-weight: 800; padding: 3px 8px; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
+                    ${num}
+                </span>
+            `).join('');
+        }
     }
 
-    const elDan9Sub = document.getElementById('radarDan9Subtitle');
     if (elDan9Sub) {
-        const heads = radarData.dan_9_heads || ['3', '4', '2'];
-        const tails = radarData.dan_9_tails || ['2', '7', '1'];
-        elDan9Sub.innerHTML = `Tầng 1: Gốc (${dan9List.length}s) | Tầng 2: Đảo (${dan9DaoList.length}s bảo hiểm)<br><span style="color: #64748B;">Top 3 Đầu [${heads.join(',')}] × Top 3 Đuôi [${tails.join(',')}]</span>`;
+        const heads = radarData.dan_9_heads || [];
+        const tails = radarData.dan_9_tails || [];
+        const statusLabel = isDynamic ? '<span style="color:#38BDF8; font-weight:800;">⚡ DÀN ĐỘNG</span>' : '<span style="color:#FBBF24; font-weight:800;">🔒 DÀN CỨNG</span>';
+        elDan9Sub.innerHTML = `${statusLabel} | Tầng 1: Gốc (${dan9List.length}s) | Tầng 2: Đảo (${dan9DaoList.length}s bảo hiểm)<br><span style="color: #64748B;">Top 3 Đầu [${heads.join(',')}] × Top 3 Đuôi [${tails.join(',')}]</span>`;
     }
 
-    const elCountDan9 = document.getElementById('lblCountDan9');
     if (elCountDan9) {
         elCountDan9.textContent = `${total17List.length} SỐ`;
     }
 
     // Dàn Lót Hợp Lệ
-    const elDanLot = document.getElementById('radarDanLotDisplay');
     const danLotList = radarData.dan_lot || [];
     window.currentRadarLot = danLotList.join(', ');
     if (elDanLot) {
-        elDanLot.textContent = danLotList.length > 0 ? danLotList.join(', ') : 'Tất cả các số lót hợp lệ đều trùng khớp trong khung 60s N1';
+        elDanLot.textContent = danLotList.length > 0 ? danLotList.join(', ') : (isDynamic ? 'Đang cập nhật lót theo giải xổ...' : 'Tất cả các số lót hợp lệ đều trùng khớp trong khung 60s N1');
     }
-    const lblCountLot = document.getElementById('lblCountLot');
     if (lblCountLot) {
         lblCountLot.textContent = `${danLotList.length} số`;
+    }
+
+    if (section2Title) {
+        if (isDynamic) {
+            section2Title.innerHTML = `<span style="color: #38BDF8;"><i class="fa-solid fa-bolt"></i> ⚡ DÀN ĐỘNG ĐANG DÒ CẦU (CHỐT HẠ KHI HẾT G5.6)</span>`;
+        } else {
+            section2Title.innerHTML = `<span style="color: #FBBF24;"><i class="fa-solid fa-lock"></i> 🔒 DÀN CỨNG CHÍNH THỨC (ĐÃ CHỐT HẾT G5.6)</span>`;
+        }
     }
 }
 
 function renderRadarCang3D() {
     if (!radarData) return;
+    const isBeforeDraw = (radarData.radar_status === 'BEFORE_DRAW' || radarData.dan_type === 'NONE' || (radarData.filled_count === 0 && !radarData.actual_de));
     const c3 = radarData.cang_3d_live || {};
-    const top3Cang = c3.top3_cang || ['1', '5', '0'];
+    const top3Cang = c3.top3_cang || [];
     const cangBT = c3.cang_bt_3s || [];
     const cangTT = c3.cang_tt_12s || [];
     const cangD9 = c3.cang_d9_27s || [];
-
-    window.currentCangBT = cangBT.join(', ');
-    window.currentCangTT = cangTT.join(', ');
-    window.currentCangD9 = cangD9.join(', ');
 
     const elCangDate = document.getElementById('lblCangTargetDate');
     if (elCangDate) {
@@ -941,6 +1091,25 @@ function renderRadarCang3D() {
     }
 
     const elBadge = document.getElementById('badgeCangTop3');
+    const elBT = document.getElementById('cangBachThuChips');
+    const elTT = document.getElementById('cangTuThuDisplay');
+    const elD9 = document.getElementById('cangDan9Display');
+
+    if (isBeforeDraw) {
+        if (elBadge) elBadge.textContent = 'Top 3 Càng: Chờ giờ quay 18h15';
+        if (elBT) elBT.innerHTML = '<span style="color:#64748B; font-size:14px; font-weight:700;">⏳ Chờ giờ quay (18h15)...</span>';
+        if (elTT) elTT.textContent = '---';
+        if (elD9) elD9.textContent = '---';
+        window.currentCangBT = '';
+        window.currentCangTT = '';
+        window.currentCangD9 = '';
+        return;
+    }
+
+    window.currentCangBT = cangBT.join(', ');
+    window.currentCangTT = cangTT.join(', ');
+    window.currentCangD9 = cangD9.join(', ');
+
     if (elBadge) {
         const tamStr = c3.tam_g1 ? `Tâm G1: ${c3.tam_g1}` : 'Chờ G1 quay (18h16)';
         const tongStr = c3.tong_de ? `Tổng Đề: ${c3.tong_de}` : '';
@@ -950,7 +1119,6 @@ function renderRadarCang3D() {
     // Hiển thị kiểm tra nổ 3 càng nếu đã có kết quả
     const actual3D = radarData.actual_3d || (radarData.actual_de && radarData.live_prizes?.g1 ? '' : '');
     
-    const elBT = document.getElementById('cangBachThuChips');
     if (elBT) {
         elBT.innerHTML = cangBT.map(num => {
             const isHit = actual3D && num === actual3D;
@@ -963,23 +1131,31 @@ function renderRadarCang3D() {
         }).join('');
     }
 
-    const elTT = document.getElementById('cangTuThuDisplay');
     if (elTT) {
         elTT.textContent = cangTT.join(', ');
     }
 
-    const elD9 = document.getElementById('cangDan9Display');
     if (elD9) {
         elD9.textContent = cangD9.join(', ');
     }
 }
 
 function renderRadar5ColTable() {
-    if (!radarData || !radarData.table_5cols) return;
+    if (!radarData) return;
     const tbody = document.getElementById('tbody5Cols');
     if (!tbody) return;
 
-    const list = radarData.table_5cols;
+    const isBeforeDraw = (radarData.radar_status === 'BEFORE_DRAW' || radarData.dan_type === 'NONE' || (radarData.filled_count === 0 && !radarData.actual_de));
+    const list = radarData.table_5cols || [];
+    
+    if (isBeforeDraw || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94A3B8; padding: 25px; font-style: italic;">⏳ Chưa đến giờ quay (18h15) - Hệ thống sẽ quét điểm và bảng 5 cột ngay khi các giải bắt đầu xổ.</td></tr>`;
+        const elAll = document.getElementById('cntAll'); if (elAll) elAll.textContent = '0';
+        const elTop = document.getElementById('cntTop'); if (elTop) elTop.textContent = '0';
+        const elLot = document.getElementById('cntLot'); if (elLot) elLot.textContent = '0';
+        const elDis = document.getElementById('cntDiscard'); if (elDis) elDis.textContent = '0';
+        return;
+    }
     
     // Đếm số lượng theo filter
     let cntAll = list.length;
