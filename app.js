@@ -388,6 +388,10 @@ function setupEventListeners() {
 }
 
 function copyToClipboard(text, successMsg) {
+    if (window.isRadarWaitingMode) {
+        showToast('⏳ Chưa đến giờ quay (18H15), nút Copy đang bị khóa!', 'warn');
+        return;
+    }
     if (!text || text.trim() === '') {
         showToast('⚠️ Không có dữ liệu để copy', 'warn');
         return;
@@ -506,14 +510,18 @@ async function fetchAndRenderRadarLive(isSilent = false) {
         if (!res.ok) throw new Error('Không thể tải file live_radar_state.json');
         setRadarData(await res.json());
         
-        renderRadarHeaderInfo();
-        renderFastLockBanner();
-        renderLivePrizeChips();
-        renderRadarTopSummaries();
-        renderRadarCang3D();
-        renderRadar5ColTable();
-        renderRadarFrame3Day();
-        renderRadarHistoryTable();
+        // Kiểm tra khung giờ reset tự động (17h00 - 18h14)
+        const currentMode = checkResetTime();
+        if (currentMode !== 'WAITING') {
+            renderRadarHeaderInfo();
+            renderFastLockBanner();
+            renderLivePrizeChips();
+            renderRadarTopSummaries();
+            renderRadarCang3D();
+            renderRadar5ColTable();
+            renderRadarFrame3Day();
+            renderRadarHistoryTable();
+        }
         
         if (!isSilent) {
             console.log('[Radar Live] Đã cập nhật thành công dữ liệu live:', radarData.target_date);
@@ -522,6 +530,248 @@ async function fetchAndRenderRadarLive(isSilent = false) {
         console.warn('[Radar Live] Chưa tải được state live:', err);
     }
 }
+
+// ==========================================================================
+// LOGIC TỰ ĐỘNG RESET VỀ CHẾ ĐỘ "CHỜ QUAY" (17H00 - 18H14 HÀNG NGÀY)
+// ==========================================================================
+window.isRadarWaitingMode = false;
+
+const RADAR_COPY_BUTTON_IDS = [
+    'btnCopyRadarBT',
+    'btnCopyRadarST',
+    'btnCopyRadarTT',
+    'btnCopyDan9Goc',
+    'btnCopyDan9Dao',
+    'btnCopyRadarDan9',
+    'btnCopyRadarLot',
+    'btnQuickCopyAll',
+    'btnCopyCangBT',
+    'btnCopyCangTT',
+    'btnCopyCangDan9',
+    'btnCopyTableAll'
+];
+
+function setCopyButtonsLocked(locked) {
+    RADAR_COPY_BUTTON_IDS.forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.disabled = locked;
+        if (locked) {
+            btn.setAttribute('data-locked', 'true');
+            btn.style.opacity = '0.45';
+            btn.style.cursor = 'not-allowed';
+            btn.style.pointerEvents = 'none';
+        } else {
+            btn.removeAttribute('data-locked');
+            btn.style.opacity = '';
+            btn.style.cursor = '';
+            btn.style.pointerEvents = '';
+        }
+    });
+}
+window.setCopyButtonsLocked = setCopyButtonsLocked;
+
+function formatVietnameseDate(d) {
+    const days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${days[d.getDay()]} ngày ${dd}-${mm}-${yyyy}`;
+}
+window.formatVietnameseDate = formatVietnameseDate;
+
+function checkResetTime(mockDate = null) {
+    const now = mockDate || (window.__mockDate ? new Date(window.__mockDate) : new Date());
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const totalMinutes = hour * 60 + minute;
+
+    // 1. Kịch bản: Giờ hiện tại >= 17h00 VÀ < 18h14 -> Hiển thị "Chờ quay"
+    if (totalMinutes >= 17 * 60 && totalMinutes < (18 * 60 + 14)) {
+        window.isRadarWaitingMode = true;
+        isRadarLockedState = false;
+
+        // 1.1. Hiển thị ngày hôm nay
+        const todayStr = formatVietnameseDate(now);
+        const elTargetDate = document.getElementById('radarPillTargetDate');
+        if (elTargetDate) elTargetDate.textContent = todayStr;
+
+        const elDynamicTarget = document.getElementById('lblRadarTargetDate');
+        if (elDynamicTarget) elDynamicTarget.textContent = todayStr.toUpperCase();
+
+        const elDateTitle = document.getElementById('radarLiveDateTitle');
+        if (elDateTitle) elDateTitle.textContent = todayStr.toUpperCase();
+
+        const elCangDate = document.getElementById('lblCangTargetDate');
+        if (elCangDate) elCangDate.textContent = todayStr.toUpperCase();
+
+        // 1.2. Banner Chờ giờ quay
+        const banner = document.getElementById('radarFastLockBanner');
+        if (banner) {
+            banner.classList.remove('dynamic-pulse');
+            banner.style.borderColor = 'rgba(100, 116, 139, 0.4)';
+            banner.style.background = 'linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%)';
+            banner.style.boxShadow = 'none';
+        }
+        const iconBox = document.getElementById('fastLockIconBox');
+        if (iconBox) {
+            iconBox.style.background = 'rgba(100, 116, 139, 0.2)';
+            iconBox.style.color = '#94A3B8';
+        }
+        const iconEl = document.getElementById('fastLockIcon');
+        if (iconEl) iconEl.className = 'fa-solid fa-clock';
+
+        const waitTitle = '⏳ CHỜ GIỜ QUAY (18H15)';
+        const titleEl = document.getElementById('lblFastLockTitle');
+        if (titleEl) titleEl.textContent = waitTitle;
+        const bannerEl = document.getElementById('banner');
+        if (bannerEl) bannerEl.textContent = waitTitle;
+
+        const subEl = document.getElementById('lblFastLockSub');
+        if (subEl) subEl.textContent = 'Lúc 18h15 bóng bắt đầu rơi (G7, G6, G5) -> Dàn Động kích hoạt. Hết G5.6 (~18h24) -> Khóa Chốt Dàn Cứng để vào tiền trước 18h28!';
+
+        const badgeEl = document.getElementById('lblCountdownLock');
+        if (badgeEl) {
+            badgeEl.className = 'badge';
+            badgeEl.style.background = 'rgba(100, 116, 139, 0.2)';
+            badgeEl.style.color = '#94A3B8';
+            badgeEl.innerHTML = '<i class="fa-solid fa-clock"></i> ⏳ Chờ 18h15';
+        }
+
+        const btnQuick = document.getElementById('btnQuickCopyAll');
+        if (btnQuick) {
+            btnQuick.innerHTML = '<i class="fa-solid fa-hourglass-start"></i> ⏳ CHỜ GIỜ QUAY (18H15)';
+        }
+
+        const elProgress = document.getElementById('radarProgressText');
+        if (elProgress) elProgress.textContent = '0/26 GIẢI (CHỜ 18H15)';
+
+        // 1.3. Reset các giải xổ về chờ quay
+        ['g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7'].forEach(g => {
+            const el = document.getElementById(`live${g.toUpperCase()}Chips`);
+            if (el) el.innerHTML = buildChipHtml('', g.toUpperCase(), {});
+            const st = document.getElementById(`status${g.toUpperCase()}`);
+            if (st) st.innerHTML = '<span class="badge-waiting" style="color: #64748B; font-size: 11px;"><i class="fa-regular fa-clock"></i> Chờ quay</span>';
+        });
+
+        // 1.4. Ẩn tất cả dàn số (Bạch thủ, Tứ thủ, Dàn 9, Dàn lót)
+        const elTop1 = document.getElementById('radarTop1Display');
+        if (elTop1) {
+            elTop1.textContent = '---';
+            elTop1.classList.remove('dynamic-pulse');
+        }
+        const elLotLon = document.getElementById('radarLotLonDisplay');
+        if (elLotLon) {
+            elLotLon.textContent = '---';
+            elLotLon.classList.remove('dynamic-pulse');
+        }
+        const elSongThuTru = document.getElementById('lblSongThuTru');
+        if (elSongThuTru) elSongThuTru.textContent = '⏳ CHỜ GIỜ QUAY (18H15)';
+
+        const elTop4 = document.getElementById('radarTop4Chips');
+        if (elTop4) {
+            elTop4.innerHTML = '<span style="color: #64748B; font-size: 14px; font-weight: 700; padding: 4px 10px;">⏳ CHỜ GIỜ QUAY (18H15)</span>';
+        }
+
+        const elDan9 = document.getElementById('radarDan9Chips');
+        if (elDan9) {
+            elDan9.innerHTML = '<span style="color: #64748B; font-size: 13px;">⏳ CHỜ GIỜ QUAY (18H15)</span>';
+        }
+        const elDan9Dao = document.getElementById('radarDan9DaoChips');
+        if (elDan9Dao) elDan9Dao.innerHTML = '';
+
+        const elDan9Sub = document.getElementById('radarDan9Subtitle');
+        if (elDan9Sub) {
+            elDan9Sub.innerHTML = '<span style="color: #64748B;">Chưa có giải quay (18h15 bắt đầu xổ G7, G6, G5)</span>';
+        }
+        const elCountDan9 = document.getElementById('lblCountDan9');
+        if (elCountDan9) elCountDan9.textContent = '0 SỐ';
+
+        const elDanLot = document.getElementById('radarDanLotDisplay');
+        if (elDanLot) elDanLot.textContent = '⏳ CHỜ GIỜ QUAY (18H15)';
+        const lblCountLot = document.getElementById('lblCountLot');
+        if (lblCountLot) lblCountLot.textContent = '0 số';
+
+        // 1.5. Càng 3D & Bảng 5 Cột
+        const elBadgeCang = document.getElementById('badgeCangTop3');
+        if (elBadgeCang) elBadgeCang.textContent = 'Top 3 Càng: ⏳ CHỜ GIỜ QUAY (18H15)';
+        const elBT = document.getElementById('cangBachThuChips');
+        if (elBT) elBT.innerHTML = '<span style="color:#64748B; font-size:14px; font-weight:700;">⏳ CHỜ GIỜ QUAY (18H15)</span>';
+        const elTT = document.getElementById('cangTuThuDisplay');
+        if (elTT) elTT.textContent = '---';
+        const elD9 = document.getElementById('cangDan9Display');
+        if (elD9) elD9.textContent = '---';
+
+        const tbody5 = document.getElementById('tbody5Cols');
+        if (tbody5) tbody5.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94A3B8; padding: 25px; font-style: italic;">⏳ CHỜ GIỜ QUAY (18H15) - Hệ thống sẽ quét điểm và bảng 5 cột ngay khi các giải bắt đầu xổ.</td></tr>';
+        ['cntAll', 'cntTop', 'cntLot', 'cntDiscard'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = '0';
+        });
+
+        const section2Title = document.getElementById('lblSection2Title');
+        if (section2Title) section2Title.textContent = 'KẾT QUẢ DÀN SỐ (BÓNG RƠI 18H15 BẮT ĐẦU DÒ CẦU ĐỘNG)';
+
+        // 1.6. Khóa tất cả nút Copy
+        setCopyButtonsLocked(true);
+
+        // 1.7. Xóa các biến copy tạm thời
+        window.currentRadarBT = '';
+        window.currentRadarLotLon = '';
+        window.currentRadarST = '';
+        window.currentRadarTT = '';
+        window.currentRadarDan9 = '';
+        window.currentRadarDan9Goc = '';
+        window.currentRadarDan9Dao = '';
+        window.currentRadarDan9All = '';
+        window.currentRadarLot = '';
+        window.currentCangBT = '';
+        window.currentCangTT = '';
+        window.currentCangD9 = '';
+        window.currentRadarTableText = '';
+        return 'WAITING';
+    } 
+    // 2. Kịch bản: Giờ < 17h00 -> Hiển thị dữ liệu cũ (nếu có)
+    else if (totalMinutes < 17 * 60) {
+        window.isRadarWaitingMode = false;
+        setCopyButtonsLocked(false);
+        if (radarData) {
+            renderRadarHeaderInfo();
+            renderFastLockBanner();
+            renderLivePrizeChips();
+            renderRadarTopSummaries();
+            renderRadarCang3D();
+            renderRadar5ColTable();
+            renderRadarFrame3Day();
+            renderRadarHistoryTable();
+            checkLock();
+        }
+        return 'OLD_DATA';
+    } 
+    // 3. Kịch bản: Giờ >= 18h14 -> Hiển thị dữ liệu live
+    else {
+        window.isRadarWaitingMode = false;
+        setCopyButtonsLocked(false);
+        if (radarData) {
+            renderRadarHeaderInfo();
+            renderFastLockBanner();
+            renderLivePrizeChips();
+            renderRadarTopSummaries();
+            renderRadarCang3D();
+            renderRadar5ColTable();
+            renderRadarFrame3Day();
+            renderRadarHistoryTable();
+            checkLock();
+        }
+        return 'LIVE';
+    }
+}
+window.checkResetTime = checkResetTime;
+
+// Chạy kiểm tra reset thời gian mỗi 1 phút
+setInterval(() => {
+    checkResetTime();
+}, 60000);
 
 window.renderRadarHeaderInfo = renderRadarHeaderInfo;
 window.renderFastLockBanner = renderFastLockBanner;
@@ -808,10 +1058,11 @@ function buildChipHtml(valStr, prizeCode, hp) {
 let isRadarLockedState = false;
 
 function checkLock() {
+    if (window.isRadarWaitingMode) return;
     // Kiểm tra Hết Giải 5.6 (data-giai="5.6")
     const g5_6 = document.querySelector('[data-giai="5.6"]');
-    const now = new Date();
-    const lockTime = new Date();
+    const now = window.__mockDate ? new Date(window.__mockDate) : new Date();
+    const lockTime = new Date(now);
     lockTime.setHours(18, 24, 0, 0);
 
     const hasG5_6 = Boolean(g5_6 && g5_6.textContent.replace(/[•\s]/g, '') !== '');

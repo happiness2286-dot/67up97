@@ -7,3 +7,4 @@ cron_history.log
 *.png
 *.lock
 *.tmp
+*.bak
