@@ -1284,5 +1284,39 @@ body {
     }
 }
 
+/* ==========================================================================
+   HIỆU ỨNG LÀM NỔI BẬT CON SỐ NỔ (TRÚNG ĐỀ) THEO YÊU CẦU
+   ========================================================================== */
+.num-tag.hit-explode {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.45) 0%, rgba(5, 150, 105, 0.65) 100%) !important;
+    border: 2px solid #34D399 !important;
+    color: #FFFFFF !important;
+    font-weight: 900 !important;
+    box-shadow: 0 0 14px rgba(52, 211, 153, 0.7), inset 0 0 6px rgba(255, 255, 255, 0.4) !important;
+    transform: scale(1.08);
+    animation: explodePulse 1.8s infinite ease-in-out;
+}
+
+@keyframes explodePulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+        transform: scale(1.05);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(52, 211, 153, 0.95), 0 0 30px rgba(16, 185, 129, 0.5);
+        transform: scale(1.12);
+    }
+}
+
+.badge-hit-explode {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.35) 0%, rgba(5, 150, 105, 0.5) 100%) !important;
+    border: 1.5px solid #10B981 !important;
+    color: #34D399 !important;
+    font-weight: 900 !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
+    animation: explodePulse 2s infinite ease-in-out;
+}
+
+
 
 

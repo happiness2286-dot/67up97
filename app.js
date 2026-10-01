@@ -1862,25 +1862,49 @@ function renderTabCauDong() {
         }
     }
 
+    // Lấy đề kỳ hiện tại nếu đã xổ
+    const todayDe = latest.de_ve || latest.de || (appData && appData.today_de) || '';
+    const hasTodayResult = todayDe && todayDe !== '--';
+
     // 2. RENDER BỘ SỐ DỰ ĐOÁN
     const elBt = document.getElementById('cauDongTop1');
-    if (elBt) elBt.textContent = bt;
+    if (elBt) {
+        elBt.textContent = bt;
+        if (hasTodayResult && bt === todayDe) {
+            elBt.classList.add('badge-hit-explode');
+        } else {
+            elBt.classList.remove('badge-hit-explode');
+        }
+    }
 
     const elLot = document.getElementById('cauDongLotLon');
     if (elLot) {
-        elLot.innerHTML = `Lót lộn: <strong style="color: #34D399; font-size: 15px; font-family: 'JetBrains Mono', monospace;">${lotLon}</strong>`;
+        const isLotHit = hasTodayResult && lotLon === todayDe;
+        elLot.innerHTML = `Lót lộn: <strong style="color: ${isLotHit ? '#34D399' : '#34D399'}; font-size: 15px; font-family: 'JetBrains Mono', monospace;">${lotLon}</strong> ${isLotHit ? '<span class="badge badge-hit-explode" style="font-size: 10px; padding: 1px 4px;">🎯 NỔ LỘN</span>' : ''}`;
     }
 
-    // Tứ Thủ Chips
+    // Tứ Thủ Chips (Làm nổi bật con nổ)
     const elTop4 = document.getElementById('cauDongTop4Chips');
     if (elTop4) {
         elTop4.innerHTML = '';
         if (tuThu.length > 0) {
             tuThu.forEach(s => {
                 const sp = document.createElement('span');
-                sp.className = 'badge';
-                sp.style.cssText = 'background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-weight: 800; font-size: 14px; padding: 4px 10px; border: 1px solid rgba(56, 189, 248, 0.4); font-family: "JetBrains Mono", monospace; border-radius: 6px;';
-                sp.textContent = s;
+                const isHit = hasTodayResult && s === todayDe;
+                const isDao = hasTodayResult && !isHit && (todayDe.length === 2 && todayDe[1] + todayDe[0] === s);
+                if (isHit) {
+                    sp.className = 'badge badge-hit-explode';
+                    sp.style.cssText = 'font-weight: 900; font-size: 14px; padding: 4px 10px; font-family: "JetBrains Mono", monospace; border-radius: 6px;';
+                    sp.textContent = `🎯 ${s}`;
+                } else if (isDao) {
+                    sp.className = 'badge';
+                    sp.style.cssText = 'background: rgba(56, 189, 248, 0.25); color: #38BDF8; font-weight: 800; font-size: 13px; padding: 4px 8px; border: 1px solid #38BDF8; font-family: "JetBrains Mono", monospace; border-radius: 6px;';
+                    sp.textContent = `🔄 ${s}`;
+                } else {
+                    sp.className = 'badge';
+                    sp.style.cssText = 'background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-weight: 800; font-size: 14px; padding: 4px 10px; border: 1px solid rgba(56, 189, 248, 0.4); font-family: "JetBrains Mono", monospace; border-radius: 6px;';
+                    sp.textContent = s;
+                }
                 elTop4.appendChild(sp);
             });
         } else {
@@ -1888,7 +1912,7 @@ function renderTabCauDong() {
         }
     }
 
-    // Dàn 9 Số Chips
+    // Dàn 9 Số Chips (Làm nổi bật con nổ)
     const elDan9 = document.getElementById('cauDongDan9Chips');
     const lblCountDan9 = document.getElementById('lblCountDan9CauDong');
     if (lblCountDan9) lblCountDan9.textContent = `${dan9.length} Số`;
@@ -1896,14 +1920,26 @@ function renderTabCauDong() {
         elDan9.innerHTML = '';
         dan9.forEach(s => {
             const sp = document.createElement('span');
-            sp.className = 'badge badge-gold';
-            sp.style.cssText = 'font-weight: 800; font-size: 13px; padding: 3px 8px; font-family: "JetBrains Mono", monospace; border-radius: 5px;';
-            sp.textContent = s;
+            const isHit = hasTodayResult && s === todayDe;
+            const isDao = hasTodayResult && !isHit && (todayDe.length === 2 && todayDe[1] + todayDe[0] === s);
+            if (isHit) {
+                sp.className = 'badge badge-hit-explode';
+                sp.style.cssText = 'font-weight: 900; font-size: 13.5px; padding: 3px 8px; font-family: "JetBrains Mono", monospace; border-radius: 5px;';
+                sp.textContent = `🎯 ${s}`;
+            } else if (isDao) {
+                sp.className = 'badge';
+                sp.style.cssText = 'background: rgba(56, 189, 248, 0.25); color: #38BDF8; font-weight: 800; font-size: 12px; padding: 2px 6px; border: 1px solid #38BDF8; font-family: "JetBrains Mono", monospace; border-radius: 5px;';
+                sp.textContent = `🔄 ${s}`;
+            } else {
+                sp.className = 'badge badge-gold';
+                sp.style.cssText = 'font-weight: 800; font-size: 13px; padding: 3px 8px; font-family: "JetBrains Mono", monospace; border-radius: 5px;';
+                sp.textContent = s;
+            }
             elDan9.appendChild(sp);
         });
     }
 
-    // Dàn Đảo Chips
+    // Dàn Đảo Chips (Làm nổi bật con nổ)
     const elDanDao = document.getElementById('cauDongDanDaoChips');
     const lblCountDanDao = document.getElementById('lblCountDanDaoCauDong');
     if (lblCountDanDao) lblCountDanDao.textContent = `${danDao.length} Số`;
@@ -1911,9 +1947,16 @@ function renderTabCauDong() {
         elDanDao.innerHTML = '';
         danDao.forEach(s => {
             const sp = document.createElement('span');
-            sp.className = 'badge';
-            sp.style.cssText = 'background: rgba(148, 163, 184, 0.2); color: #E2E8F0; font-weight: 800; font-size: 13px; padding: 3px 8px; font-family: "JetBrains Mono", monospace; border-radius: 5px; border: 1px solid rgba(148, 163, 184, 0.3);';
-            sp.textContent = s;
+            const isHit = hasTodayResult && s === todayDe;
+            if (isHit) {
+                sp.className = 'badge badge-hit-explode';
+                sp.style.cssText = 'font-weight: 900; font-size: 13px; padding: 3px 8px; font-family: "JetBrains Mono", monospace; border-radius: 5px;';
+                sp.textContent = `🎯 ${s}`;
+            } else {
+                sp.className = 'badge';
+                sp.style.cssText = 'background: rgba(148, 163, 184, 0.2); color: #E2E8F0; font-weight: 800; font-size: 13px; padding: 3px 8px; font-family: "JetBrains Mono", monospace; border-radius: 5px; border: 1px solid rgba(148, 163, 184, 0.3);';
+                sp.textContent = s;
+            }
             elDanDao.appendChild(sp);
         });
     }
@@ -1953,7 +1996,7 @@ function renderTabCauDong() {
         }
     }
 
-    // 4. RENDER DÀN GIAO THOA & NGOÀI 60S
+    // 4. RENDER DÀN GIAO THOA & NGOÀI 60S (Làm nổi bật con nổ)
     const lblCountGiaoThoa = document.getElementById('lblCountGiaoThoa');
     if (lblCountGiaoThoa) lblCountGiaoThoa.textContent = `${giaoThoa.length} Số`;
     const gridGiaoThoa = document.getElementById('gridGiaoThoa');
@@ -1961,8 +2004,9 @@ function renderTabCauDong() {
         gridGiaoThoa.innerHTML = '';
         giaoThoa.forEach(num => {
             const div = document.createElement('div');
-            div.className = 'num-tag gold';
-            div.textContent = num;
+            const isHit = hasTodayResult && num === todayDe;
+            div.className = isHit ? 'num-tag hit-explode' : 'num-tag gold';
+            div.textContent = isHit ? `🎯 ${num}` : num;
             gridGiaoThoa.appendChild(div);
         });
     }
@@ -1974,8 +2018,9 @@ function renderTabCauDong() {
         gridNgoai.innerHTML = '';
         ngoai.forEach(num => {
             const div = document.createElement('div');
-            div.className = 'num-tag gray';
-            div.textContent = num;
+            const isHit = hasTodayResult && num === todayDe;
+            div.className = isHit ? 'num-tag hit-explode' : 'num-tag gray';
+            div.textContent = isHit ? `🎯 ${num}` : num;
             gridNgoai.appendChild(div);
         });
     }
@@ -2060,9 +2105,69 @@ function renderCauDongHistoryTable() {
         const trung = (item.giao_thoa || []).length || (item.so_sanh ? item.so_sanh.trung_size : 38);
         const pct = (item.so_sanh && item.so_sanh.ty_le_trung) ? item.so_sanh.ty_le_trung : (dDong > 0 ? ((trung / dDong) * 100).toFixed(1) : '59.4');
         const bt = item.bach_thu || '--';
-        const tuThu = Array.isArray(item.tu_thu) ? item.tu_thu.join(' ') : (item.tu_thu || '---');
-        const dan9 = Array.isArray(item.dan_9) ? item.dan_9.join(' ') : (item.dan_9 || '---');
+        const tuThuRaw = Array.isArray(item.tu_thu) ? item.tu_thu : (typeof item.tu_thu === 'string' ? item.tu_thu.split(/[\s,]+/).filter(Boolean) : []);
+        const dan9Raw = Array.isArray(item.dan_9) ? item.dan_9 : (typeof item.dan_9 === 'string' ? item.dan_9.split(/[\s,]+/).filter(Boolean) : []);
         const deVe = item.de_ve || item.de || '--';
+        const hasResult = deVe && deVe !== '--';
+
+        // 1. CỘT BẠCH THỦ (Làm nổi bật nếu nổ)
+        let btHtml = '';
+        if (hasResult) {
+            if (bt === deVe) {
+                btHtml = `<span class="badge badge-hit-explode" style="font-size: 13.5px; padding: 2px 8px; font-family: 'JetBrains Mono', monospace;">🎯 ${bt}</span>`;
+            } else if (deVe.length === 2 && deVe[1] + deVe[0] === bt) {
+                btHtml = `<span class="badge" style="background: rgba(56, 189, 248, 0.25); color: #38BDF8; font-weight: 800; border: 1.5px solid #38BDF8; font-size: 12px; padding: 2px 6px; font-family: 'JetBrains Mono', monospace;" title="Trúng số lộn">🔄 ${bt}</span>`;
+            } else {
+                btHtml = `<span style="color: #64748B; font-family: 'JetBrains Mono', monospace; font-size: 12px;">${bt}</span>`;
+            }
+        } else {
+            btHtml = `<span class="badge badge-gold" style="font-size: 13px; font-weight: 800; font-family: 'JetBrains Mono', monospace;">${bt}</span>`;
+        }
+
+        // 2. CỘT TỨ THỦ (Trúng ở vị trí nào nổi ở vị trí đó)
+        let tuThuHtml = '---';
+        if (tuThuRaw.length > 0) {
+            tuThuHtml = tuThuRaw.map(num => {
+                if (hasResult && num === deVe) {
+                    return `<span class="badge badge-hit-explode" style="font-size: 12.5px; padding: 2px 7px; margin: 1px; font-family: 'JetBrains Mono', monospace;">🎯 ${num}</span>`;
+                } else if (hasResult && deVe.length === 2 && deVe[1] + deVe[0] === num) {
+                    return `<span class="badge" style="background: rgba(56, 189, 248, 0.25); color: #38BDF8; font-weight: 800; border: 1px solid #38BDF8; padding: 2px 6px; font-size: 11px; margin: 1px; font-family: 'JetBrains Mono', monospace;">🔄 ${num}</span>`;
+                } else if (hasResult) {
+                    return `<span style="color: #64748B; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin: 0 3px;">${num}</span>`;
+                } else {
+                    return `<span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; padding: 2px 6px; font-size: 11.5px; margin: 1px; font-family: 'JetBrains Mono', monospace;">${num}</span>`;
+                }
+            }).join(' ');
+        }
+
+        // 3. CỘT DÀN 9 SỐ (Trúng ở vị trí nào nổi ở vị trí đó)
+        let dan9Html = '---';
+        if (dan9Raw.length > 0) {
+            dan9Html = dan9Raw.map(num => {
+                if (hasResult && num === deVe) {
+                    return `<span class="badge badge-hit-explode" style="font-size: 12px; padding: 2px 6px; margin: 1px; font-family: 'JetBrains Mono', monospace;">🎯 ${num}</span>`;
+                } else if (hasResult && deVe.length === 2 && deVe[1] + deVe[0] === num) {
+                    return `<span class="badge" style="background: rgba(56, 189, 248, 0.25); color: #38BDF8; font-weight: 800; border: 1px solid #38BDF8; padding: 1px 4px; font-size: 10.5px; margin: 1px; font-family: 'JetBrains Mono', monospace;">🔄 ${num}</span>`;
+                } else if (hasResult) {
+                    return `<span style="color: #64748B; font-family: 'JetBrains Mono', monospace; font-size: 11px; margin: 0 1px;">${num}</span>`;
+                } else {
+                    return `<span style="color: #FDE68A; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; margin: 0 2px;">${num}</span>`;
+                }
+            }).join(' ');
+        }
+
+        // 4. CỘT TRÙNG KHỚP
+        let trungHtml = '';
+        const isHitAny = item.hit_top_1 || item.hit_top_4 || item.hit_dan_9 || bt === deVe || tuThuRaw.includes(deVe) || dan9Raw.includes(deVe);
+        if (hasResult) {
+            if (isHitAny) {
+                trungHtml = `<span class="badge" style="background: rgba(16, 185, 129, 0.25); color: #34D399; font-weight: 800; border: 1px solid #10B981; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 6px;">🎯 Trúng (${trung}s)</span>`;
+            } else {
+                trungHtml = `<span style="color: #64748B; font-size: 11.5px; font-family: 'JetBrains Mono', monospace;">Trượt (${trung}s)</span>`;
+            }
+        } else {
+            trungHtml = `<span style="color: #34D399; font-weight: 900; font-family: 'JetBrains Mono', monospace;">${trung} số</span>`;
+        }
 
         tr.innerHTML = `
             <td style="text-align: center; color: var(--text-muted); font-size: 11px;">${idx + 1}</td>
@@ -2078,8 +2183,8 @@ function renderCauDongHistoryTable() {
             <td style="text-align: center; color: #94A3B8; font-weight: 700; font-family: 'JetBrains Mono', monospace;">
                 ${d60} số
             </td>
-            <td style="text-align: center; color: #34D399; font-weight: 900; font-family: 'JetBrains Mono', monospace;">
-                ${trung} số
+            <td style="text-align: center;">
+                ${trungHtml}
             </td>
             <td style="text-align: center;">
                 <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-weight: 800; border: 1px solid #10B981;">
@@ -2087,19 +2192,21 @@ function renderCauDongHistoryTable() {
                 </span>
             </td>
             <td style="text-align: center;">
-                <span class="badge badge-gold" style="font-size: 13px; font-weight: 800; font-family: 'JetBrains Mono', monospace;">
-                    ${bt}
-                </span>
+                ${btHtml}
             </td>
             <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #38BDF8;">
-                ${tuThu || '---'}
+                <div style="display: flex; gap: 3px; flex-wrap: wrap; align-items: center;">
+                    ${tuThuHtml}
+                </div>
             </td>
             <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #FDE68A;">
-                ${dan9 || '---'}
+                <div style="display: flex; gap: 2px; flex-wrap: wrap; align-items: center; max-width: 220px;">
+                    ${dan9Html}
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
-        historyLines.push(`${ngay} | Đề: ${deVe} | Cầu Động: ${dDong}s | 60s N1: ${d60}s | Trùng: ${trung}s (${pct}%) | BT: ${bt} | TT: ${tuThu} | Dàn 9s: ${dan9}`);
+        historyLines.push(`${ngay} | Đề: ${deVe} | Cầu Động: ${dDong}s | 60s N1: ${d60}s | Trùng: ${trung}s (${pct}%) | BT: ${bt} | TT: ${tuThuRaw.join(',')} | Dàn 9s: ${dan9Raw.join(',')}`);
     });
 
     window.cauDongHistoryText = historyLines.join('\n');
