@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>XSMB AI Prediction 2026 - Model 67 UP TO 97%</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=20260925_RADAR_LIVE_V1">
+    <link rel="stylesheet" href="style.css?v=20261001_TAB4_V1">
 </head>
 <body>
 
@@ -42,6 +42,9 @@
             </button>
             <button class="tab-btn" data-tab="tab-history-stats">
                 <span>📊</span> THỐNG KÊ LỊCH SỬ & TỶ LỆ TRÚNG
+            </button>
+            <button class="tab-btn" data-tab="tab-cau-dong" id="btnTabCauDong" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(239, 68, 68, 0.2) 100%); border: 1.5px solid #F59E0B; color: #FBBF24; font-weight: 800;">
+                <span>⚡</span> CẦU ĐỘNG AI & SO SÁNH
             </button>
         </div>
     </div>
@@ -807,8 +810,277 @@
 
         </section>
 
+        <!-- TAB 4: CẦU ĐỘNG AI & SO SÁNH VỚI DÀN TĨNH 60S -->
+        <section id="tab-cau-dong" class="tab-content">
+
+            <!-- HEADER BANNER & KPIS -->
+            <div class="radar-hero-box" style="border-color: rgba(245, 158, 11, 0.4); background: linear-gradient(180deg, rgba(30, 27, 75, 0.4) 0%, rgba(15, 23, 42, 0.85) 100%);">
+                <div class="radar-header-row">
+                    <div class="radar-title" style="color: #FBBF24;">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>TAB 4: LOGIC CẦU ĐỘNG AI & ĐỐI CHIẾU DÀN TĨNH 60S</span>
+                    </div>
+                    <span class="badge badge-gold" style="font-weight: 800; font-size: 13px;">
+                        TỰ ĐỘNG HÓA AI
+                    </span>
+                </div>
+
+                <div class="radar-info-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 14px;">
+                    <div class="radar-info-pill">
+                        <div class="radar-info-label">👑 BẠCH THỦ & TỨ THỦ</div>
+                        <div class="radar-info-value" id="kpiCauDongBtTt" style="color: #FBBF24;">--</div>
+                    </div>
+                    <div class="radar-info-pill">
+                        <div class="radar-info-label">🌐 DÀN CẦU ĐỘNG</div>
+                        <div class="radar-info-value" id="kpiCauDongSize" style="color: #38BDF8;">--</div>
+                    </div>
+                    <div class="radar-info-pill">
+                        <div class="radar-info-label">🎯 GIAO THOA 60S N1</div>
+                        <div class="radar-info-value" id="kpiCauDongTrung" style="color: #34D399;">--</div>
+                    </div>
+                    <div class="radar-info-pill">
+                        <div class="radar-info-label">⚠️ CẢNH BÁO CẦU 4D+</div>
+                        <div class="radar-info-value" id="kpiCauDongTrangThai" style="color: #A78BFA;">--</div>
+                    </div>
+                </div>
+
+                <div style="font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <span>Thuật toán quét vị trí lặp chu kỳ G1→G5.6 • Lọc giao thoa với Dàn 60s N1 • Nhận diện cầu bền và cảnh báo cầu gãy 4d+</span>
+                    <span>Kỳ phân tích: <strong id="lblTab4Date" style="color: #67E8F9;">--</strong></span>
+                </div>
+            </div>
+
+            <!-- PHẦN 1: BỘ SỐ CHỐT DỰ ĐOÁN CẦU ĐỘNG -->
+            <div class="ranking-section-box">
+                <div class="prize-section-header" style="flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2>
+                            <i class="fa-solid fa-crown" style="color: #FBBF24;"></i>
+                            <span>BỘ SỐ DỰ ĐOÁN TỪ VỊ TRÍ CẦU SÁNG NHẤT</span>
+                        </h2>
+                        <div style="margin-top: 4px; font-size: 12.5px; color: #94A3B8;">
+                            Trích xuất từ các vị trí có chu kỳ lặp mạnh nhất (G1→G5.6)
+                        </div>
+                    </div>
+                    <button class="btn btn-gold btn-sm" id="btnCopyCauDongAll" style="font-weight: 800; padding: 8px 16px;">
+                        <i class="fa-solid fa-copy"></i> COPY GÓI CHỐT CẦU ĐỘNG
+                    </button>
+                </div>
+
+                <div class="top-summary-grid">
+                    <!-- Bạch Thủ Cầu Động -->
+                    <div class="top-summary-card card-gold">
+                        <div class="top-summary-title" style="color: #FBBF24;">
+                            <span>👑 BẠCH THỦ CẦU ĐỘNG</span>
+                            <span class="badge badge-gold" style="font-size: 10px;">Vị trí sáng nhất</span>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 6px; padding: 4px 0;">
+                            <div>
+                                <div style="font-size: 10.5px; color: #FDE68A; font-weight: 700; text-align: center;">BẠCH THỦ</div>
+                                <div class="big-number-display" id="cauDongTop1" style="margin: 0; line-height: 1;">--</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-align: center;" id="cauDongLotLon">
+                            Lót lộn: <strong style="color: #34D399;">--</strong>
+                        </div>
+                        <button class="btn btn-gold btn-sm" id="btnCopyCauDongBT" style="width: 100%; font-weight: 800;">
+                            <i class="fa-regular fa-copy"></i> Copy Bạch Thủ
+                        </button>
+                    </div>
+
+                    <!-- Tứ Thủ Cầu Động -->
+                    <div class="top-summary-card card-blue">
+                        <div class="top-summary-title" style="color: #38BDF8;">
+                            <span>🔥 TỨ THỦ CẦU ĐỘNG</span>
+                            <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-size: 10px;">Top 4 vị trí</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;" id="cauDongTop4Chips">
+                            <!-- Injected by JS -->
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">4 con số sáng nhất từ các cầu chạy độc lập</div>
+                        <button class="btn btn-primary btn-sm" id="btnCopyCauDongTT" style="width: 100%;">
+                            <i class="fa-regular fa-copy"></i> Copy Tứ Thủ
+                        </button>
+                    </div>
+
+                    <!-- Dàn 9 Số Cội Nguồn -->
+                    <div class="top-summary-card">
+                        <div class="top-summary-title" style="color: #FBBF24;">
+                            <span>⭐ DÀN 9 SỐ CỘI NGUỒN</span>
+                            <span class="badge badge-gold" id="lblCountDan9CauDong" style="font-size: 10px;">9 Số</span>
+                        </div>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px;" id="cauDongDan9Chips">
+                            <!-- Injected by JS -->
+                        </div>
+                        <div style="font-size: 10.5px; color: #94A3B8; margin-bottom: 10px;">
+                            Ghép Top 3 Đầu × Top 3 Đuôi (Lọc qua 60s N1)
+                        </div>
+                        <button class="btn btn-gold btn-sm" id="btnCopyCauDongDan9" style="width: 100%; font-weight: 800;">
+                            <i class="fa-regular fa-copy"></i> Copy Dàn 9 Số
+                        </button>
+                    </div>
+
+                    <!-- Dàn Đảo Bảo Hiểm -->
+                    <div class="top-summary-card">
+                        <div class="top-summary-title" style="color: #38BDF8;">
+                            <span>🔄 DÀN ĐẢO BẢO HIỂM</span>
+                            <span class="badge" id="lblCountDanDaoCauDong" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-size: 10px;">Đảo</span>
+                        </div>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px;" id="cauDongDanDaoChips">
+                            <!-- Injected by JS -->
+                        </div>
+                        <div style="font-size: 10.5px; color: #94A3B8; margin-bottom: 10px;">
+                            Bảo hiểm vị trí lộn đầu đuôi của Dàn 9s
+                        </div>
+                        <button class="btn btn-primary btn-sm" id="btnCopyCauDongDanDao" style="width: 100%; font-weight: 800; background: rgba(56, 189, 248, 0.25); color: #38BDF8; border: 1px solid #38BDF8;">
+                            <i class="fa-solid fa-arrows-rotate"></i> Copy Dàn Đảo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHẦN 2: BỘ LỌC ĐỐI CHIẾU GIAO THOA CẦU ĐỘNG VS DÀN TĨNH 60S -->
+            <div class="prize-section-box">
+                <div class="prize-section-header" style="flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2>
+                            <i class="fa-solid fa-code-compare" style="color: #34D399;"></i>
+                            <span>BỘ LỌC ĐỐI CHIẾU: CẦU ĐỘNG VS DÀN TĨNH 60S N1</span>
+                        </h2>
+                        <div style="margin-top: 4px; font-size: 12.5px; color: #94A3B8;">
+                            Giao thoa giữa Cầu Động đa vị trí và Dàn Tĩnh 60s N1 đã kiểm chứng
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Box Cảnh Báo Cầu 4d+ -->
+                <div id="boxCanhBaoCau4d" style="margin-bottom: 16px; padding: 12px 16px; border-radius: 10px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-shield-halved" id="iconCanhBao" style="font-size: 18px; color: #34D399;"></i>
+                        <span id="txtCanhBao" style="font-size: 13px; font-weight: 700; color: #E2E8F0;">Cầu đang trong chu kỳ vàng an toàn (2-3 ngày)</span>
+                    </div>
+                    <span class="badge" id="badgeCanhBao" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; font-weight: 800;">
+                        AN TOÀN
+                    </span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+                    <!-- Card Giao Thoa (Trong 60s N1) -->
+                    <div class="card" style="border: 1px solid rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.04); margin-bottom: 0;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="icon">🎯</span>
+                                <span>DÀN GIAO THOA (TRONG 60S N1)</span>
+                            </div>
+                            <span class="badge" id="lblCountGiaoThoa" style="background: rgba(16, 185, 129, 0.25); color: #34D399; border: 1px solid #10B981; font-weight: 800; font-size: 12px;">-- Số</span>
+                        </div>
+                        <div style="font-size: 11.5px; color: #94A3B8; margin-bottom: 10px;">
+                            Số đồng thuận cao giữa Cầu Động và Dàn 60s N1 (Ưu tiên cược cao)
+                        </div>
+                        <div class="number-grid" id="gridGiaoThoa" style="max-height: 200px; overflow-y: auto; padding: 4px;">
+                            <!-- Injected by JS -->
+                        </div>
+                        <button class="btn btn-gold" id="btnCopyCauDongGiaoThoa" style="width: 100%; margin-top: 12px; padding: 10px; font-weight: 800;">
+                            <i class="fa-solid fa-copy"></i> Sao Chép Dàn Giao Thoa
+                        </button>
+                    </div>
+
+                    <!-- Card Ngoài Dàn Tĩnh 60s -->
+                    <div class="card" style="border: 1px solid rgba(148, 163, 184, 0.25); background: rgba(15, 23, 42, 0.5); margin-bottom: 0;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="icon">🛡️</span>
+                                <span>DÀN NGOÀI 60S N1 (CHỈ CÓ Ở CẦU ĐỘNG)</span>
+                            </div>
+                            <span class="badge" id="lblCountNgoai" style="background: rgba(148, 163, 184, 0.2); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.3); font-weight: 800; font-size: 12px;">-- Số</span>
+                        </div>
+                        <div style="font-size: 11.5px; color: #94A3B8; margin-bottom: 10px;">
+                            Các số xuất hiện ở cầu động nhưng ngoài khung tĩnh (Cân nhắc lót nhẹ hoặc loại)
+                        </div>
+                        <div class="number-grid" id="gridNgoai" style="max-height: 200px; overflow-y: auto; padding: 4px;">
+                            <!-- Injected by JS -->
+                        </div>
+                        <button class="btn btn-secondary" id="btnCopyCauDongNgoai" style="width: 100%; margin-top: 12px; padding: 10px; font-weight: 800;">
+                            <i class="fa-solid fa-copy"></i> Sao Chép Dàn Ngoài 60s
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHẦN 3: BẢNG DANH SÁCH VỊ TRÍ CẦU CHẠY MẠNH (>= 2 NGÀY) -->
+            <div class="prize-section-box">
+                <div class="prize-section-header" style="flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2>
+                            <i class="fa-solid fa-list-ol" style="color: #38BDF8;"></i>
+                            <span>DANH SÁCH VỊ TRÍ CẦU ĐANG CHẠY MẠNH (CHU KỲ >= 2 NGÀY)</span>
+                        </h2>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="btnCopyCauDongViTri" style="font-size: 11px;">
+                        <i class="fa-regular fa-copy"></i> Copy Danh Sách Cầu
+                    </button>
+                </div>
+
+                <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                    <table class="custom-table" id="tableCauDongPositions">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 50px;">STT</th>
+                                <th style="width: 180px;">Vị Trí Giải.Con.KýSố</th>
+                                <th style="text-align: center; width: 100px;">Chữ Số Mạnh</th>
+                                <th style="text-align: center; width: 110px;">Số Ngày Lặp</th>
+                                <th style="text-align: center; width: 90px;">Điểm Nổ</th>
+                                <th style="width: 160px;">Đánh Giá Cầu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCauDongPositions">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PHẦN 4: BẢNG LỊCH SỬ SO SÁNH DÀN QUA CÁC KỲ -->
+            <div class="prize-section-box">
+                <div class="prize-section-header" style="flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2>
+                            <i class="fa-solid fa-clock-rotate-left" style="color: #C084FC;"></i>
+                            <span>NHẬT KÝ SO SÁNH DÀN ĐỘNG VS DÀN TĨNH QUA CÁC KỲ</span>
+                        </h2>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="btnCopyCauDongHistory" style="font-size: 11px;">
+                        <i class="fa-regular fa-copy"></i> Copy Toàn Bộ Lịch Sử
+                    </button>
+                </div>
+
+                <div class="table-responsive" style="max-height: 440px; overflow-y: auto;">
+                    <table class="custom-table" id="tableCauDongHistory">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 50px;">STT</th>
+                                <th style="width: 150px;">Kỳ Quay (Ngày)</th>
+                                <th style="text-align: center; width: 80px;">Đề Về</th>
+                                <th style="text-align: center; width: 110px;">Dàn Cầu Động</th>
+                                <th style="text-align: center; width: 110px;">Dàn Tĩnh 60s</th>
+                                <th style="text-align: center; width: 110px;">Trùng Khớp</th>
+                                <th style="text-align: center; width: 110px;">Tỷ Lệ Trùng</th>
+                                <th style="text-align: center; width: 100px;">Bạch Thủ</th>
+                                <th style="width: 160px;">Tứ Thủ</th>
+                                <th style="width: 180px;">Dàn 9 Số</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCauDongHistory">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
     </main>
 
-    <script src="app.js?v=20260925_DYNAMIC_DATE_V3"></script>
+    <script src="app.js?v=20261001_TAB4_V1"></script>
 </body>
 </html>

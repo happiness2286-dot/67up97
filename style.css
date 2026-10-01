@@ -1211,4 +1211,78 @@ body {
     box-shadow: 0 0 12px rgba(245, 158, 11, 0.3) !important;
 }
 
+/* ==========================================================================
+   TAB 4: CẦU ĐỘNG AI & SO SÁNH DÀN TĨNH 60S STYLES
+   ========================================================================== */
+#tab-cau-dong .radar-hero-box {
+    margin-bottom: 20px;
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+}
+
+#tab-cau-dong .top-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 14px;
+}
+
+#tab-cau-dong .top-summary-card {
+    background: rgba(17, 24, 39, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+#tab-cau-dong .top-summary-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+#tab-cau-dong .top-summary-card.card-gold {
+    border-color: rgba(245, 158, 11, 0.35);
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, rgba(15, 23, 42, 0.8) 100%);
+}
+
+#tab-cau-dong .top-summary-card.card-blue {
+    border-color: rgba(56, 189, 248, 0.35);
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.06) 0%, rgba(15, 23, 42, 0.8) 100%);
+}
+
+#tab-cau-dong .top-summary-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+#tab-cau-dong .num-tag.gray {
+    background: rgba(148, 163, 184, 0.12);
+    color: #94A3B8;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+#tab-cau-dong .num-tag.gray:hover {
+    background: rgba(148, 163, 184, 0.25);
+    color: #F1F5F9;
+}
+
+@media (max-width: 768px) {
+    #tab-cau-dong .top-summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #tab-cau-dong .radar-info-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+}
+
+
 

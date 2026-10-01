@@ -14,6 +14,7 @@ async function initApp() {
     setupGlobalManualRefresh();
     await loadDashboardData();
     initRadarLive();
+    initTabCauDong();
     setupEventListeners();
 }
 
@@ -44,7 +45,8 @@ function setupGlobalManualRefresh() {
         try {
             await Promise.allSettled([
                 loadDashboardData(),
-                fetchAndRenderRadarLive(true)
+                fetchAndRenderRadarLive(true),
+                loadTabCauDongData(true)
             ]);
             showToast('✅ Đã làm mới dữ liệu thành công!', 'success');
         } catch (e) {
@@ -1769,4 +1771,385 @@ function setupRadarEventListeners() {
         });
     });
 }
+
+/* ==========================================================================
+   TAB 4: LOGIC CẦU ĐỘNG AI & ĐỐI CHIẾU DÀN TĨNH 60S (TỰ ĐỘNG HÓA AI)
+   ========================================================================== */
+
+let tab4Data = null;
+let tab4CompareData = null;
+
+async function initTabCauDong() {
+    setupTabCauDongEventListeners();
+    await loadTabCauDongData(true);
+}
+
+async function loadTabCauDongData(isSilent = false) {
+    try {
+        const [tab4Res, compRes] = await Promise.allSettled([
+            fetch('tab4_data.json?t=' + Date.now(), { cache: 'no-store' }),
+            fetch('so_sanh_dan.json?t=' + Date.now(), { cache: 'no-store' })
+        ]);
+
+        if (tab4Res.status === 'fulfilled' && tab4Res.value.ok) {
+            tab4Data = await tab4Res.value.json();
+        }
+        if (compRes.status === 'fulfilled' && compRes.value.ok) {
+            tab4CompareData = await compRes.value.json();
+        }
+
+        renderTabCauDong();
+    } catch (err) {
+        console.warn('Lỗi tải dữ liệu Tab 4 Cầu Động:', err);
+        if (!isSilent) showToast('⚠️ Không thể tải dữ liệu Cầu Động AI: ' + err.message, 'error');
+    }
+}
+
+function renderTabCauDong() {
+    if (!tab4Data) return;
+
+    // Lấy bản ghi mới nhất (ưu tiên trường latest hoặc phần tử đầu tiên của lich_su)
+    const latest = tab4Data.latest || (tab4Data.lich_su && tab4Data.lich_su.length > 0 ? tab4Data.lich_su[0] : null);
+    if (!latest) return;
+
+    const ngay = latest.ngay || '--';
+    const danDong = latest.dan_cau_dong || [];
+    const dan60s = latest.dan_60s || [];
+    const giaoThoa = latest.giao_thoa || [];
+    const ngoai = latest.ngoai || [];
+    const bt = latest.bach_thu || '--';
+    const lotLon = bt && bt.length === 2 && bt[0] !== bt[1] ? (bt[1] + bt[0]) : (bt ? bt : '--');
+    const tuThu = latest.tu_thu || [];
+    const dan9 = latest.dan_9 || [];
+    const danDao = latest.dan_dao || [];
+    const canhBao = latest.canh_bao || { canh_bao: false };
+    const cauChay = latest.cau_chay || [];
+
+    // Lưu biến toàn cục hỗ trợ Copy
+    window.cauDongBT = bt;
+    window.cauDongLotLon = lotLon;
+    window.cauDongTT = tuThu.join(' ');
+    window.cauDongDan9 = dan9.join(' ');
+    window.cauDongDanDao = danDao.join(' ');
+    window.cauDongGiaoThoa = giaoThoa.join(' ');
+    window.cauDongNgoai = ngoai.join(' ');
+    window.cauDongAllPackage = `⚡ GÓI CHỐT CẦU ĐỘNG XSMB AI (${ngay}):\n👑 Bạch Thủ: ${bt} (Lót lộn: ${lotLon})\n🔥 Tứ Thủ: ${tuThu.join(', ')}\n⭐ Dàn 9 Số Cội Nguồn: ${dan9.join(', ')}\n🔄 Dàn Đảo Bảo Hiểm: ${danDao.join(', ')}\n🎯 Dàn Giao Thoa 60s N1 (${giaoThoa.length}s): ${giaoThoa.join(' ')}\n🛡️ Cảnh báo chu kỳ: ${canhBao.canh_bao ? 'NGUY CƠ GÃY (>=4d)' : 'AN TOÀN (2-3d)'}`;
+
+    // 1. RENDER HEADER & KPIS
+    const lblDate = document.getElementById('lblTab4Date');
+    if (lblDate) lblDate.textContent = ngay;
+
+    const kpiBtTt = document.getElementById('kpiCauDongBtTt');
+    if (kpiBtTt) kpiBtTt.textContent = `${bt} • ${tuThu.slice(0, 3).join(',')}`;
+
+    const kpiSize = document.getElementById('kpiCauDongSize');
+    if (kpiSize) kpiSize.textContent = `${danDong.length} Số (G1→G5.6)`;
+
+    const kpiTrung = document.getElementById('kpiCauDongTrung');
+    if (kpiTrung) {
+        const pct = danDong.length > 0 ? ((giaoThoa.length / danDong.length) * 100).toFixed(1) : '0';
+        kpiTrung.textContent = `${giaoThoa.length} Số (${pct}%)`;
+    }
+
+    const kpiTrangThai = document.getElementById('kpiCauDongTrangThai');
+    if (kpiTrangThai) {
+        if (canhBao.canh_bao) {
+            kpiTrangThai.textContent = `⚠️ NGUY CƠ GÃY (≥4d)`;
+            kpiTrangThai.style.color = '#F43F5E';
+        } else {
+            kpiTrangThai.textContent = `🛡️ AN TOÀN (${canhBao.so_ngay_max || 3}d)`;
+            kpiTrangThai.style.color = '#34D399';
+        }
+    }
+
+    // 2. RENDER BỘ SỐ DỰ ĐOÁN
+    const elBt = document.getElementById('cauDongTop1');
+    if (elBt) elBt.textContent = bt;
+
+    const elLot = document.getElementById('cauDongLotLon');
+    if (elLot) {
+        elLot.innerHTML = `Lót lộn: <strong style="color: #34D399; font-size: 15px; font-family: 'JetBrains Mono', monospace;">${lotLon}</strong>`;
+    }
+
+    // Tứ Thủ Chips
+    const elTop4 = document.getElementById('cauDongTop4Chips');
+    if (elTop4) {
+        elTop4.innerHTML = '';
+        if (tuThu.length > 0) {
+            tuThu.forEach(s => {
+                const sp = document.createElement('span');
+                sp.className = 'badge';
+                sp.style.cssText = 'background: rgba(56, 189, 248, 0.2); color: #38BDF8; font-weight: 800; font-size: 14px; padding: 4px 10px; border: 1px solid rgba(56, 189, 248, 0.4); font-family: "JetBrains Mono", monospace; border-radius: 6px;';
+                sp.textContent = s;
+                elTop4.appendChild(sp);
+            });
+        } else {
+            elTop4.innerHTML = '<span style="color: #64748B;">Đang cập nhật...</span>';
+        }
+    }
+
+    // Dàn 9 Số Chips
+    const elDan9 = document.getElementById('cauDongDan9Chips');
+    const lblCountDan9 = document.getElementById('lblCountDan9CauDong');
+    if (lblCountDan9) lblCountDan9.textContent = `${dan9.length} Số`;
+    if (elDan9) {
+        elDan9.innerHTML = '';
+        dan9.forEach(s => {
+            const sp = document.createElement('span');
+            sp.className = 'badge badge-gold';
+            sp.style.cssText = 'font-weight: 800; font-size: 13px; padding: 3px 8px; font-family: "JetBrains Mono", monospace; border-radius: 5px;';
+            sp.textContent = s;
+            elDan9.appendChild(sp);
+        });
+    }
+
+    // Dàn Đảo Chips
+    const elDanDao = document.getElementById('cauDongDanDaoChips');
+    const lblCountDanDao = document.getElementById('lblCountDanDaoCauDong');
+    if (lblCountDanDao) lblCountDanDao.textContent = `${danDao.length} Số`;
+    if (elDanDao) {
+        elDanDao.innerHTML = '';
+        danDao.forEach(s => {
+            const sp = document.createElement('span');
+            sp.className = 'badge';
+            sp.style.cssText = 'background: rgba(148, 163, 184, 0.2); color: #E2E8F0; font-weight: 800; font-size: 13px; padding: 3px 8px; font-family: "JetBrains Mono", monospace; border-radius: 5px; border: 1px solid rgba(148, 163, 184, 0.3);';
+            sp.textContent = s;
+            elDanDao.appendChild(sp);
+        });
+    }
+
+    // 3. RENDER CẢNH BÁO 4D+
+    const boxCanhBao = document.getElementById('boxCanhBaoCau4d');
+    const iconCanhBao = document.getElementById('iconCanhBao');
+    const txtCanhBao = document.getElementById('txtCanhBao');
+    const badgeCanhBao = document.getElementById('badgeCanhBao');
+    if (boxCanhBao && txtCanhBao && badgeCanhBao) {
+        if (canhBao.canh_bao) {
+            boxCanhBao.style.background = 'rgba(239, 68, 68, 0.12)';
+            boxCanhBao.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            if (iconCanhBao) {
+                iconCanhBao.className = 'fa-solid fa-triangle-exclamation';
+                iconCanhBao.style.color = '#F43F5E';
+            }
+            txtCanhBao.textContent = canhBao.ly_do || 'Cầu chạy ≥ 4 ngày: Nguy cơ gãy cao, chuyển ưu tiên lót lộn và tứ thủ!';
+            txtCanhBao.style.color = '#FCA5A5';
+            badgeCanhBao.textContent = 'NGUY CƠ GÃY';
+            badgeCanhBao.style.background = 'rgba(239, 68, 68, 0.25)';
+            badgeCanhBao.style.color = '#F87171';
+            badgeCanhBao.style.borderColor = '#EF4444';
+        } else {
+            boxCanhBao.style.background = 'rgba(16, 185, 129, 0.1)';
+            boxCanhBao.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+            if (iconCanhBao) {
+                iconCanhBao.className = 'fa-solid fa-shield-halved';
+                iconCanhBao.style.color = '#34D399';
+            }
+            txtCanhBao.textContent = `Cầu đang trong chu kỳ vàng an toàn (${canhBao.so_ngay_max || 3} ngày) • Tỷ lệ nổ ổn định`;
+            txtCanhBao.style.color = '#E2E8F0';
+            badgeCanhBao.textContent = 'AN TOÀN';
+            badgeCanhBao.style.background = 'rgba(16, 185, 129, 0.2)';
+            badgeCanhBao.style.color = '#34D399';
+            badgeCanhBao.style.borderColor = '#10B981';
+        }
+    }
+
+    // 4. RENDER DÀN GIAO THOA & NGOÀI 60S
+    const lblCountGiaoThoa = document.getElementById('lblCountGiaoThoa');
+    if (lblCountGiaoThoa) lblCountGiaoThoa.textContent = `${giaoThoa.length} Số`;
+    const gridGiaoThoa = document.getElementById('gridGiaoThoa');
+    if (gridGiaoThoa) {
+        gridGiaoThoa.innerHTML = '';
+        giaoThoa.forEach(num => {
+            const div = document.createElement('div');
+            div.className = 'num-tag gold';
+            div.textContent = num;
+            gridGiaoThoa.appendChild(div);
+        });
+    }
+
+    const lblCountNgoai = document.getElementById('lblCountNgoai');
+    if (lblCountNgoai) lblCountNgoai.textContent = `${ngoai.length} Số`;
+    const gridNgoai = document.getElementById('gridNgoai');
+    if (gridNgoai) {
+        gridNgoai.innerHTML = '';
+        ngoai.forEach(num => {
+            const div = document.createElement('div');
+            div.className = 'num-tag gray';
+            div.textContent = num;
+            gridNgoai.appendChild(div);
+        });
+    }
+
+    // 5. RENDER BẢNG VỊ TRÍ CẦU CHẠY MẠNH
+    renderCauDongPositionsTable(cauChay);
+
+    // 6. RENDER BẢNG NHẬT KÝ SO SÁNH QUA CÁC KỲ
+    renderCauDongHistoryTable();
+}
+
+function renderCauDongPositionsTable(cauChay) {
+    const tbody = document.getElementById('tbodyCauDongPositions');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!cauChay || cauChay.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 18px;">Không có vị trí cầu nào đạt ngưỡng chạy mạnh</td></tr>`;
+        return;
+    }
+
+    const listLines = [];
+    cauChay.forEach((c, idx) => {
+        const tr = document.createElement('tr');
+        const posFormatted = c.vi_tri.toUpperCase().replace(/\./g, '_');
+        const soNgay = c.so_ngay || 2;
+        let danhGiaTag = '';
+        if (soNgay >= 4) {
+            danhGiaTag = `<span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid #EF4444; font-weight: 700;">⚠️ Cảnh báo gãy (≥4d)</span>`;
+        } else if (soNgay === 3) {
+            danhGiaTag = `<span class="badge badge-gold" style="font-weight: 800; font-size: 11px;">⭐ Chu kỳ vàng (3d)</span>`;
+        } else {
+            danhGiaTag = `<span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4); font-weight: 700;">Đang chạy (2d)</span>`;
+        }
+
+        tr.innerHTML = `
+            <td style="text-align: center; color: var(--text-muted); font-size: 12px;">${idx + 1}</td>
+            <td style="font-weight: 700; color: #E2E8F0; font-family: 'JetBrains Mono', monospace;">
+                <i class="fa-solid fa-crosshairs" style="color: #FBBF24; margin-right: 6px; font-size: 11px;"></i>${posFormatted}
+            </td>
+            <td style="text-align: center;">
+                <span class="badge badge-gold" style="font-size: 14px; font-weight: 900; padding: 2px 8px; font-family: 'JetBrains Mono', monospace;">
+                    ${c.chu_so}
+                </span>
+            </td>
+            <td style="text-align: center; font-weight: 800; color: #38BDF8; font-family: 'JetBrains Mono', monospace;">
+                ${soNgay} ngày
+            </td>
+            <td style="text-align: center; font-weight: 800; color: #34D399; font-family: 'JetBrains Mono', monospace;">
+                ${c.diem}đ
+            </td>
+            <td>
+                ${danhGiaTag}
+            </td>
+        `;
+        tbody.appendChild(tr);
+        listLines.push(`#${idx + 1} Vị trí: ${posFormatted} | Ký số: ${c.chu_so} | Chu kỳ: ${soNgay} ngày | Điểm: ${c.diem}`);
+    });
+
+    window.cauDongPositionsText = listLines.join('\n');
+}
+
+function renderCauDongHistoryTable() {
+    const tbody = document.getElementById('tbodyCauDongHistory');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const list = (tab4Data && tab4Data.lich_su) ? tab4Data.lich_su : [];
+    if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 18px;">Chưa có dữ liệu nhật ký so sánh</td></tr>`;
+        return;
+    }
+
+    const rows = [...list];
+    const historyLines = [];
+
+    rows.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        const ngay = item.ngay || '--';
+        const dDong = (item.dan_cau_dong || []).length || (item.so_sanh ? item.so_sanh.dan_dong_size : 64);
+        const d60 = (item.dan_60s || []).length || (item.so_sanh ? item.so_sanh.dan_tinh_size : 61);
+        const trung = (item.giao_thoa || []).length || (item.so_sanh ? item.so_sanh.trung_size : 38);
+        const pct = (item.so_sanh && item.so_sanh.ty_le_trung) ? item.so_sanh.ty_le_trung : (dDong > 0 ? ((trung / dDong) * 100).toFixed(1) : '59.4');
+        const bt = item.bach_thu || '--';
+        const tuThu = Array.isArray(item.tu_thu) ? item.tu_thu.join(' ') : (item.tu_thu || '---');
+        const dan9 = Array.isArray(item.dan_9) ? item.dan_9.join(' ') : (item.dan_9 || '---');
+        const deVe = item.de_ve || item.de || '--';
+
+        tr.innerHTML = `
+            <td style="text-align: center; color: var(--text-muted); font-size: 11px;">${idx + 1}</td>
+            <td style="font-weight: 700; color: #E2E8F0; font-size: 12px;">${ngay}</td>
+            <td style="text-align: center;">
+                <span class="badge ${deVe !== '--' ? 'badge-gold' : ''}" style="font-size: 14px; font-weight: 900; font-family: 'JetBrains Mono', monospace;">
+                    ${deVe}
+                </span>
+            </td>
+            <td style="text-align: center; color: #38BDF8; font-weight: 700; font-family: 'JetBrains Mono', monospace;">
+                ${dDong} số
+            </td>
+            <td style="text-align: center; color: #94A3B8; font-weight: 700; font-family: 'JetBrains Mono', monospace;">
+                ${d60} số
+            </td>
+            <td style="text-align: center; color: #34D399; font-weight: 900; font-family: 'JetBrains Mono', monospace;">
+                ${trung} số
+            </td>
+            <td style="text-align: center;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34D399; font-weight: 800; border: 1px solid #10B981;">
+                    ${pct}%
+                </span>
+            </td>
+            <td style="text-align: center;">
+                <span class="badge badge-gold" style="font-size: 13px; font-weight: 800; font-family: 'JetBrains Mono', monospace;">
+                    ${bt}
+                </span>
+            </td>
+            <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #38BDF8;">
+                ${tuThu || '---'}
+            </td>
+            <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #FDE68A;">
+                ${dan9 || '---'}
+            </td>
+        `;
+        tbody.appendChild(tr);
+        historyLines.push(`${ngay} | Đề: ${deVe} | Cầu Động: ${dDong}s | 60s N1: ${d60}s | Trùng: ${trung}s (${pct}%) | BT: ${bt} | TT: ${tuThu} | Dàn 9s: ${dan9}`);
+    });
+
+    window.cauDongHistoryText = historyLines.join('\n');
+}
+
+function setupTabCauDongEventListeners() {
+    // Copy Bạch Thủ
+    document.getElementById('btnCopyCauDongBT')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongBT || '', 'Đã copy Bạch Thủ Cầu Động: ' + (window.cauDongBT || ''));
+    });
+
+    // Copy Tứ Thủ
+    document.getElementById('btnCopyCauDongTT')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongTT || '', 'Đã copy Tứ Thủ Cầu Động: ' + (window.cauDongTT || ''));
+    });
+
+    // Copy Dàn 9 Số
+    document.getElementById('btnCopyCauDongDan9')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongDan9 || '', 'Đã copy Dàn 9 Số Cội Nguồn Cầu Động!');
+    });
+
+    // Copy Dàn Đảo
+    document.getElementById('btnCopyCauDongDanDao')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongDanDao || '', 'Đã copy Dàn Đảo Bảo Hiểm Cầu Động!');
+    });
+
+    // Copy Toàn Bộ Gói Chốt Cầu Động
+    document.getElementById('btnCopyCauDongAll')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongAllPackage || '', '⚡ Đã copy toàn bộ Gói Chốt Cầu Động AI!');
+    });
+
+    // Copy Dàn Giao Thoa
+    document.getElementById('btnCopyCauDongGiaoThoa')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongGiaoThoa || '', 'Đã copy Dàn Giao Thoa Với 60s N1: ' + (window.cauDongGiaoThoa || ''));
+    });
+
+    // Copy Dàn Ngoài
+    document.getElementById('btnCopyCauDongNgoai')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongNgoai || '', 'Đã copy Dàn Ngoài 60s N1: ' + (window.cauDongNgoai || ''));
+    });
+
+    // Copy Danh Sách Vị Trí Cầu
+    document.getElementById('btnCopyCauDongViTri')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongPositionsText || '', 'Đã copy Danh Sách Vị Trí Cầu Đang Chạy!');
+    });
+
+    // Copy Lịch Sử So Sánh
+    document.getElementById('btnCopyCauDongHistory')?.addEventListener('click', () => {
+        copyToClipboard(window.cauDongHistoryText || '', 'Đã copy Nhật Ký So Sánh Dàn Qua Các Kỳ!');
+    });
+}
+
 
