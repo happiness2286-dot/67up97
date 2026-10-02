@@ -1,6 +1,34 @@
 {
   "lich_su": [
     {
+      "ngay": "Thứ sáu ngày 02-10-2026",
+      "ket_qua": {
+        "dan_dong_size": 64,
+        "dan_tinh_size": 61,
+        "trung_size": 41,
+        "ty_le_trung": 64.06,
+        "bach_thu": "15",
+        "tu_thu": [
+          "51",
+          "31",
+          "11",
+          "53"
+        ],
+        "dan_9": [
+          "11",
+          "15",
+          "13",
+          "51",
+          "55",
+          "53",
+          "31",
+          "35",
+          "33"
+        ]
+      },
+      "thoi_gian": "2026-10-02T20:35:25.072494"
+    },
+    {
       "ngay": "01/10/2026",
       "ket_qua": {
         "dan_dong_size": 64,
@@ -27,6 +55,6 @@
     }
   ],
   "tong_quan": {
-    "tong_ky": 1
+    "tong_ky": 2
   }
 }
