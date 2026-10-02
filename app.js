@@ -5,6 +5,149 @@
  */
 
 let appData = null;
+window.tab4Data = null;
+window.verifiedHistoryData = null;
+window.liveRadarState = null;
+window.historyUnifiedMap = {};
+
+function parseDateKey(s) {
+    if (!s) return '';
+    const m = String(s).match(/(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+    if (m) {
+        return `${String(m[1]).padStart(2, '0')}/${String(m[2]).padStart(2, '0')}/${m[3]}`;
+    }
+    return '';
+}
+
+function buildUnifiedHistoryMap() {
+    const map = {};
+
+    // 1. Quét từ verifiedHistoryData
+    if (window.verifiedHistoryData && typeof window.verifiedHistoryData === 'object') {
+        Object.entries(window.verifiedHistoryData).forEach(([dateStr, val]) => {
+            const k = parseDateKey(dateStr);
+            if (!k) return;
+            const bt = val.top_1 || '';
+            const tt = Array.isArray(val.top_4) ? val.top_4 : [];
+            const d9 = Array.isArray(val.dan_9_so) ? val.dan_9_so : [];
+            const dd = [];
+            d9.forEach(s => {
+                if (typeof s === 'string' && s.length === 2 && s[0] !== s[1]) {
+                    const rev = s[1] + s[0];
+                    if (!d9.includes(rev) && !dd.includes(rev)) dd.push(rev);
+                }
+            });
+            const n1 = Array.isArray(val.dan_n1) ? val.dan_n1 : [];
+            const excluded = new Set([bt, ...tt, ...d9, ...dd]);
+            const lotArr = n1.filter(x => !excluded.has(x));
+            const lotCnt = lotArr.length > 0 ? `${lotArr.length} số` : (n1.length > 0 ? `${n1.length} số` : '---');
+
+            map[k] = {
+                source: 'verified',
+                bach_thu: bt,
+                tu_thu: tt,
+                dan_9: d9,
+                dan_dao: dd.slice(0, 6),
+                dan_lot_count: lotCnt
+            };
+        });
+    }
+
+    // 2. Quét từ liveRadarState.history_records
+    if (window.liveRadarState && Array.isArray(window.liveRadarState.history_records)) {
+        window.liveRadarState.history_records.forEach(item => {
+            const k = parseDateKey(item.date);
+            if (!k) return;
+            const bt = item.top_1 || '';
+            const tt = Array.isArray(item.top_4) ? item.top_4 : [];
+            const d9 = Array.isArray(item.dan_9_so) ? item.dan_9_so : [];
+            const lot = Array.isArray(item.dan_lot) ? item.dan_lot : [];
+            const dd = [];
+            d9.forEach(s => {
+                if (typeof s === 'string' && s.length === 2 && s[0] !== s[1]) {
+                    const rev = s[1] + s[0];
+                    if (!d9.includes(rev) && !dd.includes(rev)) dd.push(rev);
+                }
+            });
+            map[k] = {
+                source: 'radar',
+                bach_thu: bt,
+                tu_thu: tt,
+                dan_9: d9,
+                dan_dao: dd.slice(0, 6),
+                dan_lot_count: lot.length > 0 ? `${lot.length} số` : (map[k] ? map[k].dan_lot_count : '---')
+            };
+        });
+    }
+
+    // 3. Quét từ tab4Data.lich_su
+    if (window.tab4Data && Array.isArray(window.tab4Data.lich_su)) {
+        window.tab4Data.lich_su.forEach(item => {
+            const k = parseDateKey(item.ngay);
+            if (!k) return;
+            const bt = item.bach_thu || '';
+            const tt = Array.isArray(item.tu_thu) ? item.tu_thu : [];
+            const d9 = Array.isArray(item.dan_9) ? item.dan_9 : [];
+            let dd = Array.isArray(item.dan_dao) ? [...item.dan_dao] : [];
+            if (dd.length === 0) {
+                d9.forEach(s => {
+                    if (typeof s === 'string' && s.length === 2 && s[0] !== s[1]) {
+                        const rev = s[1] + s[0];
+                        if (!d9.includes(rev) && !dd.includes(rev)) dd.push(rev);
+                    }
+                });
+            }
+            const dan60 = Array.isArray(item.dan_60s) ? item.dan_60s : [];
+            const excl = new Set([bt, ...tt, ...d9, ...dd]);
+            const lotArr = dan60.filter(x => !excl.has(x));
+            const lotCnt = lotArr.length > 0 ? `${lotArr.length} số` : (dan60.length > 0 ? `${dan60.length} số` : (map[k] ? map[k].dan_lot_count : '---'));
+
+            map[k] = {
+                source: 'tab4',
+                bach_thu: bt,
+                tu_thu: tt,
+                dan_9: d9,
+                dan_dao: dd.slice(0, 6),
+                dan_lot_count: lotCnt
+            };
+        });
+    }
+
+    // 4. Quét từ tab4Data.latest
+    if (window.tab4Data && window.tab4Data.latest) {
+        const item = window.tab4Data.latest;
+        const k = parseDateKey(item.ngay);
+        if (k) {
+            const bt = item.bach_thu || '';
+            const tt = Array.isArray(item.tu_thu) ? item.tu_thu : [];
+            const d9 = Array.isArray(item.dan_9) ? item.dan_9 : [];
+            let dd = Array.isArray(item.dan_dao) ? [...item.dan_dao] : [];
+            if (dd.length === 0) {
+                d9.forEach(s => {
+                    if (typeof s === 'string' && s.length === 2 && s[0] !== s[1]) {
+                        const rev = s[1] + s[0];
+                        if (!d9.includes(rev) && !dd.includes(rev)) dd.push(rev);
+                    }
+                });
+            }
+            const dan60 = Array.isArray(item.dan_60s) ? item.dan_60s : [];
+            const excl = new Set([bt, ...tt, ...d9, ...dd]);
+            const lotArr = dan60.filter(x => !excl.has(x));
+            const lotCnt = lotArr.length > 0 ? `${lotArr.length} số` : (dan60.length > 0 ? `${dan60.length} số` : (map[k] ? map[k].dan_lot_count : '---'));
+
+            map[k] = {
+                source: 'tab4_latest',
+                bach_thu: bt,
+                tu_thu: tt,
+                dan_9: d9,
+                dan_dao: dd.slice(0, 6),
+                dan_lot_count: lotCnt
+            };
+        }
+    }
+
+    window.historyUnifiedMap = map;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
@@ -20,9 +163,31 @@ async function initApp() {
 
 async function loadDashboardData() {
     try {
-        const response = await fetch('analysis_summary.json?t=' + Date.now(), { cache: 'no-store' });
-        if (!response.ok) throw new Error('Không thể tải dữ liệu analysis_summary.json');
-        appData = await response.json();
+        const [sumRes, tab4Res, verRes, radRes] = await Promise.allSettled([
+            fetch('analysis_summary.json?t=' + Date.now(), { cache: 'no-store' }),
+            fetch('tab4_data.json?t=' + Date.now(), { cache: 'no-store' }),
+            fetch('verified_history_data.json?t=' + Date.now(), { cache: 'no-store' }),
+            fetch('live_radar_state.json?t=' + Date.now(), { cache: 'no-store' })
+        ]);
+
+        if (sumRes.status === 'fulfilled' && sumRes.value.ok) {
+            appData = await sumRes.value.json();
+        } else {
+            throw new Error('Không thể tải dữ liệu analysis_summary.json');
+        }
+
+        if (tab4Res.status === 'fulfilled' && tab4Res.value.ok) {
+            window.tab4Data = await tab4Res.value.json();
+            if (typeof tab4Data !== 'undefined') tab4Data = window.tab4Data;
+        }
+        if (verRes.status === 'fulfilled' && verRes.value.ok) {
+            window.verifiedHistoryData = await verRes.value.json();
+        }
+        if (radRes.status === 'fulfilled' && radRes.value.ok) {
+            window.liveRadarState = await radRes.value.json();
+        }
+
+        buildUnifiedHistoryMap();
         
         updateDynamicPredictionDates();
         renderHeaderAndHero();
@@ -136,14 +301,45 @@ function renderTabFrame3Day() {
         n2List = appData.lucky26_matrix_100.slice(0, 36).map(x => x.number);
     }
 
-    // Render Dàn Gốc N1 (60 Số)
+    // Render Dàn Gốc N1 (60 Số) với highlight theo nhóm từ tab4_data.json (mới nhất)
     const gridN1 = document.getElementById('gridN1Numbers');
     if (gridN1) {
         gridN1.innerHTML = '';
+
+        // Đọc dữ liệu highlight từ tab4_data.json (latest)
+        const t4Latest = (window.tab4Data && window.tab4Data.latest) ? window.tab4Data.latest : null;
+        const bachThu = t4Latest && t4Latest.bach_thu ? String(t4Latest.bach_thu).padStart(2, '0') : '';
+        const tuThu = (t4Latest && Array.isArray(t4Latest.tu_thu)) ? t4Latest.tu_thu.map(x => String(x).padStart(2, '0')) : [];
+        const dan9 = (t4Latest && Array.isArray(t4Latest.dan_9)) ? t4Latest.dan_9.map(x => String(x).padStart(2, '0')) : [];
+        const danDao = (t4Latest && Array.isArray(t4Latest.dan_dao)) ? t4Latest.dan_dao.map(x => String(x).padStart(2, '0')) : [];
+
         n1List.forEach(num => {
+            const numStr = String(num).padStart(2, '0');
             const tag = document.createElement('div');
-            tag.className = 'num-tag cyan';
-            tag.textContent = num;
+            
+            // Phân loại nhóm theo thứ tự ưu tiên: Bạch thủ > Tứ thủ > Dàn 9 > Dàn đảo > Dàn lót
+            if (bachThu && numStr === bachThu) {
+                tag.className = 'num-tag tag-bach-thu';
+                tag.setAttribute('title', '👑 Bạch thủ');
+                tag.innerHTML = `<span class="num-badge-icon">👑</span>${numStr}`;
+            } else if (tuThu.includes(numStr)) {
+                tag.className = 'num-tag tag-tu-thu';
+                tag.setAttribute('title', '🔥 Tứ thủ');
+                tag.innerHTML = `<span class="num-badge-icon">🔥</span>${numStr}`;
+            } else if (dan9.includes(numStr)) {
+                tag.className = 'num-tag tag-dan-9';
+                tag.setAttribute('title', '⭐ Dàn 9');
+                tag.innerHTML = `<span class="num-badge-icon">⭐</span>${numStr}`;
+            } else if (danDao.includes(numStr)) {
+                tag.className = 'num-tag tag-dan-dao';
+                tag.setAttribute('title', '🔄 Dàn đảo');
+                tag.innerHTML = `<span class="num-badge-icon">🔄</span>${numStr}`;
+            } else {
+                tag.className = 'num-tag tag-dan-lot';
+                tag.setAttribute('title', '📦 Dàn lót');
+                tag.textContent = numStr;
+            }
+
             gridN1.appendChild(tag);
         });
     }
@@ -274,7 +470,14 @@ function renderHistoryTableRecords() {
             const deN2 = (r.de_n2 || '').toLowerCase();
             const deN3 = (r.de_n3 || '').toLowerCase();
             const stl = (r.stl_pair || '').toLowerCase();
-            if (!dateStr.includes(q) && !deN1.includes(q) && !deN2.includes(q) && !deN3.includes(q) && !stl.includes(q)) {
+            
+            // Tìm cả trong thông tin chi tiết
+            const k = parseDateKey(r.start_date);
+            const info = (window.historyUnifiedMap && window.historyUnifiedMap[k]) ? window.historyUnifiedMap[k] : null;
+            const bt = (info?.bach_thu || '').toLowerCase();
+            const tt = (info?.tu_thu ? info.tu_thu.join(' ') : '').toLowerCase();
+
+            if (!dateStr.includes(q) && !deN1.includes(q) && !deN2.includes(q) && !deN3.includes(q) && !stl.includes(q) && !bt.includes(q) && !tt.includes(q)) {
                 return false;
             }
         }
@@ -309,19 +512,112 @@ function renderHistoryTableRecords() {
 
         const stlColor = (r.stl_hit && r.stl_hit.includes('ĂN')) ? '#34D399' : '#64748B';
 
+        // Lấy thông tin 5 cột mới từ window.historyUnifiedMap
+        const dateKey = parseDateKey(r.start_date);
+        const info = (window.historyUnifiedMap && window.historyUnifiedMap[dateKey]) ? window.historyUnifiedMap[dateKey] : null;
+
+        let btHtml = '<span style="color:#64748B;">---</span>';
+        let ttHtml = '<span style="color:#64748B;">---</span>';
+        let d9Html = '<span style="color:#64748B;">---</span>';
+        let ddHtml = '<span style="color:#64748B;">---</span>';
+        let lotHtml = '<span style="color:#64748B;">---</span>';
+
+        if (info) {
+            if (info.bach_thu) {
+                btHtml = `<span class="cell-tag-bt">👑 ${info.bach_thu}</span>`;
+            }
+            if (info.tu_thu && info.tu_thu.length > 0) {
+                ttHtml = `<span class="cell-tag-tt">${info.tu_thu.join(', ')}</span>`;
+            }
+            if (info.dan_9 && info.dan_9.length > 0) {
+                d9Html = `<span class="cell-tag-d9">${info.dan_9.join(', ')}</span>`;
+            }
+            if (info.dan_dao && info.dan_dao.length > 0) {
+                ddHtml = `<span class="cell-tag-dd">${info.dan_dao.join(', ')}</span>`;
+            }
+            if (info.dan_lot_count && info.dan_lot_count !== '---') {
+                lotHtml = `<span class="cell-tag-lot">${info.dan_lot_count}</span>`;
+            }
+        }
+
         tr.innerHTML = `
             <td style="text-align: center; font-weight: 800; color: #67E8F9;">#${r.stt}</td>
             <td style="font-weight: 600; color: #E2E8F0; font-size: 12.5px;">${r.start_date || ''}</td>
             <td style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; ${deN1Style}">${r.de_n1 || '--'}</td>
             <td style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; ${deN2Style}">${r.de_n2 || '--'}</td>
             <td style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; ${deN3Style}">${r.de_n3 || '--'}</td>
+            <td style="text-align: center;">${btHtml}</td>
+            <td style="text-align: center;">${ttHtml}</td>
+            <td>${d9Html}</td>
+            <td>${ddHtml}</td>
+            <td style="text-align: center;">${lotHtml}</td>
             <td style="text-align: center; font-size: 12px; font-weight: 700; color: ${stlColor};">${r.stl_pair || '--'}</td>
             <td>${badgeHtml}</td>
         `;
         tbody.appendChild(tr);
     });
 
-    window.currentHistoryTableText = reversed.map(r => `Khung #${r.stt} | ${r.start_date} | N1: ${r.de_n1} | N2: ${r.de_n2} | N3: ${r.de_n3} | STL: ${r.stl_pair} | KQ: ${r.frame_result}`).join('\n');
+    // Cập nhật text xuất bản ghi (bao gồm 5 cột mới)
+    window.currentHistoryTableText = reversed.map(r => {
+        const k = parseDateKey(r.start_date);
+        const info = (window.historyUnifiedMap && window.historyUnifiedMap[k]) ? window.historyUnifiedMap[k] : null;
+        const bt = info?.bach_thu || '---';
+        const tt = (info?.tu_thu && info.tu_thu.length) ? info.tu_thu.join(' ') : '---';
+        const d9 = (info?.dan_9 && info.dan_9.length) ? info.dan_9.join(' ') : '---';
+        const dd = (info?.dan_dao && info.dan_dao.length) ? info.dan_dao.join(' ') : '---';
+        const lot = info?.dan_lot_count || '---';
+        return `Khung #${r.stt} | ${r.start_date} | N1: ${r.de_n1} | N2: ${r.de_n2} | N3: ${r.de_n3} | BT: ${bt} | TT: ${tt} | D9: ${d9} | Đảo: ${dd} | Lót: ${lot} | STL: ${r.stl_pair} | KQ: ${r.frame_result}`;
+    }).join('\n');
+}
+
+function exportHistoryDetailedCSV() {
+    if (!appData || !appData.frame3_records) {
+        showToast('⚠️ Không có dữ liệu lịch sử để xuất CSV', 'warn');
+        return;
+    }
+
+    const records = [...appData.frame3_records].reverse();
+    const csvRows = [];
+    
+    // Header CSV
+    csvRows.push(['Khung STT', 'Ngày Bắt Đầu', 'Đề N1', 'Đề N2', 'Đề N3', 'Bạch Thủ (1 số)', 'Tứ Thủ (4 số)', 'Dàn 9 (9 số)', 'Dàn Đảo (6 số)', 'Dàn Lót (SL)', 'STL Rơi', 'Kết Quả Khung Nuôi']);
+
+    records.forEach(r => {
+        const k = parseDateKey(r.start_date);
+        const info = (window.historyUnifiedMap && window.historyUnifiedMap[k]) ? window.historyUnifiedMap[k] : null;
+        const bt = info?.bach_thu || '---';
+        const tt = (info?.tu_thu && info.tu_thu.length) ? info.tu_thu.join(' ') : '---';
+        const d9 = (info?.dan_9 && info.dan_9.length) ? info.dan_9.join(' ') : '---';
+        const dd = (info?.dan_dao && info.dan_dao.length) ? info.dan_dao.join(' ') : '---';
+        const lot = info?.dan_lot_count || '---';
+
+        csvRows.push([
+            `#${r.stt}`,
+            `"${(r.start_date || '').replace(/"/g, '""')}"`,
+            `"${r.de_n1 || '--'}"`,
+            `"${r.de_n2 || '--'}"`,
+            `"${r.de_n3 || '--'}"`,
+            `"${bt}"`,
+            `"${tt}"`,
+            `"${d9}"`,
+            `"${dd}"`,
+            `"${lot}"`,
+            `"${(r.stl_pair || '--').replace(/"/g, '""')}"`,
+            `"${(r.frame_result || '--').replace(/"/g, '""')}"`
+        ]);
+    });
+
+    const csvContent = '\uFEFF' + csvRows.map(e => e.join(',')).join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Nhat_Ky_241_Khung_XSMB_2026_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('📊 Đã xuất file CSV thành công!', 'success');
 }
 
 // EVENT LISTENERS & COPY ACTIONS
@@ -369,7 +665,11 @@ function setupEventListeners() {
     });
 
     document.getElementById('btnCopyAllHistory')?.addEventListener('click', () => {
-        copyToClipboard(window.currentHistoryTableText || '', 'Đã copy Nhật Ký Lịch Sử 241 Khung Nuôi!');
+        copyToClipboard(window.currentHistoryTableText || '', 'Đã copy Nhật Ký Lịch Sử 241 Khung Nuôi (Đầy đủ 12 cột)!');
+    });
+
+    document.getElementById('btnExportHistoryCSV')?.addEventListener('click', () => {
+        exportHistoryDetailedCSV();
     });
 
     // History Table Filters

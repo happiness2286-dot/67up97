@@ -97,6 +97,14 @@
                     </div>
                     <span class="badge badge-gold" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 12px;">60 Số</span>
                 </div>
+                <!-- Legend Chú Thích Nhóm Số Tab 1 -->
+                <div class="legend-n1-bar">
+                    <span class="legend-chip legend-bt"><span>👑</span> Bạch thủ</span>
+                    <span class="legend-chip legend-tt"><span>🔥</span> Tứ thủ</span>
+                    <span class="legend-chip legend-d9"><span>⭐</span> Dàn 9</span>
+                    <span class="legend-chip legend-dd"><span>🔄</span> Dàn đảo</span>
+                    <span class="legend-chip legend-lot"><span>📦</span> Dàn lót</span>
+                </div>
                 <div class="number-grid" id="gridN1Numbers">
                     <!-- Dynamic Numbers -->
                 </div>
@@ -769,9 +777,14 @@
                         <i class="fa-solid fa-clock-rotate-left" style="color: #FBBF24;"></i>
                         <span>NHẬT KÝ CHI TIẾT 241 KHUNG NUÔI 3 NGÀY (NĂM 2026)</span>
                     </h2>
-                    <button class="btn btn-secondary btn-sm" id="btnCopyAllHistory" style="font-size: 11px;">
-                        <i class="fa-regular fa-copy"></i> Copy Toàn Bộ Lịch Sử
-                    </button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary btn-sm" id="btnCopyAllHistory" style="font-size: 11px;">
+                            <i class="fa-regular fa-copy"></i> Copy Toàn Bộ Lịch Sử
+                        </button>
+                        <button class="btn btn-gold btn-sm" id="btnExportHistoryCSV" style="font-size: 11px;">
+                            <i class="fa-solid fa-file-csv"></i> Xuất CSV (Excel)
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Filter & Search Bar -->
@@ -788,17 +801,22 @@
                     </div>
                 </div>
 
-                <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
+                <div class="table-responsive" style="max-height: 520px; overflow-x: auto; overflow-y: auto;">
                     <table class="custom-table" id="tableHistoryDetailed">
                         <thead>
                             <tr>
-                                <th style="text-align: center; width: 65px;">Khung</th>
-                                <th style="width: 170px;">Ngày Bắt Đầu</th>
-                                <th style="text-align: center; width: 85px;">Đề N1</th>
-                                <th style="text-align: center; width: 85px;">Đề N2</th>
-                                <th style="text-align: center; width: 85px;">Đề N3</th>
-                                <th style="text-align: center; width: 110px;">STL Rơi</th>
-                                <th style="width: 190px;">Kết Quả Khung Nuôi</th>
+                                <th style="text-align: center; width: 60px;">Khung</th>
+                                <th style="width: 155px;">Ngày Bắt Đầu</th>
+                                <th style="text-align: center; width: 70px;">Đề N1</th>
+                                <th style="text-align: center; width: 70px;">Đề N2</th>
+                                <th style="text-align: center; width: 70px;">Đề N3</th>
+                                <th style="text-align: center; width: 85px;">Bạch Thủ</th>
+                                <th style="text-align: center; width: 110px;">Tứ Thủ</th>
+                                <th style="width: 155px;">Dàn 9</th>
+                                <th style="width: 125px;">Dàn Đảo</th>
+                                <th style="text-align: center; width: 80px;">Dàn Lót</th>
+                                <th style="text-align: center; width: 95px;">STL Rơi</th>
+                                <th style="width: 175px;">Kết Quả Khung Nuôi</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyHistoryRecords">
