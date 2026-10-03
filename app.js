@@ -272,14 +272,16 @@ function renderHeaderAndHero() {
     }
 }
 
-// 2. TAB 1: KHUNG NUÔI 3 NGÀY & DÀN GỐC N1
+// 2. TAB 1: KHUNG NUÔI 3 NGÀY & DÀN GỐC N1 (HỖ TRỢ AUTO-SHIFT REALTIME)
 function renderTabFrame3Day() {
     if (!appData) return;
     
     let n1List = [];
     let n2List = [];
+    let n3List = [];
     let stlPair = '17, 19';
     
+    // Lấy dàn từ frame3_records mới nhất
     if (appData.frame3_records && appData.frame3_records.length > 0) {
         const latestFrame = appData.frame3_records[appData.frame3_records.length - 1];
         if (latestFrame.pred_n1) {
@@ -288,25 +290,227 @@ function renderTabFrame3Day() {
         if (latestFrame.pred_n2) {
             n2List = latestFrame.pred_n2.split(',').map(s => s.trim()).filter(Boolean);
         }
+        if (latestFrame.pred_n3) {
+            n3List = latestFrame.pred_n3.split(',').map(s => s.trim()).filter(Boolean);
+        }
         if (latestFrame.stl_pair) {
             stlPair = latestFrame.stl_pair;
         }
     }
     
-    // Fallback using lucky26_matrix_100 if frame record pred_n1 was empty
+    // Nếu có dữ liệu từ live_radar_state.json hoặc frame_transition thì ưu tiên đồng bộ
+    const radState = window.radarData || window.liveRadarState;
+    if (radState && radState.frame_transition) {
+        const ft = radState.frame_transition;
+        if (ft.dan_n1 && ft.dan_n1.length > 0) n1List = ft.dan_n1;
+        if (ft.dan_n2 && ft.dan_n2.length > 0) n2List = ft.dan_n2;
+        if (ft.dan_n3 && ft.dan_n3.length > 0) n3List = ft.dan_n3;
+    }
+
+    // Fallback nếu rỗng
     if (n1List.length === 0 && appData.lucky26_matrix_100) {
         n1List = appData.lucky26_matrix_100.slice(0, 60).map(x => x.number);
     }
-    if (n2List.length === 0 && appData.lucky26_matrix_100) {
-        n2List = appData.lucky26_matrix_100.slice(0, 36).map(x => x.number);
+    if (n2List.length === 0) {
+        n2List = ["02", "04", "07", "09", "12", "14", "17", "20", "23", "25", "27", "31", "32", "37", "40", "41", "42", "45", "47", "49", "61", "62", "67", "68", "70", "72", "75", "77", "81", "82", "84", "86", "87", "89", "91", "96"];
+    }
+    if (n3List.length === 0) {
+        n3List = ["01", "03", "05", "08", "11", "13", "16", "18", "21", "24", "26", "28", "33", "35", "38", "43", "44", "48", "51", "53", "55", "58", "60", "63", "65", "69", "71", "73", "78", "80", "83", "85", "88", "92", "95", "97"];
     }
 
-    // Render Dàn Gốc N1 (60 Số) với highlight theo nhóm từ tab4_data.json (mới nhất)
+    // =========================================================================
+    // CƠ CHẾ AUTO-SHIFT THÔNG MINH CHO TAB 1
+    // Xác định trạng thái nổ / trượt và chuyển ngày khách quan
+    // =========================================================================
+    let lastResultText = '';
+    let isN1Hit = false;
+    let isN2Hit = false;
+    let currentActiveDay = 1; // 1: Đánh N1, 2: Đánh N2, 3: Đánh N3
+    let statusBadgeText = 'ĐANG ĐÁNH N1 (60 SỐ)';
+    let statusBadgeClass = 'badge-gold';
+
+    // 1. Kiểm tra từ frame_transition của Live Radar nếu có kết quả trực tiếp
+    if (radState && radState.frame_transition) {
+        const ft = radState.frame_transition;
+        lastResultText = ft.last_result || '';
+        if (lastResultText.includes('ĐÃ TRÚNG N1') || lastResultText.includes('TRÚNG N1')) {
+            isN1Hit = true;
+            currentActiveDay = 1; // Reset chu kỳ mới đánh N1
+            statusBadgeText = '🎯 ĐÃ TRÚNG N1 → RESET CHU KỲ MỚI';
+            statusBadgeClass = 'badge-gold';
+        } else if (lastResultText.includes('TRƯỢT N1') || lastResultText.includes('ĐANG ĐÁNH N2')) {
+            isN1Hit = false;
+            currentActiveDay = 2; // Chuyển sang N2
+            statusBadgeText = '⚠️ TRƯỢT N1 → ĐANG VÀO TIỀN N2 (36 SỐ)';
+            statusBadgeClass = 'badge-warning';
+        }
+    }
+
+    // 2. Nếu chưa có từ Live Radar, xác định khách quan từ khung lịch sử cuối cùng
+    if (!lastResultText && appData.frame3_records && appData.frame3_records.length > 0) {
+        const lastRec = appData.frame3_records[appData.frame3_records.length - 1];
+        const resStr = lastRec.frame_result || '';
+        const h1 = (lastRec.hit_n1 || '').toLowerCase();
+        const h2 = (lastRec.hit_n2 || '').toLowerCase();
+        const h3 = (lastRec.hit_n3 || '').toLowerCase();
+
+        if (h1.includes('trúng')) {
+            isN1Hit = true;
+            currentActiveDay = 1;
+            lastResultText = `Kỳ trước (${lastRec.start_date}) Đề về ${lastRec.de_n1}: 🎯 ĐÃ TRÚNG N1 → RESET CHU KỲ MỚI (ĐÁNH N1)`;
+            statusBadgeText = '🎯 ĐÃ TRÚNG N1 → RESET CHU KỲ MỚI';
+        } else if (h2.includes('trúng')) {
+            isN2Hit = true;
+            currentActiveDay = 1;
+            lastResultText = `Kỳ trước N1 trượt, Đề về ${lastRec.de_n2} ĐÃ ĂN N2 (36 số) → RESET CHU KỲ MỚI (ĐÁNH N1)`;
+            statusBadgeText = '🎯 ĐÃ ĂN N2 → RESET CHU KỲ MỚI';
+        } else if (h1.includes('không') && !lastRec.de_n2) {
+            // N1 trượt và chưa có kết quả N2 -> Đang ở ngày 2
+            currentActiveDay = 2;
+            lastResultText = `Kỳ trước (${lastRec.start_date}) Đề về ${lastRec.de_n1} ❌ TRƯỢT N1 → CHUYỂN KHUNG ĐÁNH N2 (36 SỐ)`;
+            statusBadgeText = '⚡ TRƯỢT N1 → ĐANG ĐÁNH N2 (36 SỐ)';
+        } else if (h1.includes('không') && h2.includes('không') && !lastRec.de_n3) {
+            // Cả N1 và N2 trượt -> Đang ở ngày 3
+            currentActiveDay = 3;
+            lastResultText = `Kỳ trước N1 (${lastRec.de_n1}) và N2 (${lastRec.de_n2}) đều trượt ❌ → HỎA LỰC CHỐT HẠ N3 (36 SỐ)`;
+            statusBadgeText = '🚀 TRƯỢT N2 → HỎA LỰC CHỐT N3 (36 SỐ)';
+        } else {
+            // Mặc định chu kỳ mới
+            currentActiveDay = 1;
+            lastResultText = `Chu kỳ khung nuôi mới: Bắt đầu Ngày 1 với Dàn Bảo Hiểm N1 (60 số)`;
+            statusBadgeText = '🎯 ĐANG ĐÁNH N1 (60 SỐ)';
+        }
+    }
+
+    // Cập nhật Banner Auto-Shift Tab 1
+    const elBanner = document.getElementById('tab1AutoShiftBanner');
+    const elMsg = document.getElementById('tab1AutoShiftMsg');
+    const elBadge = document.getElementById('tab1AutoShiftBadge');
+    const elIcon = document.getElementById('tab1AutoShiftIcon');
+
+    if (elBanner && elMsg && elBadge) {
+        elMsg.innerHTML = lastResultText;
+        elBadge.textContent = statusBadgeText;
+
+        if (currentActiveDay === 1) {
+            elBanner.className = 'auto-shift-banner banner-hit';
+            if (elIcon) elIcon.className = 'fa-solid fa-circle-check';
+        } else if (currentActiveDay === 2) {
+            elBanner.className = 'auto-shift-banner banner-active-n2';
+            if (elIcon) elIcon.className = 'fa-solid fa-triangle-exclamation';
+        } else {
+            elBanner.className = 'auto-shift-banner banner-active-n2';
+            elBanner.style.borderColor = '#FB7185';
+            elBanner.style.background = 'linear-gradient(90deg, rgba(244, 63, 94, 0.2) 0%, rgba(15, 23, 42, 0.8) 100%)';
+            if (elIcon) elIcon.className = 'fa-solid fa-fire-extinguisher';
+        }
+    }
+
+    // Highlight các Badge ngày trên Header Tab 1 (N1 -> N2 -> N3)
+    const bN1 = document.getElementById('badgeDateN1');
+    const bN2 = document.getElementById('badgeDateN2');
+    const bN3 = document.getElementById('badgeDateN3');
+
+    if (bN1 && bN2 && bN3) {
+        // Reset styles
+        bN1.style.boxShadow = 'none';
+        bN2.style.boxShadow = 'none';
+        bN3.style.boxShadow = 'none';
+
+        if (currentActiveDay === 1) {
+            bN1.style.background = 'rgba(16, 185, 129, 0.4)';
+            bN1.style.borderColor = '#10B981';
+            bN1.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.5)';
+            bN1.innerHTML = `🟢 N1 (HÔM NAY): <span id="lblDateN1">${document.getElementById('lblDateN1')?.textContent || ''}</span>`;
+            
+            bN2.style.background = 'rgba(245, 158, 11, 0.15)';
+            bN2.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+            bN2.innerHTML = `N2: <span id="lblDateN2">${document.getElementById('lblDateN2')?.textContent || ''}</span>`;
+
+            bN3.style.background = 'rgba(239, 68, 68, 0.15)';
+            bN3.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            bN3.innerHTML = `N3: <span id="lblDateN3">${document.getElementById('lblDateN3')?.textContent || ''}</span>`;
+        } else if (currentActiveDay === 2) {
+            bN1.style.background = 'rgba(100, 116, 139, 0.2)';
+            bN1.style.borderColor = 'rgba(100, 116, 139, 0.4)';
+            bN1.innerHTML = `❌ N1 (Đã Trượt): <span id="lblDateN1">${document.getElementById('lblDateN1')?.textContent || ''}</span>`;
+
+            bN2.style.background = 'rgba(245, 158, 11, 0.4)';
+            bN2.style.borderColor = '#F59E0B';
+            bN2.style.boxShadow = '0 0 15px rgba(245, 158, 11, 0.6)';
+            bN2.innerHTML = `⚡ N2 (ĐANG ĐÁNH): <span id="lblDateN2">${document.getElementById('lblDateN2')?.textContent || ''}</span>`;
+
+            bN3.style.background = 'rgba(239, 68, 68, 0.15)';
+            bN3.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            bN3.innerHTML = `N3 (Dự phòng): <span id="lblDateN3">${document.getElementById('lblDateN3')?.textContent || ''}</span>`;
+        } else if (currentActiveDay === 3) {
+            bN1.style.background = 'rgba(100, 116, 139, 0.2)';
+            bN1.style.borderColor = 'rgba(100, 116, 139, 0.4)';
+            bN1.innerHTML = `❌ N1 (Trượt): <span id="lblDateN1">${document.getElementById('lblDateN1')?.textContent || ''}</span>`;
+
+            bN2.style.background = 'rgba(100, 116, 139, 0.2)';
+            bN2.style.borderColor = 'rgba(100, 116, 139, 0.4)';
+            bN2.innerHTML = `❌ N2 (Trượt): <span id="lblDateN2">${document.getElementById('lblDateN2')?.textContent || ''}</span>`;
+
+            bN3.style.background = 'rgba(239, 68, 68, 0.45)';
+            bN3.style.borderColor = '#EF4444';
+            bN3.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.6)';
+            bN3.innerHTML = `🚀 N3 (HỎA LỰC CHỐT): <span id="lblDateN3">${document.getElementById('lblDateN3')?.textContent || ''}</span>`;
+        }
+    }
+
+    // Highlight Card Đang Nuôi Tương Ứng
+    const cardN1 = document.getElementById('cardTab1N1');
+    const cardN2 = document.getElementById('cardTab1N2');
+    const cardN3 = document.getElementById('cardTab1N3');
+    const badgeN1 = document.getElementById('cardTab1BadgeN1');
+    const badgeN2 = document.getElementById('cardTab1BadgeN2');
+    const badgeN3 = document.getElementById('cardTab1BadgeN3');
+
+    [cardN1, cardN2, cardN3].forEach(c => {
+        if (c) {
+            c.classList.remove('tier-active-glow');
+            c.style.boxShadow = 'none';
+        }
+    });
+
+    if (currentActiveDay === 1) {
+        if (cardN1) {
+            cardN1.classList.add('tier-active-glow');
+            cardN1.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.25)';
+            cardN1.style.border = '1.5px solid #10B981';
+        }
+        if (badgeN1) badgeN1.textContent = '🟢 ĐANG ĐÁNH HÔM NAY';
+        if (badgeN2) badgeN2.textContent = 'DỰ PHÒNG N2';
+        if (badgeN3) badgeN3.textContent = 'DỰ PHÒNG N3';
+    } else if (currentActiveDay === 2) {
+        if (cardN2) {
+            cardN2.classList.add('tier-active-glow');
+            cardN2.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.35)';
+            cardN2.style.border = '1.5px solid #F59E0B';
+        }
+        if (badgeN1) badgeN1.textContent = '❌ N1 ĐÃ TRƯỢT';
+        if (badgeN2) badgeN2.textContent = '⚡ ĐANG ĐÁNH HÔM NAY (N2)';
+        if (badgeN3) badgeN3.textContent = 'DỰ PHÒNG N3';
+    } else if (currentActiveDay === 3) {
+        if (cardN3) {
+            cardN3.classList.add('tier-active-glow');
+            cardN3.style.boxShadow = '0 0 20px rgba(244, 63, 94, 0.35)';
+            cardN3.style.border = '1.5px solid #FB7185';
+        }
+        if (badgeN1) badgeN1.textContent = '❌ N1 ĐÃ TRƯỢT';
+        if (badgeN2) badgeN2.textContent = '❌ N2 ĐÃ TRƯỢT';
+        if (badgeN3) badgeN3.textContent = '🚀 HỎA LỰC CHỐT HẠ (N3)';
+    }
+
+    // =========================================================================
+    // RENDER SỐ CHO 3 CARD
+    // =========================================================================
+
+    // Card 1: Dàn Gốc N1 (60 Số) với highlight theo nhóm
     const gridN1 = document.getElementById('gridN1Numbers');
     if (gridN1) {
         gridN1.innerHTML = '';
-
-        // Đọc dữ liệu highlight từ tab4_data.json (latest)
         const t4Latest = (window.tab4Data && window.tab4Data.latest) ? window.tab4Data.latest : null;
         const bachThu = t4Latest && t4Latest.bach_thu ? String(t4Latest.bach_thu).padStart(2, '0') : '';
         const tuThu = (t4Latest && Array.isArray(t4Latest.tu_thu)) ? t4Latest.tu_thu.map(x => String(x).padStart(2, '0')) : [];
@@ -317,7 +521,6 @@ function renderTabFrame3Day() {
             const numStr = String(num).padStart(2, '0');
             const tag = document.createElement('div');
             
-            // Phân loại nhóm theo thứ tự ưu tiên: Bạch thủ > Tứ thủ > Dàn 9 > Dàn đảo > Dàn lót
             if (bachThu && numStr === bachThu) {
                 tag.className = 'num-tag tag-bach-thu';
                 tag.setAttribute('title', '👑 Bạch thủ');
@@ -339,16 +542,12 @@ function renderTabFrame3Day() {
                 tag.setAttribute('title', '📦 Dàn lót');
                 tag.textContent = numStr;
             }
-
             gridN1.appendChild(tag);
         });
     }
-    
-    const countN1 = document.getElementById('countN1Label');
-    if (countN1) countN1.textContent = `${n1List.length} số`;
     window.currentN1List = n1List.join(' ');
     
-    // Render Dàn Siêu Lọc N2 & N3 (28 Số)
+    // Card 2: Dàn Siêu Lọc N2 (36 Số)
     const gridN2 = document.getElementById('gridN2Numbers');
     if (gridN2) {
         gridN2.innerHTML = '';
@@ -359,10 +558,24 @@ function renderTabFrame3Day() {
             gridN2.appendChild(tag);
         });
     }
-    
-    const countN2 = document.getElementById('countN2Label');
-    if (countN2) countN2.textContent = `${n2List.length} số`;
     window.currentN2List = n2List.join(' ');
+
+    // Card 2B: Dàn Hỏa Lực N3 (36 Số)
+    const gridN3 = document.getElementById('gridN3Numbers');
+    if (gridN3) {
+        gridN3.innerHTML = '';
+        n3List.forEach(num => {
+            const tag = document.createElement('div');
+            tag.className = 'num-tag';
+            tag.style.background = 'rgba(244, 63, 94, 0.15)';
+            tag.style.borderColor = 'rgba(244, 63, 94, 0.4)';
+            tag.style.color = '#FB7185';
+            tag.style.fontWeight = '800';
+            tag.textContent = num;
+            gridN3.appendChild(tag);
+        });
+    }
+    window.currentN3List = n3List.join(' ');
 
     // Render Song Thủ Lô Rơi
     const stlEl = document.getElementById('stlPairLabel');
@@ -661,7 +874,11 @@ function setupEventListeners() {
     });
 
     document.getElementById('btnCopyN2')?.addEventListener('click', () => {
-        copyToClipboard(window.currentN2List || '', 'Đã copy Dàn Siêu Lọc 36 Số N2/N3!');
+        copyToClipboard(window.currentN2List || '', 'Đã copy Dàn Siêu Lọc 36 Số N2!');
+    });
+
+    document.getElementById('btnCopyN3')?.addEventListener('click', () => {
+        copyToClipboard(window.currentN3List || '', 'Đã copy Dàn Hỏa Lực 36 Số N3!');
     });
 
     document.getElementById('btnCopyAllHistory')?.addEventListener('click', () => {
@@ -1822,6 +2039,11 @@ function renderRadarFrame3Day() {
 
     const elN3 = document.getElementById('radarFrameN3List');
     if (elN3) elN3.textContent = n3List.join(', ');
+
+    // Đồng bộ tức thời sang Tab 1
+    if (typeof renderTabFrame3Day === 'function') {
+        renderTabFrame3Day();
+    }
 }
 
 let currentRadarHistoryFilter = 'all';

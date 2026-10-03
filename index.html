@@ -81,21 +81,33 @@
                 <div>
                     <span style="font-size: 13px; font-weight: 800; color: #38BDF8;">📅 LỊCH KHUNG NUÔI 3 NGÀY KỲ NÀY:</span>
                 </div>
-                <div style="font-size: 13px; font-weight: 800; color: #F8FAFC;">
-                    <span style="background: rgba(6, 182, 212, 0.25); color: #67E8F9; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(6, 182, 212, 0.4);">N1: <span id="lblDateN1">Chủ Nhật 30/08</span></span> ➔ 
-                    <span style="background: rgba(245, 158, 11, 0.25); color: #FBBF24; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.4);">N2: <span id="lblDateN2">Thứ Hai 31/08</span></span> ➔ 
-                    <span style="background: rgba(239, 68, 68, 0.25); color: #F87171; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.4);">N3: <span id="lblDateN3">Thứ Ba 01/09</span></span>
+                <div style="font-size: 13px; font-weight: 800; color: #F8FAFC; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <span id="badgeDateN1" style="background: rgba(6, 182, 212, 0.25); color: #67E8F9; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(6, 182, 212, 0.4); transition: all 0.3s ease;">N1: <span id="lblDateN1">Chủ Nhật 30/08</span></span> ➔ 
+                    <span id="badgeDateN2" style="background: rgba(245, 158, 11, 0.25); color: #FBBF24; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.4); transition: all 0.3s ease;">N2: <span id="lblDateN2">Thứ Hai 31/08</span></span> ➔ 
+                    <span id="badgeDateN3" style="background: rgba(239, 68, 68, 0.25); color: #F87171; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.4); transition: all 0.3s ease;">N3: <span id="lblDateN3">Thứ Ba 01/09</span></span>
                 </div>
+            </div>
+
+            <!-- Auto-Shift Status Banner for Tab 1 -->
+            <div class="auto-shift-banner banner-hit" id="tab1AutoShiftBanner" style="margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-circle-check" id="tab1AutoShiftIcon" style="font-size: 18px;"></i>
+                    <span id="tab1AutoShiftMsg" style="font-size: 13.5px; line-height: 1.5;">Đang tải trạng thái chu kỳ khung nuôi...</span>
+                </div>
+                <span class="badge badge-gold" id="tab1AutoShiftBadge" style="font-size: 12px; padding: 5px 12px;">ĐANG TÍNH TOÁN</span>
             </div>
             
             <!-- Card 1: Dàn Gốc N1 (60 Số) -->
-            <div class="card" style="border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.03);">
+            <div class="card" id="cardTab1N1" style="border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.03); transition: all 0.3s ease;">
                 <div class="card-header">
                     <div class="card-title">
                         <span class="icon">🔥</span>
                         <span>DÀN N1 DỰ ĐOÁN (ĐÚNG 60 SỐ BẢO HIỂM MỞ RỘNG)</span>
                     </div>
-                    <span class="badge badge-gold" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 12px;">60 Số</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="badge" id="cardTab1BadgeN1" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 11px;">NGÀY 1</span>
+                        <span class="badge badge-gold" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 12px;">60 Số</span>
+                    </div>
                 </div>
                 <!-- Legend Chú Thích Nhóm Số Tab 1 -->
                 <div class="legend-n1-bar">
@@ -113,26 +125,49 @@
                 </button>
             </div>
 
-            <!-- Card 2: Dàn Siêu Lọc N2 & N3 (36 Số) -->
-            <div class="card" style="border: 1px solid rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.03);">
+            <!-- Card 2: Dàn Siêu Lọc N2 (36 Số) -->
+            <div class="card" id="cardTab1N2" style="border: 1px solid rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.03); transition: all 0.3s ease;">
                 <div class="card-header">
                     <div class="card-title">
                         <span class="icon">🛡️</span>
-                        <span>DÀN SIÊU LỌC N2/N3 (36 SỐ HARD FILTER KHI N1 TRƯỢT)</span>
+                        <span>DÀN SIÊU LỌC N2 (36 SỐ HARD FILTER KHI N1 TRƯỢT)</span>
                     </div>
-                    <span class="badge" style="background: rgba(6, 182, 212, 0.2); color: #38BDF8; border: 1px solid rgba(6, 182, 212, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 12px;">36 Số</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="badge" id="cardTab1BadgeN2" style="background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 11px;">NGÀY 2</span>
+                        <span class="badge" style="background: rgba(6, 182, 212, 0.2); color: #38BDF8; border: 1px solid rgba(6, 182, 212, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 12px;">36 Số</span>
+                    </div>
                 </div>
                 <div class="number-grid" id="gridN2Numbers">
                     <!-- Dynamic Numbers -->
                 </div>
                 <button class="btn" id="btnCopyN2" style="width: 100%; margin-top: 14px; padding: 12px; font-size: 14px; font-weight: 800; background: linear-gradient(90deg, #06B6D4, #0284C7); border: none; border-radius: 20px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <span>🛡️</span> Sao Chép Dàn N2/N3 (36 Số Hard Filter)
+                    <span>🛡️</span> Sao Chép Dàn N2 (36 Số Hard Filter)
                 </button>
 
                 <div style="margin-top: 14px; padding: 10px 14px; background: rgba(255, 255, 255, 0.03); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 13px; font-weight: 600; color: #E2E8F0;">🎲 CẶP SONG THỦ LÔ RƠI (N2/N3):</span>
+                    <span style="font-size: 13px; font-weight: 600; color: #E2E8F0;">🎲 CẶP SONG THỦ LÔ RƠI (N2):</span>
                     <span style="font-size: 16px; font-weight: 800; color: #34D399;" id="stlPairLabel">---</span>
                 </div>
+            </div>
+
+            <!-- Card 2B: Dàn Hỏa Lực N3 (36 Số Chốt Khung) -->
+            <div class="card" id="cardTab1N3" style="border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.03); transition: all 0.3s ease;">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="icon">🚀</span>
+                        <span>DÀN HỎA LỰC N3 (36 SỐ CHỐT KHUNG CUỐI CÙNG KHI N2 TRƯỢT)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="badge" id="cardTab1BadgeN3" style="background: rgba(244, 63, 94, 0.2); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 11px;">NGÀY 3</span>
+                        <span class="badge" style="background: rgba(244, 63, 94, 0.2); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 12px;">36 Số</span>
+                    </div>
+                </div>
+                <div class="number-grid" id="gridN3Numbers">
+                    <!-- Dynamic Numbers -->
+                </div>
+                <button class="btn" id="btnCopyN3" style="width: 100%; margin-top: 14px; padding: 12px; font-size: 14px; font-weight: 800; background: linear-gradient(90deg, #E11D48, #BE123C); border: none; border-radius: 20px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>🚀</span> Sao Chép Dàn N3 (36 Số Hỏa Lực)
+                </button>
             </div>
 
             <!-- Card 3: Nhật Ký Kiểm Chứng Khung 3 Ngày (235 Kỳ) -->
