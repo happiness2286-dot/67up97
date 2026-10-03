@@ -33,7 +33,7 @@
     "g5": [
       "6110",
       "2976",
-      "0273",
+      "",
       "",
       "",
       ""
@@ -156,7 +156,7 @@
       "tooltip": "G1 vị trí 2: Đầu 9 (1d) | Theo dõi ngày 1 (Mới chạm)"
     }
   },
-  "filled_count": 16,
+  "filled_count": 15,
   "total_count": 26,
   "is_g5_finished": true,
   "is_g5_5_done": false,
@@ -5421,5 +5421,5 @@
     "cang_bt_hits": 1,
     "cang_bt_rate": 3.3
   },
-  "last_updated": "18:26:14 03/10/2026"
+  "last_updated": "18:26:25 03/10/2026"
 }
