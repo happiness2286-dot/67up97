@@ -19,8 +19,8 @@
     "g3": [
       "20816",
       "60874",
-      "",
-      "",
+      "21517",
+      "85793",
       "",
       ""
     ],
@@ -104,7 +104,7 @@
       "tooltip": "G1 vị trí 2: Đầu 9 (1d) | Theo dõi ngày 1 (Mới chạm)"
     }
   },
-  "filled_count": 5,
+  "filled_count": 7,
   "total_count": 26,
   "is_g5_finished": false,
   "is_g5_5_done": false,
@@ -113,8 +113,8 @@
   "is_dynamic": true,
   "dan_type": "DYNAMIC",
   "radar_status": "DYNAMIC",
-  "status_text": "⚡ DÀN ĐỘNG - Đang dò cầu (5/26 giải)...",
-  "lock_badge": "⚡ DÀN ĐỘNG (5/26 giải)",
+  "status_text": "⚡ DÀN ĐỘNG - Đang dò cầu (7/26 giải)...",
+  "lock_badge": "⚡ DÀN ĐỘNG (7/26 giải)",
   "top_1": "96",
   "lot_lon": "69",
   "song_thu_tru": [
@@ -1174,7 +1174,7 @@
   "actual_de": "",
   "dan_tinh_4cap": {
     "target_date": "Thứ bảy ngày 03-10-2026",
-    "status_text": "⚡ DÀN ĐỘNG - Đang dò cầu (5/26 giải)...",
+    "status_text": "⚡ DÀN ĐỘNG - Đang dò cầu (7/26 giải)...",
     "dan_type": "DYNAMIC",
     "bach_thu": "96",
     "lot_lon": "69",
@@ -4628,5 +4628,5 @@
     "cang_bt_hits": 1,
     "cang_bt_rate": 3.3
   },
-  "last_updated": "18:20:48 03/10/2026"
+  "last_updated": "18:21:06 03/10/2026"
 }
