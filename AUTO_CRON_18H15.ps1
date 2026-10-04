@@ -23,6 +23,13 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 "[$timestamp] BAT DAU CHAY TU DONG LIVE XSMB TU 18H14..." | Out-File -FilePath $logFile -Append -Encoding utf8
 
 try {
+    # 0. Khoi dong song song Logic G1->G5 Mini App
+    $logicDir = "E:\DONG BO\New Ha GCCK\Năm 2026\Dự Án AI_ Antigravity\Logic"
+    if (Test-Path $logicDir) {
+        "[$timestamp] Khoi dong song song Logic G1->G5 Mini App..." | Out-File -FilePath $logFile -Append -Encoding utf8
+        Start-Process -FilePath $pythonExe -ArgumentList "soi_cau_g1_g5.py --live --interval 8 --push" -WorkingDirectory $logicDir -WindowStyle Hidden
+    }
+
     # 1. Quet Radar Live truc tiep (18h14 - 18h32)
     # Tu dong chot khoa va push GitHub ngay khi hoan tat G5 (khoang 18h24)
     "[$timestamp] Dang chay Live Radar Scanner G1->G5 (tu khoa khi het G5)..." | Out-File -FilePath $logFile -Append -Encoding utf8

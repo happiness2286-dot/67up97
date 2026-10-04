@@ -116,7 +116,7 @@ def get_gaussian_rhythm_score(nhip):
     elif 8 <= nhip <= 20: return 6.0
     else: return 1.0
 
-def get_super_filtered_dan(dan_set, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map=None, target_size=36):
+def get_super_filtered_dan(dan_set, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map=None, target_size=28):
     """
     Tạo Dàn Siêu Lọc (chỉ 25-30 số) cho N2 và N3:
     Dựa trên ma trận giao thoa từ các khung N1 trúng (Tần suất Đầu/Đuôi/Tổng xuất hiện ở N1).
@@ -146,131 +146,117 @@ def get_super_filtered_dan(dan_set, n1_head_freq, n1_tail_freq, n1_sum_freq, con
     super_set = set(x[0] for x in scored_items[:target_size])
     return super_set
 
-def crawl_xsmb():
-    url = "https://mketqua.net/so-ket-qua"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Content-Type': 'application/x-www-form-urlencoded'
+def parse_xsmb_block_daiphat(block, pre_text):
+    dow_map = {0: 'Thứ Hai', 1: 'Thứ Ba', 2: 'Thứ Tư', 3: 'Thứ Năm', 4: 'Thứ Sáu', 5: 'Thứ Bảy', 6: 'Chủ Nhật'}
+    date_m = re.findall(r'(\d{2})[/-](\d{2})[/-](\d{4})', pre_text)
+    if not date_m:
+        return None
+    d, mth, y = date_m[-1]
+    if y != '2026':
+        return None
+    try:
+        dt = datetime.date(int(y), int(mth), int(d))
+        date_str = f"{dow_map[dt.weekday()]} ngày {d}-{mth}-{y}"
+    except Exception:
+        date_str = f"ngày {d}-{mth}-{y}"
+
+    def get_row_numbers(label, max_len=None):
+        pattern = rf'{re.escape(label)}.*?(?:<td[^>]*>)(.*?)(?:<tr>|</table>)'
+        m = re.search(pattern, block, re.DOTALL)
+        if not m:
+            return []
+        raw_nums = re.findall(r'>\s*([0-9]{2,5})\s*<', m.group(1))
+        if max_len:
+            raw_nums = [n for n in raw_nums if len(n) == max_len]
+        return raw_nums
+
+    db_nums = get_row_numbers('G.ĐB', 5)
+    db_val = db_nums[0] if db_nums else ''
+    if not db_val:
+        return None
+    de_val = db_val[-2:] if len(db_val) >= 2 else ''
+
+    g1_nums = get_row_numbers('G.1', 5)
+    g2_nums = get_row_numbers('G.2', 5)
+    g3_nums = get_row_numbers('G.3', 5)
+    g4_nums = get_row_numbers('G.4', 4)
+    g5_nums = get_row_numbers('G.5', 4)
+    g6_nums = get_row_numbers('G.6', 3)
+    g7_nums = get_row_numbers('G.7', 2)
+
+    all_prizes_list = [db_val] + g1_nums + g2_nums + g3_nums + g4_nums + g5_nums + g6_nums + g7_nums
+    all_lo = [p[-2:] for p in all_prizes_list if len(p) >= 2]
+
+    return {
+        'date': date_str,
+        'db': db_val,
+        'de': de_val,
+        'g7_1': g7_nums[0] if len(g7_nums) > 0 else '',
+        'g7_2': g7_nums[1] if len(g7_nums) > 1 else '',
+        'g7_3': g7_nums[2] if len(g7_nums) > 2 else '',
+        'g7_4': g7_nums[3] if len(g7_nums) > 3 else '',
+        'all_lo': all_lo
     }
 
-    # 0. Load existing data_2026.json as reliable foundation
-    existing_map = {}
+def crawl_daiphat_records():
+    """Cào kết quả XSMB từ xosodaiphat.com (7 ngày và 30 ngày gần nhất)."""
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+    records = []
+    seen_dates = set()
+    for url in ['https://xosodaiphat.com/xsmb-xo-so-mien-bac.html', 'https://xosodaiphat.com/xsmb-30-ngay.html']:
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                html = resp.read().decode('utf-8', errors='ignore')
+            blocks = re.split(r'<table[^>]*table-xsmb[^>]*>', html)
+            for i in range(1, len(blocks)):
+                pre_text = blocks[i-1][-400:]
+                rec = parse_xsmb_block_daiphat(blocks[i], pre_text)
+                if rec and rec['date'] not in seen_dates:
+                    seen_dates.add(rec['date'])
+                    records.append(rec)
+        except Exception as e:
+            print(f"[!] Lỗi cào từ {url}: {e}", flush=True)
+    return records
+
+def crawl_xsmb():
+    """Hàm cào dữ liệu XSMB chính thức: Ưu tiên xosodaiphat.com và đồng bộ cùng data_2026.json."""
+    print("Fetching lottery data from xosodaiphat.com...", flush=True)
+    daiphat_recs = []
+    try:
+        daiphat_recs = crawl_daiphat_records()
+    except Exception as e:
+        print("Lỗi khi cào xosodaiphat:", e, flush=True)
+
+    existing_records = []
     if os.path.exists('data_2026.json'):
         try:
             with open('data_2026.json', 'r', encoding='utf-8') as f:
-                old_list = json.load(f)
-                for r in old_list:
-                    d_key = r.get('date', '').strip()
-                    if d_key:
-                        existing_map[d_key] = r
-        except Exception as e:
-            print("Note reading existing data_2026.json:", e)
+                existing_records = json.load(f)
+        except Exception:
+            pass
 
-    results = []
-    print("Fetching lottery data from mketqua.net...", flush=True)
-    try:
-        data = urllib.parse.urlencode({'code': 'mb', 'count': '300', 'dow': '7'}).encode('utf-8')
-        req = urllib.request.Request(url, data=data, headers=headers)
-        with urllib.request.urlopen(req, timeout=8) as response:
-            html = response.read().decode('utf-8', errors='ignore')
-            blocks = html.split('<table class="table table-condensed kqcenter kqvertimarginw table-kq-border table-kq-hover-div table-bordered kqbackground table-kq-bold-border tb-phoi-border watermark table-striped" id="result_tab_mb">')
-            
-            for block in blocks[1:]:
-                date_match = re.search(r'id="result_date">([^<]+)</span>', block)
-                date_str = date_match.group(1).strip() if date_match else ""
-                
-                db_match = re.search(r'id="rs_0_0"[^>]*>([^<]*)</div>', block)
-                if not db_match:
-                    db_match = re.search(r'id="rs_0_0"[^>]*data-sofar="([^"]*)"', block)
-                db_raw = db_match.group(1).strip() if db_match else ""
-                db = ''.join(c for c in db_raw if c.isdigit())
-                
-                g7_1_match = re.search(r'id="rs_7_0"[^>]*>([^<]*)</div>', block)
-                g7_2_match = re.search(r'id="rs_7_1"[^>]*>([^<]*)</div>', block)
-                g7_3_match = re.search(r'id="rs_7_2"[^>]*>([^<]*)</div>', block)
-                g7_4_match = re.search(r'id="rs_7_3"[^>]*>([^<]*)</div>', block)
-                
-                g7_1 = ''.join(c for c in (g7_1_match.group(1) if g7_1_match else "") if c.isdigit())
-                g7_2 = ''.join(c for c in (g7_2_match.group(1) if g7_2_match else "") if c.isdigit())
-                g7_3 = ''.join(c for c in (g7_3_match.group(1) if g7_3_match else "") if c.isdigit())
-                g7_4 = ''.join(c for c in (g7_4_match.group(1) if g7_4_match else "") if c.isdigit())
-                
-                raw_prizes = re.findall(r'id="rs_\d+_\d+"[^>]*>([^<]*)</div>', block)
-                if not raw_prizes:
-                    raw_prizes = re.findall(r'id="rs_\d+_\d+"[^>]*data-sofar="([^"]*)"', block)
-                all_lo = []
-                for p in raw_prizes:
-                    digits = ''.join(c for c in p if c.isdigit())
-                    if len(digits) >= 2:
-                        all_lo.append(digits[-2:])
+    if daiphat_recs:
+        seen_dates = set()
+        merged = []
+        for r in daiphat_recs:
+            d_key = r['date'].split()[-1]
+            if d_key not in seen_dates:
+                seen_dates.add(d_key)
+                merged.append(r)
+        for r in existing_records:
+            d_key = r['date'].split()[-1]
+            if d_key not in seen_dates:
+                seen_dates.add(d_key)
+                merged.append(r)
+        print(f"[✓ xosodaiphat.com] Cào thành công! Tổng hợp được {len(merged)} bản ghi năm 2026.", flush=True)
+        return merged
 
-                if date_str and len(db) == 5:
-                    results.append({
-                        'date': date_str,
-                        'db': db,
-                        'de': db[-2:],
-                        'g7_1': g7_1,
-                        'g7_2': g7_2,
-                        'g7_3': g7_3,
-                        'g7_4': g7_4,
-                        'all_lo': all_lo
-                    })
-    except Exception as e:
-        print("Notice mketqua crawl fallback:", e)
+    if existing_records:
+        print(f"[!] Sử dụng {len(existing_records)} bản ghi có sẵn từ data_2026.json.", flush=True)
+        return existing_records
 
-    # 1. Merge crawled results into existing_map
-    for r in results:
-        existing_map[r['date'].strip()] = r
-
-    # 2. Check live_radar_state.json for finished today's result
-    if os.path.exists('live_radar_state.json'):
-        try:
-            with open('live_radar_state.json', 'r', encoding='utf-8') as rf:
-                r_state = json.load(rf)
-                t_date = r_state.get('target_date', '').strip()
-                act_de = r_state.get('actual_de', '').strip()
-                lp = r_state.get('live_prizes', {})
-                if t_date and act_de and lp and t_date not in existing_map:
-                    # Construct record from live prizes
-                    g7_list = lp.get('g7', [])
-                    g7_1 = g7_list[0] if len(g7_list) > 0 else ''
-                    g7_2 = g7_list[1] if len(g7_list) > 1 else ''
-                    g7_3 = g7_list[2] if len(g7_list) > 2 else ''
-                    g7_4 = g7_list[3] if len(g7_list) > 3 else ''
-                    all_lo_live = [act_de]
-                    for gk in ['g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7']:
-                        val = lp.get(gk)
-                        if isinstance(val, list):
-                            for v in val:
-                                s = str(v).strip()
-                                if len(s) >= 2: all_lo_live.append(s[-2:])
-                        elif val:
-                            s = str(val).strip()
-                            if len(s) >= 2: all_lo_live.append(s[-2:])
-                    act_db = r_state.get('actual_db', f"779{act_de}" if act_de == '61' else f"000{act_de}")
-                    existing_map[t_date] = {
-                        'date': t_date,
-                        'db': act_db,
-                        'de': act_de,
-                        'g7_1': g7_1,
-                        'g7_2': g7_2,
-                        'g7_3': g7_3,
-                        'g7_4': g7_4,
-                        'all_lo': all_lo_live
-                    }
-                    print(f"✅ Integrated live radar finish into dataset: {t_date} (ĐB {act_db})")
-        except Exception as ex:
-            print("Note reading live_radar_state:", ex)
-
-    # 3. Sort chronologically descending
-    def parse_rec_date(r):
-        dt = parse_date(r.get('date', ''))
-        return dt if dt else datetime.datetime.min
-
-    all_sorted = sorted(existing_map.values(), key=parse_rec_date, reverse=True)
-    results_2026 = [r for r in all_sorted if '2026' in r.get('date', '')]
-    print(f"Extracted {len(results_2026)} records for 2026.")
-    return results_2026
+    return []
 
 def analyze_all(data_2026):
     chrono = list(reversed(data_2026))
@@ -301,8 +287,8 @@ def analyze_all(data_2026):
                 w_hits[k] += 1
                 
     sorted_weekly_g7 = sorted(w_hits.items(), key=lambda x: x[1], reverse=True)
-    top_weekly_keys = [x[0] for x in sorted_weekly_g7[:4]]
-    excluded_weekly_key = None
+    top_weekly_keys = [x[0] for x in sorted_weekly_g7[:3]]
+    excluded_weekly_key = sorted_weekly_g7[3][0]
 
     # 2. Multi-window frequencies (30, 60, 90 days)
     last_date = chrono[-1]['datetime'] if 'datetime' in chrono[-1] else parse_date(chrono[-1]['date'])
@@ -986,15 +972,15 @@ def analyze_all(data_2026):
         h1 = de_n1 in pred_set_n1
         stl_h1 = de_n1 in stl_pair
         
-        # N2: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N1 (~40 số) -> Ép Dàn Siêu Lọc N2 (36 số)
+        # N2: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N1 (~40 số) -> Ép Dàn Siêu Lọc N2 (25-28 số)
         pred_set_n2_std = filter_dan_by_head_trend(pred_set_n1, de_n1)
-        pred_set_n2_super = get_super_filtered_dan(pred_set_n2_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=36)
+        pred_set_n2_super = get_super_filtered_dan(pred_set_n2_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=28)
         h2 = de_n2 in pred_set_n2_super
         stl_h2 = de_n2 in stl_pair
         
-        # N3: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N2 (~35 số) -> Ép Dàn Siêu Lọc N3 (36 số)
+        # N3: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N2 (~35 số) -> Ép Dàn Siêu Lọc N3 (25-28 số)
         pred_set_n3_std = filter_dan_by_head_trend(pred_set_n2_std, de_n2)
-        pred_set_n3_super = get_super_filtered_dan(pred_set_n3_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=36)
+        pred_set_n3_super = get_super_filtered_dan(pred_set_n3_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=28)
         h3 = de_n3 in pred_set_n3_super
         stl_h3 = de_n3 in stl_pair
         
@@ -1921,28 +1907,28 @@ def export_excel(data_2026, summary, filename='Thong_Ke_G7_Va_Top20_XSMB_2026.xl
         'STT': 'TỔNG KẾT KHUNG 3 NGÀY',
         'Ngày Bắt Đầu Khung': f"Tổng Khung: {summary['frame3_summary']['total_frames']} Khung",
         'N1 (Gốc 60 số)': f"Trúng N1: {summary['frame3_summary']['n1_hits']} Khung",
-        'N2 (Siêu Lọc 36 số)': f"Trúng N2: {summary['frame3_summary']['n2_super_hits']} Khung",
-        'N3 (Siêu Lọc 36 số)': f"Trúng N3: {summary['frame3_summary']['n3_super_hits']} Khung",
+        'N2 (Siêu Lọc 28 số)': f"Trúng N2: {summary['frame3_summary']['n2_super_hits']} Khung",
+        'N3 (Siêu Lọc 28 số)': f"Trúng N3: {summary['frame3_summary']['n3_super_hits']} Khung",
         'Tỷ Lệ Trúng N2/N3 (Khi N1 Trượt)': f"Trúng N2/N3 Siêu Lọc: {summary['frame3_summary']['n2_n3_super_hits']} Khung ({summary['frame3_summary']['n2_n3_super_rate_when_miss_n1']}%)",
         'Song Thủ Lô Rơi (N2/N3)': f"Trúng STL Rơi: {summary['frame3_summary']['stl_hits']} Khung ({summary['frame3_summary']['stl_rate']}%)",
         'Kết Quả Khung 3 Ngày': f"TỔNG TRÚNG: {summary['frame3_summary']['total_frame_hits']} Khung ({summary['frame3_summary']['frame_hit_rate']}%)",
         'Dàn N1 (60 Số)': '---',
-        'Dàn Siêu Lọc N2 (36 Số)': '---',
-        'Dàn Siêu Lọc N3 (36 Số)': '---'
+        'Dàn Siêu Lọc N2 (28 Số)': '---',
+        'Dàn Siêu Lọc N3 (28 Số)': '---'
     }]
     for rec in summary['frame3_records']:
         sheet7_rows.append({
             'STT': rec['stt'],
             'Ngày Bắt Đầu Khung': rec['start_date'],
             'N1 (Gốc 60 số)': f"{rec['de_n1']} ({rec['hit_n1']})",
-            'N2 (Siêu Lọc 36 số)': f"{rec['de_n2']} ({rec['hit_n2']})",
-            'N3 (Siêu Lọc 36 số)': f"{rec['de_n3']} ({rec['hit_n3']})",
+            'N2 (Siêu Lọc 28 số)': f"{rec['de_n2']} ({rec['hit_n2']})",
+            'N3 (Siêu Lọc 28 số)': f"{rec['de_n3']} ({rec['hit_n3']})",
             'Tỷ Lệ Trúng N2/N3 (Khi N1 Trượt)': '---',
             'Song Thủ Lô Rơi (N2/N3)': f"{rec['stl_pair']} ({rec['stl_hit']})",
             'Kết Quả Khung 3 Ngày': rec['frame_result'],
             'Dàn N1 (60 Số)': f"{rec['pred_n1']} ({rec['sz_n1']} số)",
-            'Dàn Siêu Lọc N2 (36 Số)': f"{rec['pred_n2']} ({rec['sz_n2']} số)",
-            'Dàn Siêu Lọc N3 (36 Số)': f"{rec['pred_n3']} ({rec['sz_n3']} số)"
+            'Dàn Siêu Lọc N2 (28 Số)': f"{rec['pred_n2']} ({rec['sz_n2']} số)",
+            'Dàn Siêu Lọc N3 (28 Số)': f"{rec['pred_n3']} ({rec['sz_n3']} số)"
         })
 
     # Sheet 10: TOP 3D & 4D
@@ -2100,20 +2086,6 @@ def export_excel(data_2026, summary, filename='Thong_Ke_G7_Va_Top20_XSMB_2026.xl
             print(f"⚠️ Không thể lưu file Excel do bị khóa bởi phần mềm khác: {e}", flush=True)
 
 
-def auto_git_push():
-    try:
-        import subprocess
-        print("\n🚀 Đang tự động đẩy dữ liệu mới nhất lên GitHub (67up97)...", flush=True)
-        git_path = r"C:\Program Files\Git\cmd\git.exe"
-        subprocess.run([git_path, 'add', '.'], check=True)
-        date_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        subprocess.run([git_path, 'commit', '-m', f'Auto update daily prediction {date_str}'], capture_output=True, text=True)
-        subprocess.run([git_path, 'push', 'origin', 'main'], capture_output=True, text=True)
-        print("✅ ĐÃ ĐẨY DỮ LIỆU LÊN GITHUB THÀNH CÔNG! Web điện thoại (https://happiness2286-dot.github.io/67up97/) sẽ tự động cập nhật sau vài giây.", flush=True)
-    except Exception as e:
-        print(f"⚠️ Lưu ý khi đẩy GitHub: {e}", flush=True)
-
-
 if __name__ == '__main__':
     data = crawl_xsmb()
     if data:
@@ -2125,6 +2097,13 @@ if __name__ == '__main__':
             json.dump(summary, f, ensure_ascii=False, indent=2)
             
         export_excel(data, summary, filename='Thong_Ke_G7_Va_Top20_XSMB_2026.xlsx')
-        print("All daily analysis complete. Updated Unified Master Excel File (18 Sheets) & Dashboard successfully.", flush=True)
-        
-        auto_git_push()
+        print("All daily analysis complete. Updated Unified Master Excel File (18 Sheets) & Dashboard successfully.")
+
+        if os.path.exists('soi_cau_g1_g5.py'):
+            try:
+                import soi_cau_g1_g5
+                print("\n[*] Đang tự động phân tích Soi Cầu G1-G5...", flush=True)
+                soi_cau_g1_g5.run_pipeline()
+            except Exception as e:
+                print(f"[!] Lỗi khi chạy soi_cau_g1_g5: {e}", flush=True)
+
