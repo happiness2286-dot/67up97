@@ -220,11 +220,22 @@ def crawl_daiphat_records():
     return records
 
 def crawl_xsmb():
-    """Hàm cào dữ liệu XSMB chính thức: Ưu tiên xosodaiphat.com và đồng bộ cùng data_2026.json."""
-    print("Fetching lottery data from xosodaiphat.com...", flush=True)
-    daiphat_recs = []
+    """Hàm cào dữ liệu XSMB chính thức: Ưu tiên API 383.im & xosodaiphat.com và đồng bộ cùng data_2026.json."""
+    print("Fetching lottery data from API 383.im & xosodaiphat.com...", flush=True)
+    incoming_recs = []
+    try:
+        from live_radar_scanner import fetch_383_live
+        rec_383 = fetch_383_live()
+        if rec_383 and rec_383.get('db') and len(rec_383.get('db')) == 5:
+            incoming_recs.append(rec_383)
+    except Exception:
+        pass
+
     try:
         daiphat_recs = crawl_daiphat_records()
+        for r in daiphat_recs:
+            if not any(r['date'].split()[-1] == x['date'].split()[-1] for x in incoming_recs):
+                incoming_recs.append(r)
     except Exception as e:
         print("Lỗi khi cào xosodaiphat:", e, flush=True)
 
@@ -236,10 +247,10 @@ def crawl_xsmb():
         except Exception:
             pass
 
-    if daiphat_recs:
+    if incoming_recs:
         seen_dates = set()
         merged = []
-        for r in daiphat_recs:
+        for r in incoming_recs:
             d_key = r['date'].split()[-1]
             if d_key not in seen_dates:
                 seen_dates.add(d_key)
@@ -249,7 +260,7 @@ def crawl_xsmb():
             if d_key not in seen_dates:
                 seen_dates.add(d_key)
                 merged.append(r)
-        print(f"[✓ xosodaiphat.com] Cào thành công! Tổng hợp được {len(merged)} bản ghi năm 2026.", flush=True)
+        print(f"[✓ API 383 & xosodaiphat] Cào thành công! Tổng hợp được {len(merged)} bản ghi năm 2026.", flush=True)
         return merged
 
     if existing_records:

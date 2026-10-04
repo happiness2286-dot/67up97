@@ -35,6 +35,7 @@ except ImportError:
 
 STATE_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'live_radar_state.json')
 SUMMARY_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'analysis_summary.json')
+API_383_LIVE_URL = "https://api.383.im/lottery/live.json"
 DAIPHAT_LIVE_URL = "https://xosodaiphat.com/xsmb-xo-so-mien-bac.html"
 DAIPHAT_30N_URL = "https://xosodaiphat.com/xsmb-30-ngay.html"
 
@@ -182,6 +183,93 @@ def parse_daiphat_block(block, pre_text):
         'prizes': prizes
     }
 
+def fetch_383_live():
+    """Lấy dữ liệu kết quả XSMB trực tiếp siêu tốc (50ms) từ API 383.im."""
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
+    dow_map = {0: 'Thứ hai', 1: 'Thứ ba', 2: 'Thứ tư', 3: 'Thứ năm', 4: 'Thứ sáu', 5: 'Thứ bảy', 6: 'Chủ nhật'}
+    raw_text = ""
+    try:
+        if HAS_LIBS:
+            r = requests.get(API_383_LIVE_URL, headers=headers, timeout=3)
+            if r.status_code == 200:
+                raw_text = r.text
+        else:
+            req = urllib.request.Request(API_383_LIVE_URL, headers=headers)
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                raw_text = resp.read().decode('utf-8', errors='ignore')
+    except Exception:
+        return None
+
+    if not raw_text:
+        return None
+
+    try:
+        data = json.loads(raw_text)
+        mb = data.get('mb', {})
+        if not mb:
+            return None
+        d_str = mb.get('d', '')
+        if d_str:
+            parts = d_str.split('-')
+            if len(parts) == 3:
+                y, mth, d = parts
+                dt = datetime(int(y), int(mth), int(d))
+                date_str = f"{dow_map[dt.weekday()]} ngày {d}-{mth}-{y}"
+            else:
+                date_str = d_str
+        else:
+            now = datetime.now()
+            date_str = f"{dow_map[now.weekday()]} ngày {now.strftime('%d-%m-%Y')}"
+
+        pr = mb.get('pr', {})
+        db_list = pr.get('db', [])
+        db_val = db_list[0].strip() if db_list else ''
+        de_val = db_val[-2:] if len(db_val) >= 2 else ''
+
+        g1_list = pr.get('g1', [])
+        g1_val = g1_list[0].strip() if g1_list else ''
+        g2_list = [str(x).strip() for x in pr.get('g2', [])]
+        g3_list = [str(x).strip() for x in pr.get('g3', [])]
+        g4_list = [str(x).strip() for x in pr.get('g4', [])]
+        g5_list = [str(x).strip() for x in pr.get('g5', [])]
+        g6_list = [str(x).strip() for x in pr.get('g6', [])]
+        g7_list = [str(x).strip() for x in pr.get('g7', [])]
+
+        prizes = {}
+        prizes['G1'] = g1_val
+        for idx in range(1, 3):
+            prizes[f'G2.{idx}'] = g2_list[idx-1] if len(g2_list) >= idx else ''
+        for idx in range(1, 7):
+            prizes[f'G3.{idx}'] = g3_list[idx-1] if len(g3_list) >= idx else ''
+        for idx in range(1, 5):
+            prizes[f'G4.{idx}'] = g4_list[idx-1] if len(g4_list) >= idx else ''
+        for idx in range(1, 7):
+            prizes[f'G5.{idx}'] = g5_list[idx-1] if len(g5_list) >= idx else ''
+        for idx in range(1, 4):
+            prizes[f'G6.{idx}'] = g6_list[idx-1] if len(g6_list) >= idx else ''
+        for idx in range(1, 5):
+            prizes[f'G7.{idx}'] = g7_list[idx-1] if len(g7_list) >= idx else ''
+
+        all_p = [db_val, g1_val] + g2_list + g3_list + g4_list + g5_list + g6_list + g7_list
+        all_lo = [str(x)[-2:] for x in all_p if len(str(x)) >= 2]
+
+        return {
+            'date': date_str,
+            'db': db_val,
+            'de': de_val,
+            'g7_1': prizes.get('G7.1', ''),
+            'g7_2': prizes.get('G7.2', ''),
+            'g7_3': prizes.get('G7.3', ''),
+            'g7_4': prizes.get('G7.4', ''),
+            'prizes': prizes,
+            'all_lo': all_lo,
+            'source': 'api.383.im'
+        }
+    except Exception:
+        return None
+
 def fetch_daiphat_draws(is_live=False):
     """Cào kết quả từ xosodaiphat.com nhanh chóng và chuẩn xác."""
     headers = {
@@ -244,7 +332,22 @@ def get_positions(prizes):
     return res
 
 def scan_radar(is_live=False):
-    draws = fetch_daiphat_draws(is_live=is_live)
+    live_383 = None
+    if is_live:
+        try:
+            live_383 = fetch_383_live()
+        except Exception:
+            live_383 = None
+
+    daiphat_draws = fetch_daiphat_draws(is_live=is_live)
+    draws = []
+    if live_383:
+        draws = [live_383]
+        for d in daiphat_draws:
+            if d['date'].split()[-1] != live_383['date'].split()[-1]:
+                draws.append(d)
+    else:
+        draws = daiphat_draws
     if len(draws) < 2 and os.path.exists('cached_draws.json'):
         try:
             with open('cached_draws.json', 'r', encoding='utf-8') as cf:
