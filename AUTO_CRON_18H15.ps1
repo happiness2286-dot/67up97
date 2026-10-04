@@ -19,8 +19,15 @@ if (-not (Test-Path $gitExe)) { $gitExe = "git.exe" }
 $logFile = Join-Path $scriptDir "cron_history.log"
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
+# Kiem tra tranh chay trung lap: neu da co live_radar_scanner.py dang chay thi thoat
+$existing = Get-CimInstance Win32_Process -Filter "Name LIKE 'python%'" | Where-Object { $_.CommandLine -like "*live_radar_scanner.py*" }
+if ($existing) {
+    "[$timestamp] [INFO] Tien trinh live_radar_scanner.py da dang hoat dong (PID: $($existing.ProcessId)). Bo qua lan kich hoat nay." | Out-File -FilePath $logFile -Append -Encoding utf8
+    exit 0
+}
+
 "=======================================================" | Out-File -FilePath $logFile -Append -Encoding utf8
-"[$timestamp] BAT DAU CHAY TU DONG LIVE XSMB TU 18H14..." | Out-File -FilePath $logFile -Append -Encoding utf8
+"[$timestamp] BAT DAU CHU TRINH TU DONG XSMB (KHUNG GIO 17H00 - 18H35)..." | Out-File -FilePath $logFile -Append -Encoding utf8
 
 try {
     # 0. Khoi dong song song Logic G1->G5 Mini App

@@ -18,6 +18,7 @@ echo =====================================================================
 echo    DA KET THUC KY QUAY LIVE! CHAY PHAN TICH KHUNG 3 NGAY...
 echo =====================================================================
 python crawl_and_analyze.py
+python logic_cau_dong.py
 python live_radar_scanner.py
 
 git add .

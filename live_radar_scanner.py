@@ -1037,12 +1037,42 @@ if __name__ == "__main__":
             print(f"⚠️ Không thể git push nhanh: {ex}", flush=True)
 
     if args.live:
-        print(f"[*] Bắt đầu radar live polling mỗi {args.interval} giây (Thời lượng tối đa: {args.duration if args.duration else 'Vô hạn'}s)...", flush=True)
+        now = datetime.now()
+        cur_min_of_day = now.hour * 60 + now.minute
+        start_allowed = 17 * 60         # 17h00
+        end_allowed = 18 * 60 + 36      # 18h36
+
+        if cur_min_of_day < start_allowed or cur_min_of_day > end_allowed:
+            print(f"⚠️ [GIỚI HẠN THỜI GIAN] Hiện tại là {now.strftime('%H:%M:%S')}. Khung giờ làm việc cho dự án chỉ từ 17h00 đến 18h35.", flush=True)
+            print(f"[*] Để bảo vệ tài nguyên và chống bot quét, hệ thống chỉ cập nhật 1 lần và thoát ngay, không cào ảo liên tục.", flush=True)
+            scan_radar(is_live=False)
+            sys.exit(0)
+
+        # Nếu trong khoảng 17h00 - 18h14: chạy 1 lượt đồng bộ trạng thái CHỜ QUAY
+        if cur_min_of_day < (18 * 60 + 14):
+            print(f"[*] [{now.strftime('%H:%M:%S')}] Đang trong khung giờ chuẩn bị (17h00 - 18h14). Cập nhật dàn số Chờ Quay...", flush=True)
+            res = scan_radar(is_live=False)
+            if args.auto_push:
+                do_quick_git_push(f"Chuan bi dan so cho gio quay 18h15 ngay {datetime.now().strftime('%d/%m/%Y')}")
+            
+            # Tính thời gian còn lại đến 18h14
+            wait_seconds = (18 * 60 + 14) * 60 - (now.hour * 3600 + now.minute * 60 + now.second)
+            if wait_seconds > 0:
+                print(f"⏳ Hệ thống sẽ nghỉ ngơi {wait_seconds} giây và tự động đón lồng cầu quay lúc 18h14. KHÔNG cào dữ liệu trong lúc chờ!", flush=True)
+                time.sleep(wait_seconds)
+
+        print(f"[*] [{datetime.now().strftime('%H:%M:%S')}] Bắt đầu radar live polling mỗi {args.interval} giây trong giờ quay thưởng...", flush=True)
         start_t = time.time()
         g5_locked = False
         final_completed = False
 
         while True:
+            # Kiểm tra chặn quá giờ 18h36
+            now_loop = datetime.now()
+            if (now_loop.hour == 18 and now_loop.minute >= 36) or now_loop.hour >= 19:
+                print(f"[*] [{now_loop.strftime('%H:%M:%S')}] Đã chạm mốc kết thúc giờ làm việc (18h36). Dừng quét live!", flush=True)
+                break
+
             try:
                 res = scan_radar(is_live=True)
                 if res:
