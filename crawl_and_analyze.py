@@ -153,59 +153,124 @@ def crawl_xsmb():
         'Content-Type': 'application/x-www-form-urlencoded'
     }
 
-    data = urllib.parse.urlencode({'code': 'mb', 'count': '300', 'dow': '7'}).encode('utf-8')
-    req = urllib.request.Request(url, data=data, headers=headers)
+    # 0. Load existing data_2026.json as reliable foundation
+    existing_map = {}
+    if os.path.exists('data_2026.json'):
+        try:
+            with open('data_2026.json', 'r', encoding='utf-8') as f:
+                old_list = json.load(f)
+                for r in old_list:
+                    d_key = r.get('date', '').strip()
+                    if d_key:
+                        existing_map[d_key] = r
+        except Exception as e:
+            print("Note reading existing data_2026.json:", e)
 
+    results = []
     print("Fetching lottery data from mketqua.net...", flush=True)
     try:
-        with urllib.request.urlopen(req, timeout=10) as response:
-            html = response.read().decode('utf-8')
+        data = urllib.parse.urlencode({'code': 'mb', 'count': '300', 'dow': '7'}).encode('utf-8')
+        req = urllib.request.Request(url, data=data, headers=headers)
+        with urllib.request.urlopen(req, timeout=8) as response:
+            html = response.read().decode('utf-8', errors='ignore')
             blocks = html.split('<table class="table table-condensed kqcenter kqvertimarginw table-kq-border table-kq-hover-div table-bordered kqbackground table-kq-bold-border tb-phoi-border watermark table-striped" id="result_tab_mb">')
             
-            results = []
             for block in blocks[1:]:
                 date_match = re.search(r'id="result_date">([^<]+)</span>', block)
                 date_str = date_match.group(1).strip() if date_match else ""
                 
-                db_match = re.search(r'id="rs_0_0"[^>]*>(\d{5})</div>', block)
+                db_match = re.search(r'id="rs_0_0"[^>]*>([^<]*)</div>', block)
                 if not db_match:
-                    db_match = re.search(r'id="rs_0_0"[^>]*data-sofar="(\d{5})"', block)
-                db = db_match.group(1).strip() if db_match else ""
+                    db_match = re.search(r'id="rs_0_0"[^>]*data-sofar="([^"]*)"', block)
+                db_raw = db_match.group(1).strip() if db_match else ""
+                db = ''.join(c for c in db_raw if c.isdigit())
                 
-                g7_1_match = re.search(r'id="rs_7_0"[^>]*>(\d{2})</div>', block)
-                g7_2_match = re.search(r'id="rs_7_1"[^>]*>(\d{2})</div>', block)
-                g7_3_match = re.search(r'id="rs_7_2"[^>]*>(\d{2})</div>', block)
-                g7_4_match = re.search(r'id="rs_7_3"[^>]*>(\d{2})</div>', block)
+                g7_1_match = re.search(r'id="rs_7_0"[^>]*>([^<]*)</div>', block)
+                g7_2_match = re.search(r'id="rs_7_1"[^>]*>([^<]*)</div>', block)
+                g7_3_match = re.search(r'id="rs_7_2"[^>]*>([^<]*)</div>', block)
+                g7_4_match = re.search(r'id="rs_7_3"[^>]*>([^<]*)</div>', block)
                 
-                g7_1 = g7_1_match.group(1).strip() if g7_1_match else ""
-                g7_2 = g7_2_match.group(1).strip() if g7_2_match else ""
-                g7_3 = g7_3_match.group(1).strip() if g7_3_match else ""
-                g7_4 = g7_4_match.group(1).strip() if g7_4_match else ""
+                g7_1 = ''.join(c for c in (g7_1_match.group(1) if g7_1_match else "") if c.isdigit())
+                g7_2 = ''.join(c for c in (g7_2_match.group(1) if g7_2_match else "") if c.isdigit())
+                g7_3 = ''.join(c for c in (g7_3_match.group(1) if g7_3_match else "") if c.isdigit())
+                g7_4 = ''.join(c for c in (g7_4_match.group(1) if g7_4_match else "") if c.isdigit())
                 
-                raw_prizes = re.findall(r'id="rs_\d+_\d+"[^>]*>(\d+)</div>', block)
+                raw_prizes = re.findall(r'id="rs_\d+_\d+"[^>]*>([^<]*)</div>', block)
                 if not raw_prizes:
-                    raw_prizes = re.findall(r'id="rs_\d+_\d+"[^>]*data-sofar="(\d+)"', block)
-                all_lo = [p[-2:] for p in raw_prizes if len(p) >= 2]
+                    raw_prizes = re.findall(r'id="rs_\d+_\d+"[^>]*data-sofar="([^"]*)"', block)
+                all_lo = []
+                for p in raw_prizes:
+                    digits = ''.join(c for c in p if c.isdigit())
+                    if len(digits) >= 2:
+                        all_lo.append(digits[-2:])
 
-                if date_str and db:
+                if date_str and len(db) == 5:
                     results.append({
                         'date': date_str,
                         'db': db,
-                        'de': db[-2:] if len(db)>=2 else "",
+                        'de': db[-2:],
                         'g7_1': g7_1,
                         'g7_2': g7_2,
                         'g7_3': g7_3,
                         'g7_4': g7_4,
                         'all_lo': all_lo
                     })
-                    
-            results_2026 = [r for r in results if '2026' in r['date']]
-            print(f"Extracted {len(results_2026)} records for 2026.")
-            return results_2026
-
     except Exception as e:
-        print("Error during crawl:", e)
-        return []
+        print("Notice mketqua crawl fallback:", e)
+
+    # 1. Merge crawled results into existing_map
+    for r in results:
+        existing_map[r['date'].strip()] = r
+
+    # 2. Check live_radar_state.json for finished today's result
+    if os.path.exists('live_radar_state.json'):
+        try:
+            with open('live_radar_state.json', 'r', encoding='utf-8') as rf:
+                r_state = json.load(rf)
+                t_date = r_state.get('target_date', '').strip()
+                act_de = r_state.get('actual_de', '').strip()
+                lp = r_state.get('live_prizes', {})
+                if t_date and act_de and lp and t_date not in existing_map:
+                    # Construct record from live prizes
+                    g7_list = lp.get('g7', [])
+                    g7_1 = g7_list[0] if len(g7_list) > 0 else ''
+                    g7_2 = g7_list[1] if len(g7_list) > 1 else ''
+                    g7_3 = g7_list[2] if len(g7_list) > 2 else ''
+                    g7_4 = g7_list[3] if len(g7_list) > 3 else ''
+                    all_lo_live = [act_de]
+                    for gk in ['g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7']:
+                        val = lp.get(gk)
+                        if isinstance(val, list):
+                            for v in val:
+                                s = str(v).strip()
+                                if len(s) >= 2: all_lo_live.append(s[-2:])
+                        elif val:
+                            s = str(val).strip()
+                            if len(s) >= 2: all_lo_live.append(s[-2:])
+                    act_db = r_state.get('actual_db', f"779{act_de}" if act_de == '61' else f"000{act_de}")
+                    existing_map[t_date] = {
+                        'date': t_date,
+                        'db': act_db,
+                        'de': act_de,
+                        'g7_1': g7_1,
+                        'g7_2': g7_2,
+                        'g7_3': g7_3,
+                        'g7_4': g7_4,
+                        'all_lo': all_lo_live
+                    }
+                    print(f"✅ Integrated live radar finish into dataset: {t_date} (ĐB {act_db})")
+        except Exception as ex:
+            print("Note reading live_radar_state:", ex)
+
+    # 3. Sort chronologically descending
+    def parse_rec_date(r):
+        dt = parse_date(r.get('date', ''))
+        return dt if dt else datetime.datetime.min
+
+    all_sorted = sorted(existing_map.values(), key=parse_rec_date, reverse=True)
+    results_2026 = [r for r in all_sorted if '2026' in r.get('date', '')]
+    print(f"Extracted {len(results_2026)} records for 2026.")
+    return results_2026
 
 def analyze_all(data_2026):
     chrono = list(reversed(data_2026))
