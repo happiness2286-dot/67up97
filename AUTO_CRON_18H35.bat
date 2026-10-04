@@ -14,12 +14,15 @@ python live_radar_scanner.py --live --interval 5 --duration 1200 --auto_push >> 
 echo [%date% %time%] Đã hoàn tất quay thưởng, bắt đầu phân tích Khung 3 Ngày & chốt dữ liệu... >> cron_history.log
 python crawl_and_analyze.py >> cron_history.log 2>&1
 
-:: 3. Quét chốt và cập nhật lại Radar lần cuối cùng ngày mới
+:: 3. Chạy Logic Cầu Động AI & So Sánh (Tab 4)
+python logic_cau_dong.py >> cron_history.log 2>&1
+
+:: 4. Quét chốt và cập nhật lại Radar lần cuối cùng ngày mới
 python live_radar_scanner.py >> cron_history.log 2>&1
 
-:: 4. Đẩy toàn bộ dữ liệu & kết quả lên GitHub Pages
+:: 5. Đẩy toàn bộ dữ liệu & kết quả lên GitHub Pages
 git add . >> cron_history.log 2>&1
-git commit -m "Auto update Live XSMB: Radar G1-G5 & Khung 3N %date%" >> cron_history.log 2>&1
+git commit -m "Auto update Live XSMB: Radar G1-G5 & Khung 3N & Cau Dong %date%" >> cron_history.log 2>&1
 git push origin main >> cron_history.log 2>&1
 
 echo [%date% %time%] HOÀN TẤT ĐỒNG BỘ TOÀN BỘ DỮ LIỆU LÊN GITHUB THÀNH CÔNG! >> cron_history.log

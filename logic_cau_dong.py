@@ -425,6 +425,8 @@ def ghi_tab4_data(ngay, dan_dong, dan_60s, giao_thoa, ngoai, bt, tt, dan_9, dan_
 
     latest_record = {
         'ngay': ngay,
+        'de': '--',
+        'de_ve': '--',
         'dan_cau_dong': dan_dong,
         'dan_60s': dan_60s,
         'giao_thoa': giao_thoa,
@@ -480,6 +482,7 @@ def ghi_tab4_data(ngay, dan_dong, dan_60s, giao_thoa, ngoai, bt, tt, dan_9, dan_
                     existing['cau_chay'] = h['cau_chay']
                 if 'de' in h:
                     existing['de'] = h['de']
+                    existing['de_ve'] = h['de']
                 if 'hit_top_1' in h:
                     existing['hit_top_1'] = h['hit_top_1']
                 if 'hit_top_4' in h:
@@ -487,6 +490,8 @@ def ghi_tab4_data(ngay, dan_dong, dan_60s, giao_thoa, ngoai, bt, tt, dan_9, dan_
                 if 'hit_dan_9' in h:
                     existing['hit_dan_9'] = h['hit_dan_9']
             else:
+                if 'de' in h and 'de_ve' not in h:
+                    h['de_ve'] = h['de']
                 data['lich_su'].append(h)
 
     # Khử trùng lặp (deduplicate) trong lich_su
@@ -503,11 +508,11 @@ def ghi_tab4_data(ngay, dan_dong, dan_60s, giao_thoa, ngoai, bt, tt, dan_9, dan_
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def tinh_toan_ngay_cau_dong(sub_5days, dan_60s):
+def tinh_toan_ngay_cau_dong(sub_5days, dan_60s, target_date=None, target_de=None):
     """Tính toán logic cầu động hoàn chỉnh cho một cửa sổ 5 ngày."""
     cur_draw = sub_5days[0]
-    ngay = cur_draw.get('date', '')
-    de = cur_draw.get('de', '')
+    ngay = target_date if target_date else cur_draw.get('date', '')
+    de = target_de if target_de is not None else cur_draw.get('de', '')
 
     vtd = quet_vi_tri_g1_g5(sub_5days)
     diem_no = tinh_diem_no(vtd)
@@ -536,12 +541,55 @@ def tinh_toan_ngay_cau_dong(sub_5days, dan_60s):
         'canh_bao': canh_bao,
         'cau_chay': cau_chay,
         'so_sanh': so_sanh,
-        'hit_top_1': (bt == de) if de else False,
-        'hit_top_4': (de in tt) if de else False,
-        'hit_dan_9': (de in dan_9) if de else False,
+        'hit_top_1': (bt == de) if (de and de != '--') else False,
+        'hit_top_4': (de in tt) if (de and de != '--') else False,
+        'hit_dan_9': (de in dan_9) if (de and de != '--') else False,
         'thoi_gian': datetime.now().isoformat()
     }
     return record
+
+
+def ghi_lich_su(ngay, so_sanh_current, history_items=None):
+    """Ghi lịch sử so sánh đầy đủ các ngày vào so_sanh_dan.json."""
+    file_path = 'so_sanh_dan.json'
+    items = []
+
+    # 1. Thêm bản ghi hiện tại
+    items.append({
+        'ngay': ngay,
+        'ket_qua': so_sanh_current,
+        'thoi_gian': datetime.now().isoformat()
+    })
+
+    # 2. Thêm các bản ghi lịch sử
+    if history_items:
+        for h in history_items:
+            items.append({
+                'ngay': h['ngay'],
+                'de': h.get('de', ''),
+                'ket_qua': h.get('so_sanh', {}),
+                'thoi_gian': h.get('thoi_gian', datetime.now().isoformat())
+            })
+
+    # Khử trùng lặp theo ngày
+    unique_items = []
+    seen = set()
+    for item in items:
+        k = extract_date_key(item.get('ngay'))
+        if k and k not in seen:
+            seen.add(k)
+            unique_items.append(item)
+
+    data = {
+        'lich_su': unique_items,
+        'tong_quan': {
+            'tong_ky': len(unique_items),
+            'last_updated': datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+        }
+    }
+
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def main():
@@ -553,28 +601,35 @@ def main():
     print(f"📦 Dàn 60s N1: {len(dan_60s)} số")
 
     # 1. Đọc danh sách kết quả xổ số nhiều ngày (để lấy cửa sổ 5 ngày thực tế)
-    draws = doc_danh_sach_draws(count=25)
+    draws = doc_danh_sach_draws(count=30)
 
-    # Nếu có live_radar_state.json và có live_prizes hôm nay
+    # Nếu có live_radar_state.json và có live_prizes
     if os.path.exists('live_radar_state.json'):
         try:
             with open('live_radar_state.json', 'r', encoding='utf-8') as f:
                 radar_state = json.load(f)
                 live_p = radar_state.get('live_prizes')
                 t_date = radar_state.get('target_date', '')
+                act_de = radar_state.get('actual_de', '')
                 if live_p and t_date:
                     if not draws or t_date not in draws[0].get('date', ''):
                         draws.insert(0, {
                             'date': t_date,
-                            'de': radar_state.get('actual_de', ''),
+                            'de': act_de,
                             'prizes': live_p
                         })
+                    elif draws and t_date in draws[0].get('date', '') and act_de and not draws[0].get('de'):
+                        draws[0]['de'] = act_de
         except Exception as e:
             print(f"Lưu ý khi đọc radar_state: {e}")
 
     if not draws or len(draws) < 5:
         print("⚠️ Chưa đủ 5 ngày cào, nạp dữ liệu mẫu an toàn...")
         draws = [
+            {
+                'date': 'Thứ bảy ngày 03-10-2026', 'de': '61',
+                'prizes': {'g1': ['59714'], 'g2': ['70056', '79568'], 'g3': ['20816', '60874', '21577', '85793', '36546', '43188'], 'g4': ['6288', '2348', '1063', '5874'], 'g5': ['6110', '2976', '0273', '0068', '4429', '2952']}
+            },
             {
                 'date': 'Thứ sáu ngày 02-10-2026', 'de': '83',
                 'prizes': {'g1': ['48799'], 'g2': ['63906', '22370'], 'g3': ['92151', '85709', '96557', '45967', '17050', '35145'], 'g4': ['2719', '2206', '1575', '1644'], 'g5': ['8754', '3913', '4102', '5685', '9938', '3837']}
@@ -590,16 +645,44 @@ def main():
             {
                 'date': 'Thứ ba ngày 29-09-2026', 'de': '51',
                 'prizes': {'g1': ['08389'], 'g2': ['72814', '46429'], 'g3': ['61403', '53225', '12186', '68865', '70733', '05305'], 'g4': ['0985', '7902', '1519', '9746'], 'g5': ['2966', '2437', '6169', '6077', '5155', '7323']}
-            },
-            {
-                'date': 'Thứ hai ngày 28-09-2026', 'de': '15',
-                'prizes': {'g1': ['86908'], 'g2': ['34512', '98124'], 'g3': ['12345', '67890', '54321', '98765', '13579', '24680'], 'g4': ['1122', '3344', '5566', '7788'], 'g5': ['9900', '1234', '5678', '9012', '3456', '7890']}
             }
         ]
 
-    # Tính toán cho ngày mới nhất (Cửa sổ 5 ngày đầu tiên)
-    sub_latest_5days = draws[0:5]
-    latest_rec = tinh_toan_ngay_cau_dong(sub_latest_5days, dan_60s)
+    now = datetime.now()
+    ds_today = now.strftime('%d-%m-%Y')
+    thu_map = {0: 'Thứ hai', 1: 'Thứ ba', 2: 'Thứ tư', 3: 'Thứ năm', 4: 'Thứ sáu', 5: 'Thứ bảy', 6: 'Chủ nhật'}
+    today_label = f"{thu_map.get(now.weekday(), 'Hôm nay')} ngày {ds_today}"
+
+    # Kiểm tra xem draws[0] đã có đề (đã kết thúc) hay chưa
+    has_completed_draw0 = bool(draws[0].get('de'))
+    first_draw_date = draws[0].get('date', '')
+
+    if has_completed_draw0:
+        # Kỳ draws[0] đã kết thúc -> Soi cho ngày mới hôm nay (Chủ nhật 04-10-2026) dựa trên 5 ngày kết thúc gần nhất (draws[0:5])
+        target_pred_date = today_label if ds_today not in first_draw_date else f"Kỳ kế tiếp ngày {ds_today}"
+        sub_latest_5days = draws[0:5]
+        latest_rec = tinh_toan_ngay_cau_dong(sub_latest_5days, dan_60s, target_date=target_pred_date, target_de="")
+
+        # Lịch sử kiểm chứng khách quan:
+        # Mỗi kỳ i được soi dựa trên cửa sổ 5 ngày trước đó (draws[i+1 : i+6]) và đối chiếu với đề thực tế draws[i]['de']
+        history_items = []
+        for i in range(0, min(20, len(draws) - 5)):
+            h_target = draws[i]
+            h_win = draws[i+1 : i+6]
+            h_rec = tinh_toan_ngay_cau_dong(h_win, dan_60s, target_date=h_target.get('date', ''), target_de=h_target.get('de', ''))
+            history_items.append(h_rec)
+    else:
+        # draws[0] chưa có đề (đang chờ quay hôm nay)
+        target_pred_date = first_draw_date or today_label
+        sub_latest_5days = draws[1:6] if len(draws) > 5 else draws[0:5]
+        latest_rec = tinh_toan_ngay_cau_dong(sub_latest_5days, dan_60s, target_date=target_pred_date, target_de="")
+
+        history_items = []
+        for i in range(1, min(20, len(draws) - 5)):
+            h_target = draws[i]
+            h_win = draws[i+1 : i+6]
+            h_rec = tinh_toan_ngay_cau_dong(h_win, dan_60s, target_date=h_target.get('date', ''), target_de=h_target.get('de', ''))
+            history_items.append(h_rec)
 
     ngay = latest_rec['ngay']
     dan_dong = latest_rec['dan_cau_dong']
@@ -631,17 +714,13 @@ def main():
     else:
         print(f"🟢 Cầu chạy an toàn, chu kỳ cao nhất: {canh_bao.get('so_ngay_max', 2)}d")
 
-    # Tính toán cho các ngày lịch sử qua sliding window 5 ngày
-    history_items = []
-    print("\n🔍 Đang tính toán kiểm chứng lịch sử qua các ngày:")
-    for i in range(1, min(15, len(draws) - 4)):
-        window = draws[i:i+5]
-        h_rec = tinh_toan_ngay_cau_dong(window, dan_60s)
-        history_items.append(h_rec)
-        print(f"   - {h_rec['ngay']}: Dàn {len(h_rec['dan_cau_dong'])}s | BT: {h_rec['bach_thu']} | TT: {h_rec['tu_thu']} | D9 ({len(h_rec['dan_9'])}s) | Đề: {h_rec['de']}")
+    print(f"\n🔍 Đã tính toán kiểm chứng {len(history_items)} kỳ lịch sử:")
+    for h in history_items[:8]:
+        hit_str = "🎯 TRÚNG" if (h['de'] in h['giao_thoa']) else "❌ TRƯỢT"
+        print(f"   - {h['ngay']}: Đề {h['de']} ({hit_str}) | BT: {h['bach_thu']} | TT: {h['tu_thu']} | D9: {h['dan_9'][:4]}")
 
     # Ghi dữ liệu
-    ghi_lich_su(ngay, so_sanh)
+    ghi_lich_su(ngay, so_sanh, history_items)
     ghi_tab4_data(ngay, dan_dong, dan_60s, giao_thoa, ngoai, bt, tt, dan_9, dan_dao, canh_bao, cau_chay, so_sanh, history_items)
 
     print("\n✅ ĐÃ GHI THÀNH CÔNG so_sanh_dan.json VÀ tab4_data.json!")

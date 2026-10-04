@@ -269,13 +269,19 @@ def get_positions(prizes):
 
 def scan_radar():
     html = fetch_html(is_live=True)
-    if not html:
-        if os.path.exists(STATE_JSON_PATH):
-            with open(STATE_JSON_PATH, encoding='utf-8') as f:
-                return json.load(f)
-        return None
+    draws = []
+    if html:
+        draws = parse_draws(html)
 
-    draws = parse_draws(html)
+    if len(draws) < 2 and os.path.exists('cached_draws.json'):
+        try:
+            with open('cached_draws.json', 'r', encoding='utf-8') as cf:
+                cached = json.load(cf)
+                if len(cached) >= 2:
+                    draws = cached
+        except Exception:
+            pass
+
     if len(draws) < 2:
         if os.path.exists(STATE_JSON_PATH):
             with open(STATE_JSON_PATH, encoding='utf-8') as f:
@@ -681,11 +687,21 @@ def scan_radar():
     }
 
     # Auto-Shift Khung 3 ngày
-    hit_n1 = (actual_de in DEFAULT_60_N1) if actual_de else False
-    
+    if actual_de:
+        hit_n1 = (actual_de in DEFAULT_60_N1)
+        last_result_msg = f"Kỳ gần nhất ({target_draw['date']}) Đề về {actual_de}: {'🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI' if hit_n1 else '❌ TRƯỢT N1 → GIỮ NGUYÊN KHUNG, ĐÁNH N2 (36 SỐ)'}"
+        badge_status = 'ĐÃ TRÚNG N1 → RESET CẦU MỚI' if hit_n1 else 'ĐANG ĐÁNH N2 (36 SỐ)'
+    elif prev_de:
+        hit_prev_n1 = (prev_de in DEFAULT_60_N1)
+        last_result_msg = f"Kỳ gần nhất ({prev_draw['date']}) Đề về {prev_de}: {'🎯 ĐÃ TRÚNG N1 → RESET CHU KỲ MỚI (HÔM NAY ĐÁNH N1)' if hit_prev_n1 else '❌ TRƯỢT N1 → CHUYỂN KHUNG ĐÁNH N2 (36 SỐ)'}"
+        badge_status = '🎯 ĐÃ TRÚNG N1 → RESET CẦU MỚI' if hit_prev_n1 else '⚡ ĐANG ĐÁNH N2 (36 SỐ)'
+    else:
+        last_result_msg = "Chu kỳ khung nuôi mới: Bắt đầu Ngày 1 với Dàn Bảo Hiểm N1 (60 số)"
+        badge_status = '🎯 ĐANG ĐÁNH N1 (60 SỐ)'
+
     frame_transition = {
-        'last_result': f"Kỳ gần nhất ({target_draw['date']}) Đề về {actual_de or 'đang quay'}: {'🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI' if hit_n1 else ('❌ TRƯỢT N1 → GIỮ NGUYÊN KHUNG, ĐÁNH N2 (36 SỐ)' if actual_de else 'Đang chờ quay Giải Đặc Biệt')}",
-        'status_badge': 'ĐÃ TRÚNG N1 → RESET CẦU MỚI' if hit_n1 else ('ĐANG ĐÁNH N2 (36 SỐ)' if actual_de else 'ĐANG QUAY THƯỞNG'),
+        'last_result': last_result_msg,
+        'status_badge': badge_status,
         'dan_n1': DEFAULT_60_N1,
         'dan_n2': ["02", "04", "07", "09", "12", "14", "17", "20", "23", "25", "27", "31", "32", "37", "40", "41", "42", "45", "47", "49", "61", "62", "67", "68", "70", "72", "75", "77", "81", "82", "84", "86", "87", "89", "91", "96"],
         'dan_n3': ["01", "03", "05", "08", "11", "13", "16", "18", "21", "24", "26", "28", "33", "35", "38", "43", "44", "48", "51", "53", "55", "58", "60", "63", "65", "69", "71", "73", "78", "80", "83", "85", "88", "92", "95", "97"]

@@ -258,7 +258,21 @@ function renderHeaderAndHero() {
     if (!appData) return;
     
     const lastDateEl = document.getElementById('heroLastDate');
-    if (lastDateEl) lastDateEl.textContent = appData.last_date || 'N/A';
+    if (lastDateEl) {
+        if (appData.last_date) {
+            const m = appData.last_date.match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+            if (m) {
+                const d0 = new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
+                d0.setDate(d0.getDate() + 1);
+                const days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+                lastDateEl.textContent = `${days[d0.getDay()]} ngày ${String(d0.getDate()).padStart(2, '0')}-${String(d0.getMonth() + 1).padStart(2, '0')}-${d0.getFullYear()}`;
+            } else {
+                lastDateEl.textContent = appData.last_date;
+            }
+        } else {
+            lastDateEl.textContent = 'N/A';
+        }
+    }
     
     const totalDaysEl = document.getElementById('heroTotalDays');
     if (totalDaysEl) totalDaysEl.textContent = (appData.total_days || 235) + ' Kỳ';
