@@ -23,47 +23,53 @@ Hệ thống đã hoàn tất nâng cấp toàn bộ sang cơ chế 2 lớp siê
 
 ---
 
-## ⏰ 3. KHUNG GIỜ VẬN HÀNH & CHỐNG CÀO LẶP (STRICT TIMEFRAME 17H00 - 18H35)
+## ⚡ 3. CƠ CHẾ LIVE QUAY CÙNG ĐÀI & KHÓA CHỐT SỚM G5.5 / 18H23:30 (ĐÃ FIX TRIỆT ĐỂ)
+1. **Live Push Từng Giải Mới (Quay Cùng Đài 100%)**:
+   - Trong khung giờ live **18h15 - 18h23:30**, cứ mỗi khi lồng cầu xổ xong 1 giải mới (**G1, G2, G3, G4, G5**) hoặc tối đa **15 giây/lần**, hệ thống tự động đẩy nhẹ `live_radar_state.json` lên GitHub.
+   - Giao diện web/điện thoại liên tục nhảy số, vẽ cầu, đổi màu vị trí ăn thông theo đúng thời gian thực của đài.
+2. **Khóa Chốt Sớm Tại G5.5 (18/19 Giải)**:
+   - Ngay khi nổ giải 5 thứ 5 (**G5.5, khoảng 18h22:45 – 18h23:15**), hệ thống tự động khóa trạng thái `LOCKED_G5` mà **không cần chờ G5.6**.
+   - Lập tức chốt hạ Bạch Thủ Top 1, Lót Lộn, Tứ Thủ Top 4 và Dàn 3 Càng 3D.
+3. **Backup Cứng Đúng 18h23:30 (Chống Hết Giờ Ghi)**:
+   - Nếu mạng lag hoặc đài quay chậm mà chạm mốc **18h23:30**, hệ thống **ép khóa chốt ngay lập tức**.
+   - Đảm bảo chậm nhất **18h23:45** điện thoại người dùng đã có số chốt đầy đủ, còn trọn vẹn 4-5 phút để vào tiền trước 18h28.
+4. **Triệt Tiêu Độ Trễ Web & Rate Limit ([app.js](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/app.js))**:
+   - Gỡ bỏ việc gọi GitHub API (tránh bị 403 Rate Limit sau 3 phút).
+   - Kéo trực tiếp `live_radar_state.json?t=Date.now()` kèm cờ ép bỏ qua cache (`no-store`, `must-revalidate`), đảm bảo độ trễ 0s.
+
+---
+
+## 🔄 4. ĐỒNG BỘ SONG SONG CÙNG ĐÀI VỚI REPO `Logic` LÚC 18H14:00
+1. **Cơ Chế Gọi Đón Giờ Quay**:
+   - Đúng **18h14:00**, khi `live_radar_scanner.py` thức dậy chuẩn bị quét live, nó sẽ tự động kích hoạt tiến trình ngầm `soi_cau_g1_g5.py --live --interval 8 --push` bên thư mục `Logic`.
+   - Cả 2 hệ thống cùng chạy song song, cùng đài 18h14 - 18h35.
+2. **Khắc Phục Lỗi Đường Dẫn Tiếng Việt**:
+   - Đường dẫn gọi `Logic` trong [AUTO_CRON_18H15.ps1](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/AUTO_CRON_18H15.ps1) và Python được quy chuẩn sang đường dẫn tương đối an toàn qua `Split-Path` / `os.path.normpath`, không còn bị lỗi font tiếng Việt của Windows PowerShell.
+
+---
+
+## ⏰ 5. KHUNG GIỜ VẬN HÀNH & CHỐNG CÀO LẶP (STRICT TIMEFRAME 17H00 - 18H35)
 1. **Trước 17h00**: Hệ thống ở trạng thái nghỉ, ngăn chặn cào lặp để tiết kiệm CPU và tài nguyên mạng.
 2. **17h00 - 18h14**: Giai đoạn chuẩn bị dữ liệu, rà soát kết quả ngày hôm qua và tải dữ liệu nền.
 3. **18h14 - 18h35 (Khung Giờ Vàng Live)**:
    - Tự động quét theo chu kỳ 3s - 5s / lần.
-   - Bắt trọn từng bóng số từ Giải Nhất (18h16) -> Giải Nhì -> Giải Ba -> Giải Tư -> Giải Năm -> Giải Sáu -> Giải Bảy -> Giải Đặc Biệt (18h30).
-   - Tự động commit và push Git theo từng giải mới hoặc mỗi chu kỳ 25s - 30s.
+   - Bắt trọn từng bóng số từ Giải Nhất (18h16) -> Giải Nhì -> Giải Ba -> Giải Tư -> Giải Năm (Khóa chốt 18h23:30) -> Giải Sáu -> Giải Bảy -> Giải Đặc Biệt (18h30).
 4. **Sau 18h35**:
-   - Khi đã nổ GĐB hôm nay hoặc quá 18h35, hệ thống tự động hoàn tất phiên live, cập nhật lịch sử trúng trượt và dừng an toàn.
+   - Tự động chạy `crawl_and_analyze.py` (tổng hợp 3N, xuất Master Excel 18 Sheet) và `logic_cau_dong.py` (Tab 4 Cầu Động AI), đồng bộ toàn diện lên GitHub và dừng an toàn.
 
 ---
 
-## ⚡ 4. CƠ CHẾ RADAR SOI LIVE G1-G5 & KHÓA CHỐT G5 (TAB 2)
-1. **Khóa Chốt G5.5 Tức Thì**:
-   - Khi cào nhận được giải **G5.5 (hoặc backup cứng lúc 18h24)**, hệ thống tự động khóa trạng thái `LOCKED_G5`.
-   - Lập tức tính toán và xuất các dàn để người dùng vào tiền trước **18h28** (trước khi quay GĐB).
-2. **Tâm 3 Càng 3D Live**:
-   - Lấy số tâm của G1 (nổ 18h16) làm càng, kết hợp với các dàn số.
-   - **Mục tiêu**: Đánh trực tiếp cho **Giải Đặc Biệt (GĐB) của chính ngày hôm đó lúc 18h30**.
+## 🔬 6. BỘ LỌC GIAO THOA 3 CHIỀU & BẠCH THỦ TRỤ
+1. **Thuật Toán Điểm Đồng Thuận**:
+   $$\text{Điểm Giao Thoa} = \text{Điểm Radar G1-G5} + \text{Điểm Dàn 9s AI} + \text{Chạm Tâm G1} + \text{Ép Cầu Tổng G7} + \text{Khung 60s N1}$$
+2. **Cặp "Lót Lộn Song Thủ Trụ"**:
+   - 👑 **Bạch Thủ Trụ**: Hiển thị số Top 1 + Nút Copy BT.
+   - 🛡️ **Lót Lộn Trụ**: Hiển thị số lộn + Nút Copy Cặp ST (`BT - Lót`).
+   - ⚡ **Nút Gói Chốt Gấp 1 Chạm**: Tích hợp sẵn Bạch Thủ + Lót Lộn + Tứ Thủ + 3 Càng + Dàn 9s + Dàn Lót.
 
 ---
 
-## 🔬 5. BỘ LỌC GIAO THOA 3 CHIỀU (MULTI-CRITERIA CONVERGENCE)
-* **Nguyên Tắc**: Tuyệt đối không ghi đè, không làm mất gốc logic thống kê chu kỳ của Radar gốc.
-* **Thuật Toán Điểm Đồng Thuận**:
-  $$\text{Điểm Giao Thoa} = \text{Điểm Radar G1-G5} + \text{Điểm Dàn 9s AI} + \text{Chạm Tâm G1} + \text{Ép Cầu Tổng G7} + \text{Khung 60s N1}$$
-* **Hiệu Quả Thực Tế**: Đề ngày 26/09/2026 về **32**, số 32 hội tụ đồng thuận vượt bậc vào ngay **Tứ Thủ** (`['42', '24', '32', '37']`).
-
----
-
-## 🛡️ 6. BỔ SUNG CẶP "LÓT LỘN SONG THỦ TRỤ"
-* **Mục Tiêu**: Bảo vệ vốn 100% không bao giờ bị trượt do nổ lộn vị trí đầu đuôi (ví dụ bắt 42 về 24, hay 23 về 32).
-* **Giao Diện Tab 2**:
-  - 👑 **Bạch Thủ Trụ**: Hiển thị số Top 1 + Nút Copy BT.
-  - 🛡️ **Lót Lộn Trụ**: Hiển thị số lộn + Nút Copy Cặp ST (`BT - Lót`).
-* **Nút Gói Chốt Gấp 1 Chạm**: Tích hợp sẵn Bạch Thủ + Lót Lộn + Tứ Thủ + 3 Càng + Dàn 9s + Dàn Lót.
-
----
-
-## 🚀 7. BỘ CÔNG CỤ TỰ ĐỘNG HÓA & TRỰC TIẾP
-1. **Windows Task Scheduler**: Task `XSMB_AI_AutoUpdate_18h15` kích hoạt `AUTO_CRON_18H15.ps1` lúc 18:14 hàng ngày với quyền `-WakeToRun`.
-2. **Khởi Động Trực Tiếp Thủ Công**: File `CHAY_LIVE_TRUC_TIEP_18H14.bat` cho phép người dùng click đúp chạy xem cửa sổ console nhảy số trực tiếp bất cứ lúc nào.
-3. **Bypass Cache GitHub Pages**: `app.js` tự động lấy commit SHA mới nhất qua GitHub API để đọc tức thì dữ liệu từ raw GitHub (độ trễ 0s).
-4. **Kịch Bản Đẩy Thủ Công Toàn Diện**: `CAP_NHAT_VA_DAY_GITHUB.bat` cào, phân tích, xuất Excel 18 Sheet và push GitHub toàn bộ.
+## 🚀 7. BỘ CÔNG CỤ TỰ ĐỘNG HÓA ĐÃ KIỂM ĐỊNH
+1. **Windows Task Scheduler**: Task `XSMB_AI_AutoUpdate_17h00` kích hoạt [AUTO_CRON_18H15.ps1](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/AUTO_CRON_18H15.ps1) lúc 17:00 với quyền `-WakeToRun`.
+2. **Khởi Động Trực Tiếp Thủ Công**: File [CHAY_LIVE_TRUC_TIEP_18H14.bat](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/CHAY_LIVE_TRUC_TIEP_18H14.bat) cho phép click đúp xem màn hình console nhảy số trực tiếp bất cứ lúc nào.
+3. **Kịch Bản Kiểm Thử Mô Phỏng**: File [test_live_cycle_simulation.py](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/test_live_cycle_simulation.py) giả lập 4 giai đoạn live (18h15, 18h16, 18h22:55 G5.5, 18h23:30 backup) đã kiểm định đạt 100%.
