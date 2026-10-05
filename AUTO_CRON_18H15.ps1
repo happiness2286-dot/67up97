@@ -31,8 +31,9 @@ if ($existing) {
 
 try {
     # 0. Khoi dong song song Logic G1->G5 Mini App
-    $logicDir = "E:\DONG BO\New Ha GCCK\Năm 2026\Dự Án AI_ Antigravity\Logic"
-    if (Test-Path $logicDir) {
+    $parentDir = Split-Path $scriptDir -Parent
+    $logicDir = Join-Path $parentDir "Logic"
+    if (Test-Path -LiteralPath $logicDir) {
         "[$timestamp] Khoi dong song song Logic G1->G5 Mini App..." | Out-File -FilePath $logFile -Append -Encoding utf8
         Start-Process -FilePath $pythonExe -ArgumentList "soi_cau_g1_g5.py --live --interval 8 --push" -WorkingDirectory $logicDir -WindowStyle Hidden
     }
