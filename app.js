@@ -1019,27 +1019,13 @@ let lastKnownCommitSha = null;
 async function fetchAndRenderRadarLive(isSilent = false) {
     try {
         let url = 'live_radar_state.json?t=' + Date.now();
-
-        // Nếu chạy trên GitHub Pages, thử lấy commit SHA mới nhất từ GitHub API để đọc tức thì không trễ CDN
-        if (window.location.hostname.includes('github.io')) {
-            try {
-                const apiRes = await fetch('https://api.github.com/repos/happiness2286-dot/67up97/commits/main', {
-                    headers: { 'Accept': 'application/vnd.github.v3+json' },
-                    cache: 'no-store'
-                });
-                if (apiRes.ok) {
-                    const commitData = await apiRes.json();
-                    if (commitData && commitData.sha) {
-                        lastKnownCommitSha = commitData.sha;
-                        url = `https://raw.githubusercontent.com/happiness2286-dot/67up97/${commitData.sha}/live_radar_state.json`;
-                    }
-                }
-            } catch (apiErr) {
-                // Tự động fallback về file tĩnh tương đối
+        const res = await fetch(url, { 
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
             }
-        }
-
-        const res = await fetch(url, { cache: 'no-store' });
+        });
         if (!res.ok) throw new Error('Không thể tải file live_radar_state.json');
         setRadarData(await res.json());
         
@@ -1398,15 +1384,15 @@ function renderRadarHeaderInfo() {
     const elProgress = document.getElementById('radarProgressText');
     if (elProgress) {
         const filled = radarData.filled_count || 0;
-        const total = radarData.total_count || 26;
+        const total = radarData.total_count || 19;
         const actualDe = radarData.actual_de || '';
-        const isG5Done = radarData.is_g5_6_done || radarData.is_locked || (filled >= 26);
+        const isG5Done = radarData.is_g5_5_done || radarData.is_g5_6_done || radarData.is_locked || (filled >= 19);
         const isDynamic = (radarData.dan_type === 'DYNAMIC' || radarData.radar_status === 'DYNAMIC');
 
         if (actualDe) {
             elProgress.innerHTML = `<span style="color: #34D399; font-weight: 800;">${filled}/${total} GIẢI • ĐÃ CÓ ĐỀ ${actualDe} 🎯</span>`;
         } else if (isG5Done) {
-            elProgress.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">🔒 ĐÃ KHÓA CHỐT DÀN (HẾT G5.6)</span>`;
+            elProgress.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">🔒 ĐÃ KHÓA CHỐT DÀN (XONG G5)</span>`;
         } else if (isDynamic || filled > 0) {
             elProgress.innerHTML = `<span style="color: #38BDF8; font-weight: 800;">⚡ DÀN ĐỘNG: ${filled}/${total} GIẢI (ĐANG DÒ CẦU...)</span>`;
         } else {
@@ -1426,8 +1412,8 @@ function renderFastLockBanner() {
     const btnQuick = document.getElementById('btnQuickCopyAll');
 
     const filled = radarData.filled_count || 0;
-    const total = radarData.total_count || 26;
-    const isLocked = radarData.is_locked || (radarData.dan_type === 'LOCKED') || radarData.is_g5_6_done;
+    const total = radarData.total_count || 19;
+    const isLocked = radarData.is_locked || (radarData.dan_type === 'LOCKED') || radarData.is_g5_5_done || radarData.is_g5_6_done;
     const isDynamic = (radarData.dan_type === 'DYNAMIC' || radarData.radar_status === 'DYNAMIC');
     const isBeforeDraw = (radarData.radar_status === 'BEFORE_DRAW' || radarData.dan_type === 'NONE' || (filled === 0 && !radarData.actual_de));
     const actualDe = radarData.actual_de || '';
@@ -1486,11 +1472,11 @@ function renderFastLockBanner() {
             badgeEl.className = 'badge badge-gold badge-locked-hard';
             badgeEl.innerHTML = `🔒 DÀN CỨNG - ĐÃ CHỐT HẠ`;
         }
-        const bannerTitle = '🔒 DÀN CỨNG - ĐÃ CHỐT HẠ (HẾT G5.6) - VÀO TIỀN TRƯỚC 18H28!';
+        const bannerTitle = '🔒 DÀN CỨNG - ĐÃ CHỐT HẠ (KHI XONG G5) - VÀO TIỀN TRƯỚC 18H28!';
         if (titleEl) titleEl.textContent = bannerTitle;
         const bannerEl = document.getElementById('banner');
         if (bannerEl) bannerEl.innerHTML = bannerTitle;
-        if (subEl) subEl.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Đã chốt hạ sau khi hết Giải 5.6. Hạn chót vào tiền trước 18h28!`;
+        if (subEl) subEl.innerHTML = `<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Đã chốt hạ lúc ~18h23:30 (xong G5). Hạn chót vào tiền trước 18h28!`;
         if (btnQuick) {
             btnQuick.innerHTML = `<i class="fa-solid fa-bolt"></i> COPY GÓI CHỐT GẤP (VÀO TIỀN NGAY)`;
         }
@@ -1509,13 +1495,13 @@ function renderFastLockBanner() {
         if (titleEl) titleEl.textContent = liveTitle;
         const bannerEl = document.getElementById('banner');
         if (bannerEl) bannerEl.textContent = liveTitle;
-        if (subEl) subEl.innerHTML = `<span style="color: #38BDF8; font-weight: 800;">Dàn số đang biến thiên theo lồng quay (G7, G6, G5).</span> Hệ thống sẽ tự động <strong>CHỐT DÀN CỨNG</strong> ngay khi có kết quả G5.6!`;
+        if (subEl) subEl.innerHTML = `<span style="color: #38BDF8; font-weight: 800;">Dàn số đang biến thiên theo lồng quay (G1->G5).</span> Hệ thống sẽ tự động <strong>CHỐT DÀN CỨNG</strong> ngay khi có kết quả G5.5 (~18h23:30)!`;
         if (badgeEl) {
             badgeEl.className = 'badge badge-dynamic-live';
             badgeEl.innerHTML = `⚡ DÀN ĐỘNG (${filled}/${total})`;
         }
         if (btnQuick) {
-            btnQuick.innerHTML = `<i class="fa-solid fa-eye"></i> DÀN ĐANG DÒ - CHỜ HẾT G5.6 ĐỂ CHỐT`;
+            btnQuick.innerHTML = `<i class="fa-solid fa-eye"></i> DÀN ĐANG DÒ - CHỜ G5.5 ĐỂ CHỐT`;
         }
     } else {
         if (banner) {

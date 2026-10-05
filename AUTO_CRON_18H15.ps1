@@ -30,15 +30,9 @@ if ($existing) {
 "[$timestamp] BAT DAU CHU TRINH TU DONG XSMB (KHUNG GIO 17H00 - 18H35)..." | Out-File -FilePath $logFile -Append -Encoding utf8
 
 try {
-    # 0. Khoi dong song song Logic G1->G5 Mini App
-    $parentDir = Split-Path $scriptDir -Parent
-    $logicDir = Join-Path $parentDir "Logic"
-    if (Test-Path -LiteralPath $logicDir) {
-        "[$timestamp] Khoi dong song song Logic G1->G5 Mini App..." | Out-File -FilePath $logFile -Append -Encoding utf8
-        Start-Process -FilePath $pythonExe -ArgumentList "soi_cau_g1_g5.py --live --interval 8 --push" -WorkingDirectory $logicDir -WindowStyle Hidden
-    }
-
     # 1. Quet Radar Live truc tiep (18h14 - 18h32)
+    # Tu dong khoi dong song song Logic G1->G5 Mini App luc 18h14 de quay cung dai
+    # Tu dong khoa chot tai G5.5 / 18h23:30 va day len GitHub ngay lập tức
     # Tu dong chot khoa va push GitHub ngay khi hoan tat G5 (khoang 18h24)
     "[$timestamp] Dang chay Live Radar Scanner G1->G5 (tu khoa khi het G5)..." | Out-File -FilePath $logFile -Append -Encoding utf8
     & $pythonExe live_radar_scanner.py --live --interval 5 --duration 1200 --auto_push 2>&1 | Out-File -FilePath $logFile -Append -Encoding utf8

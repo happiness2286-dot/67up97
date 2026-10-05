@@ -538,6 +538,17 @@ def scan_radar(is_live=False):
     filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
     is_completed = (filled_prizes >= 19)
 
+    # Nhận diện sớm G5.5 đã có kết quả (giải 5 thứ 5, chỉ số 4 trong mảng G5)
+    is_g5_5_done = bool(p_g5[4] and len(str(p_g5[4]).strip()) >= 3) if len(p_g5) > 4 else False
+    is_g5_6_done = bool(p_g5[5] and len(str(p_g5[5]).strip()) >= 3) if len(p_g5) > 5 else False
+
+    # Backup cứng lúc 18h23:30 (nếu mạng lag hoặc đài quay chậm thì đúng 18h23:30 vẫn chốt dàn an toàn)
+    now_cur = datetime.now()
+    is_backup_18h23_30 = (now_cur.hour == 18 and (now_cur.minute > 23 or (now_cur.minute == 23 and now_cur.second >= 30)))
+    
+    # Điều kiện chốt khóa: Xong G5.5 HOẶC Đủ cả 19 giải HOẶC Đến mốc backup 18h23:30 (và đã có giải)
+    should_lock = is_completed or is_g5_5_done or (is_backup_18h23_30 and filled_prizes > 0)
+
     tam_g1 = p_g1[2] if (p_g1 and len(p_g1) >= 3 and p_g1.isdigit()) else ''
     tam_g1_set = {tam_g1, str(BONG_DUONG.get(int(tam_g1), ''))} if tam_g1 else set()
 
@@ -667,13 +678,14 @@ def scan_radar(is_live=False):
         radar_status = "FINISHED_RESULT"
         status_text = f"ĐÃ HOÀN TẤT KỲ QUAY (ĐỀ VỀ {actual_de})"
         lock_badge = f"🎯 ĐÃ CÓ KẾT QUẢ ĐỀ: {actual_de}"
-    elif is_completed:
+    elif should_lock:
         radar_status = "LOCKED_G5"
-        status_text = "🔒 ĐÃ CHỐT KHÓA KHI HẾT G5 (19/19 GIẢI) - VÀO TIỀN NGAY TRƯỚC 18H28!"
-        lock_badge = "🔒 ĐÃ KHÓA CHỐT DÀN (HẾT G5)"
+        reason = "XONG G5.5" if is_g5_5_done else ("HẾT G5" if is_completed else "MỐC 18H23:30")
+        status_text = f"🔒 ĐÃ CHỐT KHÓA DÀN ({reason}) - VÀO TIỀN NGAY TRƯỚC 18H28!"
+        lock_badge = f"🔒 ĐÃ KHÓA CHỐT DÀN ({reason})"
     elif filled_prizes > 0:
         radar_status = "SCANNING_LIVE"
-        status_text = f"⚡ ĐANG QUAY TRỰC TIẾP ({filled_prizes}/19 GIẢI) - CHỐT KHI XONG G5"
+        status_text = f"⚡ ĐANG QUAY TRỰC TIẾP ({filled_prizes}/19 GIẢI) - CHỐT KHI XONG G5.5"
         lock_badge = f"⚡ ĐANG QUAY ({filled_prizes}/19)"
     elif not is_live and actual_de:
         radar_status = "FINISHED_RESULT"
@@ -750,10 +762,11 @@ def scan_radar(is_live=False):
         'highlight_positions': highlight_positions,
         'filled_count': filled_prizes,
         'total_count': 19,
-        'is_g5_finished': is_completed,
-        'is_g5_5_done': bool(live_p.get('G5.5')),
-        'is_g5_6_done': bool(live_p.get('G5.6')),
-        'is_locked': is_completed,
+        'is_g5_finished': should_lock,
+        'is_g5_5_done': is_g5_5_done,
+        'is_g5_6_done': is_g5_6_done,
+        'is_locked': should_lock,
+        'dan_type': 'LOCKED' if should_lock else ('DYNAMIC' if filled_prizes > 0 else 'NONE'),
         'radar_status': radar_status,
         'status_text': status_text,
         'lock_badge': lock_badge,
@@ -1030,9 +1043,10 @@ if __name__ == "__main__":
             import subprocess
             git_path = r"C:\Program Files\Git\cmd\git.exe"
             subprocess.run([git_path, 'add', 'live_radar_state.json'], check=True, capture_output=True)
-            subprocess.run([git_path, 'commit', '-m', commit_msg], capture_output=True, text=True)
-            subprocess.run([git_path, 'push', 'origin', 'main'], capture_output=True, text=True)
-            print(f"🚀 [GIT PUSH] {commit_msg} -> Đã đồng bộ lên GitHub thành công!", flush=True)
+            res_c = subprocess.run([git_path, 'commit', '-m', commit_msg], capture_output=True, text=True)
+            if "nothing to commit" not in (res_c.stdout + res_c.stderr):
+                subprocess.run([git_path, 'push', 'origin', 'main'], capture_output=True, text=True)
+                print(f"🚀 [GIT PUSH] {commit_msg} -> Đã đồng bộ lên GitHub thành công!", flush=True)
         except Exception as ex:
             print(f"⚠️ Không thể git push nhanh: {ex}", flush=True)
 
@@ -1062,9 +1076,27 @@ if __name__ == "__main__":
                 time.sleep(wait_seconds)
 
         print(f"[*] [{datetime.now().strftime('%H:%M:%S')}] Bắt đầu radar live polling mỗi {args.interval} giây trong giờ quay thưởng...", flush=True)
+
+        # Tự động kích hoạt song song Logic G1->G5 Mini App nếu tồn tại (đồng bộ quay cùng đài 18h14 - 18h35)
+        logic_dir = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Logic'))
+        logic_py = os.path.join(logic_dir, 'soi_cau_g1_g5.py')
+        if os.path.exists(logic_py):
+            try:
+                import subprocess
+                subprocess.Popen(
+                    [sys.executable, 'soi_cau_g1_g5.py', '--live', '--interval', '8', '--push'],
+                    cwd=logic_dir,
+                    creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+                )
+                print(f"[*] [{datetime.now().strftime('%H:%M:%S')}] Đã tự động kích hoạt song song Logic G1->G5 Mini App đón quay cùng đài!", flush=True)
+            except Exception as ex_logic:
+                print(f"[!] Không thể kích hoạt Logic song song: {ex_logic}", flush=True)
+
         start_t = time.time()
         g5_locked = False
         final_completed = False
+        last_pushed_filled = -1
+        last_pushed_time = 0
 
         while True:
             # Kiểm tra chặn quá giờ 18h36
@@ -1076,23 +1108,39 @@ if __name__ == "__main__":
             try:
                 res = scan_radar(is_live=True)
                 if res:
-                    # 1. BƯỚC CHỐT KHÓA NGAY KHI HẾT G5 (18h24)
-                    if res.get('is_g5_finished') and not g5_locked:
+                    cur_filled = res.get('filled_count', 0)
+                    now_t = time.time()
+                    t_date = res.get('target_date', '')
+                    top1 = res.get('top_1')
+                    top4 = res.get('top_4')
+                    top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
+
+                    # 1. BƯỚC KHÓA CHỐT SỚM TẠI G5.5 HOẶC BACKUP 18H23:30 (HOẶC HẾT 19/19 GIẢI)
+                    is_lock_now = res.get('is_locked') or res.get('is_g5_5_done') or res.get('is_g5_finished')
+                    if is_lock_now and not g5_locked:
                         g5_locked = True
-                        top1 = res.get('top_1')
-                        top4 = res.get('top_4')
-                        top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
-                        t_date = res.get('target_date', '')
                         print(f"\n=======================================================", flush=True)
-                        print(f"🔒 [CHỐT KHÓA G5 - {datetime.now().strftime('%H:%M:%S')}] ĐÃ HOÀN TẤT 19/19 GIẢI G1->G5 KỲ {t_date}!", flush=True)
-                        print(f"👑 BẠCH THỦ TOP 1: {top1} | 🔥 TỨ THỦ: {top4}", flush=True)
+                        print(f"🔒 [CHỐT KHÓA G5 - {datetime.now().strftime('%H:%M:%S')}] ĐÃ KHÓA CHỐT DÀN SỐ KỲ {t_date}!", flush=True)
+                        print(f"👑 BẠCH THỦ TOP 1: {top1} (Lót lộn: {res.get('lot_lon')}) | 🔥 TỨ THỦ: {top4}", flush=True)
                         print(f"🌟 TOP 3 CÀNG: {top3_cang} (ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY QUAY LÚC 18H30)", flush=True)
                         print(f"⏱️ HẠN CHỐT VÀO TIỀN: TRƯỚC 18H28!", flush=True)
                         print(f"=======================================================\n", flush=True)
                         if args.auto_push:
-                            do_quick_git_push(f"Lock Radar G5 {t_date} (BT {top1}, TT {top4})")
+                            do_quick_git_push(f"🔒 Lock Radar G5 {t_date} (BT {top1}, TT {top4})")
+                            last_pushed_time = now_t
+                            last_pushed_filled = cur_filled
 
-                    # 2. BƯỚC ĐỐI CHIẾU KHI CÓ GIẢI ĐẶC BIỆT (sau 18h30)
+                    # 2. BƯỚC ĐẨY LIVE TỪNG GIẢI MỚI (18H15 - 18H23:30) ĐỂ WEB QUAY CÙNG ĐÀI
+                    elif not g5_locked and cur_filled > 0:
+                        if (cur_filled != last_pushed_filled) or (now_t - last_pushed_time >= 15):
+                            last_pushed_filled = cur_filled
+                            last_pushed_time = now_t
+                            p1 = res.get('live_prizes', {}).get('g1', '')
+                            tam_g1_str = f" (G1: {p1} - Tâm {p1[2]})" if (p1 and len(p1) >= 3) else ""
+                            if args.auto_push:
+                                do_quick_git_push(f"⚡ Live XSMB {t_date}: {cur_filled}/19 giải{tam_g1_str}")
+
+                    # 3. BƯỚC ĐỐI CHIẾU KHI CÓ GIẢI ĐẶC BIỆT (sau 18h30)
                     now_d_str = datetime.now().strftime('%d-%m-%Y')
                     if res.get('actual_de') and (now_d_str in res.get('target_date', '')):
                         print(f"\n🎯 [KẾT THÚC QUAY - {datetime.now().strftime('%H:%M:%S')}] Đã có Giải Đặc Biệt hôm nay ({res.get('target_date')}): {res.get('actual_de')}.", flush=True)
