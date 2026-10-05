@@ -45,6 +45,13 @@
   - Cột Phải: 🛡️ **LÓT LỘN TRỤ** kèm hiển thị `Cặp Song Thủ: [BT - Lót]` và nút `Copy Cặp ST`.
 - **Nút Chốt Gấp Trước 18h25 (1 Chạm)**: Tự động tổng hợp đầy đủ Bạch Thủ + Lót Lộn + Tứ Thủ + 3 Càng + Dàn 9s + Dàn Lót để gửi tin nhắn thần tốc.
 
-### D. Hệ Thống Windows Task Scheduler Tự Động Hóa
+### D. Kiến Trúc Dual-Engine Siêu Tốc (API 383.im & xosodaiphat.com)
+- **Engine 1 - API 383.im (`https://api.383.im/lottery/live.json`)**: Độ trễ cực thấp (~50ms), trả JSON trực tiếp, cập nhật bóng số real-time trong suốt giờ quay thưởng.
+- **Engine 2 - Dự Phòng Bền Vững (`xosodaiphat.com`)**: Phân tích BeautifulSoup bảng kết quả XSMB hôm nay và 30 ngày, tự động kích hoạt tức thì nếu API 383 gặp sự cố mạng hoặc trả kết quả rỗng.
+- **Khung Giờ Hoạt Động & Chống Cào Lặp**: Áp dụng nghiêm ngặt khung 17h00 - 18h35. Trước 17h00 hoặc sau 18h35 (đã có GĐB hôm nay) hệ thống tự động ngắt quét, bảo vệ tài nguyên máy tính và ngăn chặn ghi đè trùng lặp.
+
+### E. Hệ Thống Windows Task Scheduler Tự Động Hóa
 - **Task Name**: `XSMB_AI_AutoUpdate_18h15` (Chạy PowerShell UTF-8 ẩn `AUTO_CRON_18H15.ps1`).
-- **Lịch Chạy**: Tự động kích hoạt hàng ngày lúc **18:14**, lặp lại quét live liên tục mỗi 30s-60s trong suốt khung giờ quay thưởng 18h14 - 18h35, tự động commit và push GitHub.
+- **Lịch Chạy**: Tự động kích hoạt hàng ngày lúc **18:14**, lặp lại quét live liên tục mỗi 3s-5s trong suốt khung giờ quay thưởng 18h14 - 18h35, tự động commit và push GitHub.
+- **Khởi Động Nhanh**: Cung cấp `CHAY_LIVE_TRUC_TIEP_18H14.bat` để click chạy trực tiếp xem bảng điều khiển live.
+
