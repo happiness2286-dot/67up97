@@ -368,14 +368,14 @@
   },
   "filled_count": 17,
   "total_count": 19,
-  "is_g5_finished": false,
+  "is_g5_finished": true,
   "is_g5_5_done": false,
   "is_g5_6_done": false,
-  "is_locked": false,
-  "dan_type": "DYNAMIC",
-  "radar_status": "SCANNING_LIVE",
-  "status_text": "⚡ ĐANG QUAY TRỰC TIẾP (17/19 GIẢI) - CHỐT KHI XONG G5.5",
-  "lock_badge": "⚡ ĐANG QUAY (17/19)",
+  "is_locked": true,
+  "dan_type": "LOCKED",
+  "radar_status": "LOCKED_G5",
+  "status_text": "🔒 ĐÃ CHỐT KHÓA DÀN (MỐC 18H23:30) - VÀO TIỀN NGAY TRƯỚC 18H28!",
+  "lock_badge": "🔒 ĐÃ KHÓA CHỐT DÀN (MỐC 18H23:30)",
   "top_1": "81",
   "lot_lon": "18",
   "song_thu_tru": [
@@ -3808,5 +3808,5 @@
     "cang_bt_hits": 0,
     "cang_bt_rate": 0.0
   },
-  "last_updated": "18:23:21 07/10/2026"
+  "last_updated": "18:23:31 07/10/2026"
 }
