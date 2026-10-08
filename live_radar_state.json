@@ -19,7 +19,7 @@
     "g3": [
       "58235",
       "19643",
-      "",
+      "74473",
       "",
       "",
       ""
@@ -119,7 +119,7 @@
       "tooltip": "G3.1 vị trí 1: Đầu 5 (2d) | Lót ngày 2"
     }
   },
-  "filled_count": 5,
+  "filled_count": 6,
   "total_count": 19,
   "is_g5_finished": false,
   "is_g5_5_done": false,
@@ -127,8 +127,8 @@
   "is_locked": false,
   "dan_type": "DYNAMIC",
   "radar_status": "SCANNING_LIVE",
-  "status_text": "⚡ ĐANG QUAY TRỰC TIẾP (5/19 GIẢI) - CHỐT KHI XONG G5.5",
-  "lock_badge": "⚡ ĐANG QUAY (5/19)",
+  "status_text": "⚡ ĐANG QUAY TRỰC TIẾP (6/19 GIẢI) - CHỐT KHI XONG G5.5",
+  "lock_badge": "⚡ ĐANG QUAY (6/19)",
   "top_1": "03",
   "lot_lon": "30",
   "song_thu_tru": [
@@ -2643,5 +2643,5 @@
     "cang_bt_hits": 0,
     "cang_bt_rate": 0.0
   },
-  "last_updated": "18:17:30 08/10/2026"
+  "last_updated": "18:17:41 08/10/2026"
 }
