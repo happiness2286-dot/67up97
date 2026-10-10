@@ -227,6 +227,13 @@ def crawl_xsmb():
         from live_radar_scanner import fetch_383_live
         rec_383 = fetch_383_live()
         if rec_383 and rec_383.get('db') and len(rec_383.get('db')) == 5:
+            pz = rec_383.get('prizes', {})
+            rec_383['g7_1'] = pz.get('G7.1', '')
+            rec_383['g7_2'] = pz.get('G7.2', '')
+            rec_383['g7_3'] = pz.get('G7.3', '')
+            rec_383['g7_4'] = pz.get('G7.4', '')
+            all_vals = [rec_383.get('db', '')] + [pz.get(k, '') for k in pz if pz.get(k)]
+            rec_383['all_lo'] = [p[-2:] for p in all_vals if len(p) >= 2]
             incoming_recs.append(rec_383)
     except Exception:
         pass
