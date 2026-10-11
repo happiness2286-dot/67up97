@@ -72,3 +72,6 @@ Hệ thống đã hoàn tất nâng cấp toàn bộ sang cơ chế 2 lớp siê
    - Trong `AUTO_CRON_18H15.ps1`: Bộ lọc `Win32_Process` kiểm tra chính xác `CommandLine` chứa `67_up_95` mới coi là trùng. Tuyệt đối không tự thoát nhầm khi tiến trình của `Logic` đang chạy.
 4. **Quy tắc chốt dàn động G5.5**:
    - Dàn động của `67_up_95` khóa cứng ngay khi nổ giải 5 thứ 5 (**G5.5, 18/19 giải**) hoặc backup khẩn cấp tại **18h23:30**, đảm bảo người dùng có số hoàn tất trước 18h28.
+5. **Quy tắc hiển thị trước và sau 17h00 (Tránh reset trắng sớm)**:
+   - **Trước 17h00**: Giữ nguyên toàn bộ kết quả, các bóng số nổ, cầu ăn thông và đối chiếu trúng trượt của kỳ vừa quay gần nhất (ngày hôm qua) để người dùng xem lại cả ngày.
+   - **Từ 17h00 trở đi** (khi Task 17h00 chạy): Mới chính thức chuyển giao diện sang chế độ "⏳ CHỜ GIỜ QUAY (18H15)" cho kỳ quay hôm nay.
