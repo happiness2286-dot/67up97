@@ -52,8 +52,23 @@ Hệ thống đã hoàn tất nâng cấp toàn bộ sang cơ chế 2 lớp siê
 ---
 
 ## 📊 5. CÁC TỆP DỮ LIỆU ĐÃ ĐỒNG BỘ MỚI NHẤT
-* **Kết quả đã cập nhật**: Đến ngày 09/10/2026 (278 kỳ năm 2026, Đề 35, ĐB 20635).
+* **Kết quả đã cập nhật**: Đến ngày 10/10/2026 (279 kỳ năm 2026, Đề 53, ĐB 20653).
 * **Excel Master**: [Thong_Ke_G7_Va_Top20_XSMB_2026.xlsx](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/Thong_Ke_G7_Va_Top20_XSMB_2026.xlsx) (18 Sheets phân tích).
 * **Tab 4 Cầu Động AI**: [tab4_data.json](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/tab4_data.json) & [so_sanh_dan.json](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/so_sanh_dan.json).
 * **Live Radar State**: [live_radar_state.json](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/live_radar_state.json).
 * **Bộ cài đặt Task Scheduler**: [register_task.ps1](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/register_task.ps1).
+
+---
+
+## 🔒 6. CƠ CHẾ PHÂN LẬP & LỆCH GIỜ VỚI DỰ ÁN LOGIC & 58_UP_TO_75
+1. **Phân lập tuyệt đối dữ liệu & Git**:
+   - `67_up_95`: Git repo `happiness2286-dot/67up97.git`, dữ liệu nằm độc lập trong thư mục `67_up_95`.
+   - `Logic`: Git repo `happiness2286-dot/logistic.git`, chạy độc lập trong thư mục `Logic`.
+   - `58_up_to_75`: Git repo `happiness2286-dot/57_up_to_75.git`, chạy độc lập trong thư mục `58_up_to_75`.
+2. **Lệch giờ chạy tự động (Staggered Scheduling)**:
+   - Live: `Logic` chạy **18:14:14** | `67_up_95` chạy **18:15:15** (lệch sau 1 phút, đón đúng giờ đài quay).
+   - Chốt ngày: `Logic` chạy **18:35:35** | `67_up_95` chạy **18:37:37** (lệch sau 2 phút, cào và xuất Excel Master sau khi Logic đã đẩy xong).
+3. **Chống nhận diện nhầm tiến trình**:
+   - Trong `AUTO_CRON_18H15.ps1`: Bộ lọc `Win32_Process` kiểm tra chính xác `CommandLine` chứa `67_up_95` mới coi là trùng. Tuyệt đối không tự thoát nhầm khi tiến trình của `Logic` đang chạy.
+4. **Quy tắc chốt dàn động G5.5**:
+   - Dàn động của `67_up_95` khóa cứng ngay khi nổ giải 5 thứ 5 (**G5.5, 18/19 giải**) hoặc backup khẩn cấp tại **18h23:30**, đảm bảo người dùng có số hoàn tất trước 18h28.
