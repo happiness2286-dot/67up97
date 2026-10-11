@@ -19,30 +19,30 @@ if (-not (Test-Path $gitExe)) { $gitExe = "git.exe" }
 $logFile = Join-Path $scriptDir "cron_history.log"
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
-# Kiem tra tranh chay trung lap: neu da co live_radar_scanner.py dang chay thi thoat
-$existing = Get-CimInstance Win32_Process -Filter "Name LIKE 'python%'" | Where-Object { $_.CommandLine -like "*live_radar_scanner.py*" }
+# Kiem tra tranh chay trung lap: chi thoat neu chinh tien trinh cua thu muc 67_up_95 dang chay
+$existing = Get-CimInstance Win32_Process -Filter "Name LIKE 'python%'" | Where-Object { 
+    $_.CommandLine -like "*live_radar_scanner.py*" -and ($_.CommandLine -like "*67_up_95*" -or $_.CommandLine -like "*67UP97*")
+}
 if ($existing) {
-    "[$timestamp] [INFO] Tien trinh live_radar_scanner.py da dang hoat dong (PID: $($existing.ProcessId)). Bo qua lan kich hoat nay." | Out-File -FilePath $logFile -Append -Encoding utf8
+    "[$timestamp] [INFO] Tien trinh live_radar_scanner.py cua 67_up_95 da dang hoat dong (PID: $($existing.ProcessId)). Bo qua lan kich hoat nay." | Out-File -FilePath $logFile -Append -Encoding utf8
     exit 0
 }
 
 "=======================================================" | Out-File -FilePath $logFile -Append -Encoding utf8
-"[$timestamp] BAT DAU CHU TRINH TU DONG XSMB (KHUNG GIO 17H00 - 18H35)..." | Out-File -FilePath $logFile -Append -Encoding utf8
+"[$timestamp] BAT DAU CHU TRINH TU DONG XSMB 67_UP_95 (KHUNG GIO 17H00 - 18H37)..." | Out-File -FilePath $logFile -Append -Encoding utf8
 
 try {
-    # 1. Quet Radar Live truc tiep (18h14 - 18h32)
-    # Tu dong khoi dong song song Logic G1->G5 Mini App luc 18h14 de quay cung dai
-    # Tu dong khoa chot tai G5.5 / 18h23:30 va day len GitHub ngay lập tức
-    # Tu dong chot khoa va push GitHub ngay khi hoan tat G5 (khoang 18h24)
-    "[$timestamp] Dang chay Live Radar Scanner G1->G5 (tu khoa khi het G5)..." | Out-File -FilePath $logFile -Append -Encoding utf8
+    # 1. Quet Radar Live truc tiep (18h15 - 18h32)
+    # Tu dong khoa chot tai G5.5 / 18h23:30 va day len GitHub ngay lap tuc
+    "[$timestamp] Dang chay Live Radar Scanner G1->G5.5 (tu dong khoa chot tai G5.5)..." | Out-File -FilePath $logFile -Append -Encoding utf8
     & $pythonExe live_radar_scanner.py --live --interval 5 --duration 1200 --auto_push 2>&1 | Out-File -FilePath $logFile -Append -Encoding utf8
 
-    # 2. Sau khi co Giai Dac Biet (khoang 18h31-18h35), doi den 18h34 de cac dai dong bo ket qua day du
+    # 2. Sau khi co Giai Dac Biet (khoang 18h31-18h35), doi den 18h36 de cac dai dong bo ket qua day du va tach roi gio voi Logic (18h35)
     $nowHour = (Get-Date).Hour
     $nowMin = (Get-Date).Minute
-    if ($nowHour -eq 18 -and $nowMin -lt 34) {
-        $waitSec = (34 - $nowMin) * 60
-        "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] Cho $waitSec giay den 18h34 de dong bo ket qua chot..." | Out-File -FilePath $logFile -Append -Encoding utf8
+    if ($nowHour -eq 18 -and $nowMin -lt 36) {
+        $waitSec = (36 - $nowMin) * 60
+        "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] Cho $waitSec giay den 18h36 de dong bo ket qua chot toan dien..." | Out-File -FilePath $logFile -Append -Encoding utf8
         Start-Sleep -Seconds $waitSec
     }
 

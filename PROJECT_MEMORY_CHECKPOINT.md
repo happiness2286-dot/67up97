@@ -43,8 +43,8 @@ Hệ thống đã hoàn tất nâng cấp toàn bộ sang cơ chế 2 lớp siê
 Đã khắc phục hoàn toàn sự cố ngày 09/10 do tắt máy/mất nguồn:
 1. **Tách biệt các mốc độc lập (Không dùng Sleep dài 74 phút)**:
    - **Tầng 1 (17h00)**: [AUTO_CRON_18H15.ps1](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/AUTO_CRON_18H15.ps1) chuẩn bị dàn số Chờ Quay cho ngày mới và thoát ngay.
-   - **Tầng 2 (18h14)**: Task `XSMB_AI_AutoLive_18h14` kích hoạt đón lồng cầu quay trực tiếp.
-   - **Tầng 3 (18h35)**: Task `XSMB_AI_AutoDaily_18h35` chốt toàn diện Khung 3N & Tab 4, xuất Excel Master và đẩy GitHub.
+   - **Tầng 2 (18h15)**: Task `XSMB_AI_AutoLive_18h15` kích hoạt đón lồng cầu quay trực tiếp, khóa chốt sớm tại G5.5 / 18h23:30.
+   - **Tầng 3 (18h37)**: Task `XSMB_AI_AutoDaily_18h37` chốt toàn diện Khung 3N & Tab 4, xuất Excel Master và đẩy GitHub (lệch giờ sau Logic 18h35:35 để tránh tranh chấp).
 2. **Cơ chế Tự Động Bù (Self-Healing Recovery)**:
    - **Tầng 4 (AtLogOn - Khi mở máy/đăng nhập)**: Task `XSMB_AI_Catchup_OnLogon` chạy [catchup_check.py](file:///e:/DONG%20BO/New%20Ha%20GCCK/N%C4%83m%202026/D%E1%BB%B1%20%C3%81n%20AI_%20Antigravity/67_up_95/catchup_check.py). Nếu máy tính bị tắt trong giờ quay và mở lại lúc tối (19h, 20h, 22h...), script phát hiện hôm nay chưa có kết quả sẽ **tự động cào và cập nhật bù ngay trong 10 giây**.
    - **Tầng 5 (19h00 Evening Fallback)**: Task `XSMB_AI_Catchup_Evening` có cờ `StartWhenAvailable = $true`, tự động kích hoạt bù nếu bị lỡ giờ.

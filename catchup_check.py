@@ -38,9 +38,9 @@ def check_and_catchup():
     cur_date_str = now.strftime('%d-%m-%Y')
     cur_min = now.hour * 60 + now.minute
 
-    # Nếu chưa tới 18h35 thì chưa phải giờ chốt kết quả ngày hôm nay
-    if cur_min < (18 * 60 + 35):
-        log(f"Hiện tại {now.strftime('%H:%M:%S')} chưa tới giờ chốt kết quả (18h35). Không cần bù.")
+    # Nếu chưa tới 18h37 thì chưa phải giờ chốt kết quả ngày hôm nay
+    if cur_min < (18 * 60 + 37):
+        log(f"Hiện tại {now.strftime('%H:%M:%S')} chưa tới giờ chốt kết quả (18h37). Không cần bù.")
         return
 
     # Kiểm tra xem data_2026.json đã có kết quả hôm nay chưa

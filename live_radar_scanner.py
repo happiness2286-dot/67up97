@@ -508,7 +508,11 @@ def scan_radar(is_live=True):
     p_g4 = [live_p.get(f'G4.{i}', '') for i in range(1, 5)]
     p_g5 = [live_p.get(f'G5.{i}', '') for i in range(1, 7)]
     filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
-    is_completed = (filled_prizes >= 19)
+    has_g5_5 = bool(live_p.get('G5.5', ''))
+    now_curr = datetime.now()
+    is_timeout_backup = (now_curr.hour == 18 and (now_curr.minute > 23 or (now_curr.minute == 23 and now_curr.second >= 30)))
+    # Khóa chốt ngay khi có kết quả G5.5 (từ 18 giải) hoặc backup cứng lúc 18h23:30 hoặc khi đủ 19 giải
+    is_completed = (filled_prizes >= 19) or (has_g5_5 and filled_prizes >= 18) or (is_timeout_backup and filled_prizes >= 10)
 
     tam_g1 = p_g1[2] if (p_g1 and len(p_g1) >= 3 and p_g1.isdigit()) else ''
     tam_g1_set = {tam_g1, str(BONG_DUONG.get(int(tam_g1), ''))} if tam_g1 else set()
@@ -640,11 +644,11 @@ def scan_radar(is_live=True):
         lock_badge = f"🎯 ĐÃ CÓ KẾT QUẢ ĐỀ: {actual_de}"
     elif is_completed:
         radar_status = "LOCKED_G5"
-        status_text = "🔒 ĐÃ CHỐT KHÓA KHI HẾT G5 (19/19 GIẢI) - VÀO TIỀN NGAY TRƯỚC 18H28!"
-        lock_badge = "🔒 ĐÃ KHÓA CHỐT DÀN (HẾT G5)"
+        status_text = "🔒 ĐÃ CHỐT KHÓA TẠI G5.5 - VÀO TIỀN NGAY TRƯỚC 18H28!"
+        lock_badge = "🔒 ĐÃ KHÓA CHỐT DÀN (G5.5)"
     elif filled_prizes > 0:
         radar_status = "SCANNING_LIVE"
-        status_text = f"⚡ ĐANG QUAY TRỰC TIẾP ({filled_prizes}/19 GIẢI) - CHỐT KHI XONG G5"
+        status_text = f"⚡ ĐANG QUAY TRỰC TIẾP ({filled_prizes}/19 GIẢI) - CHỐT KHI XONG G5.5"
         lock_badge = f"⚡ ĐANG QUAY ({filled_prizes}/19)"
     else:
         radar_status = "BEFORE_DRAW"
@@ -1019,7 +1023,7 @@ if __name__ == "__main__":
             try:
                 res = scan_radar()
                 if res:
-                    # 1. BƯỚC CHỐT KHÓA NGAY KHI HẾT G5 (18h24)
+                    # 1. BƯỚC CHỐT KHÓA NGAY KHI CÓ G5.5 (khoảng 18h22 - 18h23:30)
                     if res.get('is_g5_finished') and not g5_locked:
                         g5_locked = True
                         top1 = res.get('top_1')
@@ -1027,13 +1031,13 @@ if __name__ == "__main__":
                         top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
                         t_date = res.get('target_date', '')
                         print(f"\n=======================================================", flush=True)
-                        print(f"🔒 [CHỐT KHÓA G5 - {datetime.now().strftime('%H:%M:%S')}] ĐÃ HOÀN TẤT 19/19 GIẢI G1->G5 KỲ {t_date}!", flush=True)
+                        print(f"🔒 [CHỐT KHÓA G5.5 - {datetime.now().strftime('%H:%M:%S')}] ĐÃ HOÀN TẤT GIẢI G1->G5.5 KỲ {t_date}!", flush=True)
                         print(f"👑 BẠCH THỦ TOP 1: {top1} | 🔥 TỨ THỦ: {top4}", flush=True)
                         print(f"🌟 TOP 3 CÀNG: {top3_cang} (ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY QUAY LÚC 18H30)", flush=True)
                         print(f"⏱️ HẠN CHỐT VÀO TIỀN: TRƯỚC 18H28!", flush=True)
                         print(f"=======================================================\n", flush=True)
                         if args.auto_push:
-                            do_quick_git_push(f"Lock Radar G5 {t_date} (BT {top1}, TT {top4})")
+                            do_quick_git_push(f"Lock Radar G5.5 {t_date} (BT {top1}, TT {top4})")
 
                     # 2. BƯỚC ĐỐI CHIẾU KHI CÓ GIẢI ĐẶC BIỆT (chỉ kết thúc sau 18h30 khi thực sự có GĐB hôm nay)
                     now_t = datetime.now()
