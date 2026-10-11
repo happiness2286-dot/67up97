@@ -345,8 +345,9 @@ def scan_radar(is_live=True):
             m_d = re.search(r'(\d{2})[-/](\d{2})[-/](\d{4})', draws[0]['date'])
             if m_d and f"{m_d.group(1)}-{m_d.group(2)}-{m_d.group(3)}" == today_str:
                 is_today = True
-        if not is_today:
-            # Chưa bắt đầu mở thưởng kỳ hôm nay (ví dụ lúc 18h14) -> Khởi tạo kỳ hôm nay chờ mở thưởng
+        # Chỉ chuyển sang kỳ hôm nay (chờ mở thưởng) từ 17h00 trở đi!
+        # Trước 17h00: Giữ nguyên kết quả đầy đủ của kỳ vừa quay để người dùng theo dõi và kiểm chứng cả ngày.
+        if not is_today and today_dt.hour >= 17:
             empty_p = {
                 'G1': '', 'G2.1': '', 'G2.2': '',
                 'G3.1': '', 'G3.2': '', 'G3.3': '', 'G3.4': '', 'G3.5': '', 'G3.6': '',
