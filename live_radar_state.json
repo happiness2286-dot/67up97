@@ -36,7 +36,7 @@
       "6093",
       "9746",
       "0853",
-      ""
+      "3967"
     ]
   },
   "highlight_positions": {
@@ -468,14 +468,66 @@
       "label": "Theo dõi ngày 1 (Mới chạm)",
       "color_type": "cycle_watch",
       "tooltip": "G5.5 vị trí 3: Đuôi 5 (1d) | Theo dõi ngày 1 (Mới chạm)"
+    },
+    "G6.1_1": {
+      "pos_raw": "G6.1 vị trí 1",
+      "role": "tail",
+      "role_name": "Đuôi",
+      "digit": "2",
+      "digit_bong": "7",
+      "cycle": 1,
+      "cycle_suffix": "1d",
+      "category": "Theo dõi",
+      "label": "Theo dõi ngày 1 (Mới chạm)",
+      "color_type": "cycle_watch",
+      "tooltip": "G6.1 vị trí 1: Đuôi 2 (1d) | Theo dõi ngày 1 (Mới chạm)"
+    },
+    "G6.2_2": {
+      "pos_raw": "G6.2 vị trí 2",
+      "role": "tail",
+      "role_name": "Đuôi",
+      "digit": "6",
+      "digit_bong": "1",
+      "cycle": 1,
+      "cycle_suffix": "1d",
+      "category": "Theo dõi",
+      "label": "Theo dõi ngày 1 (Mới chạm)",
+      "color_type": "cycle_watch",
+      "tooltip": "G6.2 vị trí 2: Đuôi 6 (1d) | Theo dõi ngày 1 (Mới chạm)"
+    },
+    "G6.2_3": {
+      "pos_raw": "G6.2 vị trí 3",
+      "role": "head",
+      "role_name": "Đầu",
+      "digit": "2",
+      "digit_bong": "7",
+      "cycle": 1,
+      "cycle_suffix": "1d",
+      "category": "Theo dõi",
+      "label": "Theo dõi ngày 1 (Mới chạm)",
+      "color_type": "cycle_watch",
+      "tooltip": "G6.2 vị trí 3: Đầu 2 (1d) | Theo dõi ngày 1 (Mới chạm)"
+    },
+    "G6.3_2": {
+      "pos_raw": "G6.3 vị trí 2",
+      "role": "tail",
+      "role_name": "Đuôi",
+      "digit": "1",
+      "digit_bong": "6",
+      "cycle": 1,
+      "cycle_suffix": "1d",
+      "category": "Theo dõi",
+      "label": "Theo dõi ngày 1 (Mới chạm)",
+      "color_type": "cycle_watch",
+      "tooltip": "G6.3 vị trí 2: Đuôi 1 (1d) | Theo dõi ngày 1 (Mới chạm)"
     }
   },
-  "filled_count": 18,
+  "filled_count": 19,
   "total_count": 19,
   "is_g5_finished": true,
-  "radar_status": "LOCKED_G5",
-  "status_text": "🔒 ĐÃ CHỐT KHÓA TẠI G5.5 - VÀO TIỀN NGAY TRƯỚC 18H28!",
-  "lock_badge": "🔒 ĐÃ KHÓA CHỐT DÀN (G5.5)",
+  "radar_status": "FINISHED_RESULT",
+  "status_text": "ĐÃ HOÀN TẤT KỲ QUAY (ĐỀ VỀ 66)",
+  "lock_badge": "🎯 ĐÃ CÓ KẾT QUẢ ĐỀ: 66",
   "top_1": "31",
   "lot_lon": "13",
   "song_thu_tru": [
@@ -3168,10 +3220,10 @@
       "top_rank": "❌ Loại bỏ (Ngoài N1)"
     }
   ],
-  "actual_de": "",
+  "actual_de": "66",
   "dan_tinh_4cap": {
-    "target_date": "Thứ năm ngày 15-10-2026",
-    "status_text": "ĐANG CÓ HIỆU LỰC (VÀO TIỀN TRƯỚC 18H15)",
+    "target_date": "Thứ sáu ngày 16-10-2026",
+    "status_text": "ĐANG HIỆU LỰC CHO KỲ TỚI (VÀO TIỀN TRƯỚC 18H15 NGÀY 16/10)",
     "bach_thu": "31",
     "lot_lon": "13",
     "song_thu": [
@@ -3305,8 +3357,8 @@
     ]
   },
   "frame_transition": {
-    "last_result": "Kỳ gần nhất (Thứ năm ngày 15-10-2026) Đề về đang quay: Đang chờ quay Giải Đặc Biệt",
-    "status_badge": "ĐANG QUAY THƯỞNG",
+    "last_result": "Kỳ gần nhất (Thứ năm ngày 15-10-2026) Đề về 66: ❌ TRƯỢT N1 → GIỮ NGUYÊN KHUNG, ĐÁNH N2 (36 SỐ)",
+    "status_badge": "ĐANG ĐÁNH N2 (36 SỐ)",
     "dan_n1": [
       "01",
       "02",
@@ -3450,6 +3502,110 @@
   "history_records": [
     {
       "stt": 1,
+      "date": "Thứ năm ngày 15-10-2026",
+      "de": "66",
+      "actual_3d": "066",
+      "top_1": "81",
+      "lot_lon": "18",
+      "song_thu": [
+        "81",
+        "18"
+      ],
+      "hit_top_1": false,
+      "hit_lot_lon": false,
+      "hit_song_thu": false,
+      "top_4": [
+        "81",
+        "18",
+        "31",
+        "19"
+      ],
+      "hit_top_4": false,
+      "dan_9_so": [
+        "81",
+        "31",
+        "19",
+        "69",
+        "91",
+        "13",
+        "18",
+        "96",
+        "63"
+      ],
+      "pred_heads": "",
+      "pred_tails": "",
+      "hit_dan_9": false,
+      "dan_lot": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "08",
+        "09",
+        "11",
+        "12",
+        "13",
+        "15",
+        "17",
+        "21",
+        "22",
+        "23",
+        "24",
+        "26",
+        "28",
+        "29",
+        "32",
+        "33",
+        "34",
+        "35",
+        "37",
+        "38",
+        "39",
+        "42",
+        "43",
+        "44",
+        "45",
+        "51",
+        "53",
+        "55",
+        "58",
+        "59",
+        "60",
+        "61",
+        "62",
+        "63",
+        "65",
+        "67",
+        "68",
+        "69",
+        "72",
+        "80",
+        "82",
+        "83",
+        "84",
+        "85",
+        "87",
+        "88",
+        "91",
+        "92",
+        "95",
+        "96",
+        "97",
+        "99"
+      ],
+      "hit_dan_lot": false,
+      "hit_n1": false,
+      "top3_cang": [
+        "1",
+        "4",
+        "6"
+      ],
+      "hit_cang_tt": false,
+      "hit_cang_bt": false
+    },
+    {
+      "stt": 2,
       "date": "Thứ tư ngày 14-10-2026",
       "de": "59",
       "actual_3d": "259",
@@ -3553,7 +3709,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 2,
+      "stt": 3,
       "date": "Thứ ba ngày 13-10-2026",
       "de": "18",
       "actual_3d": "618",
@@ -3657,7 +3813,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 3,
+      "stt": 4,
       "date": "Thứ hai ngày 12-10-2026",
       "de": "87",
       "actual_3d": "287",
@@ -3761,7 +3917,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 4,
+      "stt": 5,
       "date": "Chủ nhật ngày 11-10-2026",
       "de": "63",
       "actual_3d": "363",
@@ -3866,7 +4022,7 @@
     }
   ],
   "history_summary": {
-    "total_evals": 4,
+    "total_evals": 5,
     "top1_hits": 0,
     "top1_rate": 0.0,
     "song_thu_hits": 0,
@@ -3876,13 +4032,13 @@
     "dan9_hits": 0,
     "dan9_rate": 0.0,
     "lot_hits": 4,
-    "lot_rate": 100.0,
+    "lot_rate": 80.0,
     "n1_hits": 4,
-    "n1_rate": 100.0,
+    "n1_rate": 80.0,
     "cang_tt_hits": 0,
     "cang_tt_rate": 0.0,
     "cang_bt_hits": 0,
     "cang_bt_rate": 0.0
   },
-  "last_updated": "18:22:23 15/10/2026"
+  "last_updated": "18:30:43 15/10/2026"
 }
