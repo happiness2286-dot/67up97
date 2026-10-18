@@ -36,7 +36,7 @@
       "6131",
       "4116",
       "3869",
-      ""
+      "3213"
     ]
   },
   "highlight_positions": {
@@ -221,14 +221,40 @@
       "label": "Theo dõi ngày 1 (Mới chạm)",
       "color_type": "cycle_watch",
       "tooltip": "G5.5 vị trí 2: Đầu 8 (1d) | Theo dõi ngày 1 (Mới chạm)"
+    },
+    "G5.6_4": {
+      "pos_raw": "G5.6 vị trí 4",
+      "role": "head",
+      "role_name": "Đầu",
+      "digit": "3",
+      "digit_bong": "8",
+      "cycle": 1,
+      "cycle_suffix": "1d",
+      "category": "Theo dõi",
+      "label": "Theo dõi ngày 1 (Mới chạm)",
+      "color_type": "cycle_watch",
+      "tooltip": "G5.6 vị trí 4: Đầu 3 (1d) | Theo dõi ngày 1 (Mới chạm)"
+    },
+    "G6.3_2": {
+      "pos_raw": "G6.3 vị trí 2",
+      "role": "head",
+      "role_name": "Đầu",
+      "digit": "4",
+      "digit_bong": "9",
+      "cycle": 1,
+      "cycle_suffix": "1d",
+      "category": "Theo dõi",
+      "label": "Theo dõi ngày 1 (Mới chạm)",
+      "color_type": "cycle_watch",
+      "tooltip": "G6.3 vị trí 2: Đầu 4 (1d) | Theo dõi ngày 1 (Mới chạm)"
     }
   },
-  "filled_count": 18,
+  "filled_count": 19,
   "total_count": 19,
   "is_g5_finished": true,
-  "radar_status": "LOCKED_G5",
-  "status_text": "🔒 ĐÃ CHỐT KHÓA TẠI G5.5 - VÀO TIỀN NGAY TRƯỚC 18H28!",
-  "lock_badge": "🔒 ĐÃ KHÓA CHỐT DÀN (G5.5)",
+  "radar_status": "FINISHED_RESULT",
+  "status_text": "ĐÃ HOÀN TẤT KỲ QUAY (ĐỀ VỀ 42)",
+  "lock_badge": "🎯 ĐÃ CÓ KẾT QUẢ ĐỀ: 42",
   "top_1": "51",
   "lot_lon": "15",
   "song_thu_tru": [
@@ -2945,10 +2971,10 @@
       "top_rank": "❌ Loại bỏ (Ngoài N1)"
     }
   ],
-  "actual_de": "",
+  "actual_de": "42",
   "dan_tinh_4cap": {
-    "target_date": "Chủ nhật ngày 18-10-2026",
-    "status_text": "ĐANG CÓ HIỆU LỰC (VÀO TIỀN TRƯỚC 18H15)",
+    "target_date": "Thứ hai ngày 19-10-2026",
+    "status_text": "ĐANG HIỆU LỰC CHO KỲ TỚI (VÀO TIỀN TRƯỚC 18H15 NGÀY 19/10)",
     "bach_thu": "51",
     "lot_lon": "15",
     "song_thu": [
@@ -3082,8 +3108,8 @@
     ]
   },
   "frame_transition": {
-    "last_result": "Kỳ gần nhất (Chủ nhật ngày 18-10-2026) Đề về đang quay: Đang chờ quay Giải Đặc Biệt",
-    "status_badge": "ĐANG QUAY THƯỞNG",
+    "last_result": "Kỳ gần nhất (Chủ nhật ngày 18-10-2026) Đề về 42: 🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI",
+    "status_badge": "ĐÃ TRÚNG N1 → RESET CẦU MỚI",
     "dan_n1": [
       "01",
       "02",
@@ -3227,6 +3253,110 @@
   "history_records": [
     {
       "stt": 1,
+      "date": "Chủ nhật ngày 18-10-2026",
+      "de": "42",
+      "actual_3d": "642",
+      "top_1": "09",
+      "lot_lon": "90",
+      "song_thu": [
+        "09",
+        "90"
+      ],
+      "hit_top_1": false,
+      "hit_lot_lon": false,
+      "hit_song_thu": false,
+      "top_4": [
+        "09",
+        "60",
+        "04",
+        "80"
+      ],
+      "hit_top_4": false,
+      "dan_9_so": [
+        "09",
+        "60",
+        "04",
+        "80",
+        "15",
+        "65",
+        "45",
+        "95",
+        "59"
+      ],
+      "pred_heads": "",
+      "pred_tails": "",
+      "hit_dan_9": false,
+      "dan_lot": [
+        "01",
+        "02",
+        "03",
+        "05",
+        "08",
+        "11",
+        "12",
+        "13",
+        "15",
+        "17",
+        "18",
+        "19",
+        "21",
+        "22",
+        "23",
+        "24",
+        "26",
+        "28",
+        "29",
+        "31",
+        "32",
+        "33",
+        "34",
+        "35",
+        "37",
+        "38",
+        "39",
+        "42",
+        "43",
+        "44",
+        "45",
+        "51",
+        "53",
+        "55",
+        "58",
+        "59",
+        "61",
+        "62",
+        "63",
+        "65",
+        "67",
+        "68",
+        "69",
+        "72",
+        "81",
+        "82",
+        "83",
+        "84",
+        "85",
+        "87",
+        "88",
+        "91",
+        "92",
+        "95",
+        "96",
+        "97",
+        "99"
+      ],
+      "hit_dan_lot": true,
+      "hit_n1": true,
+      "top3_cang": [
+        "0",
+        "1",
+        "5"
+      ],
+      "hit_cang_tt": false,
+      "hit_cang_bt": false
+    },
+    {
+      "stt": 2,
       "date": "Thứ bảy ngày 17-10-2026",
       "de": "38",
       "actual_3d": "538",
@@ -3330,7 +3460,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 2,
+      "stt": 3,
       "date": "Thứ sáu ngày 16-10-2026",
       "de": "56",
       "actual_3d": "756",
@@ -3434,7 +3564,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 3,
+      "stt": 4,
       "date": "Thứ năm ngày 15-10-2026",
       "de": "66",
       "actual_3d": "066",
@@ -3538,7 +3668,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 4,
+      "stt": 5,
       "date": "Thứ tư ngày 14-10-2026",
       "de": "59",
       "actual_3d": "259",
@@ -3643,7 +3773,7 @@
     }
   ],
   "history_summary": {
-    "total_evals": 4,
+    "total_evals": 5,
     "top1_hits": 0,
     "top1_rate": 0.0,
     "song_thu_hits": 0,
@@ -3652,14 +3782,14 @@
     "top4_rate": 0.0,
     "dan9_hits": 0,
     "dan9_rate": 0.0,
-    "lot_hits": 2,
-    "lot_rate": 50.0,
-    "n1_hits": 2,
-    "n1_rate": 50.0,
+    "lot_hits": 3,
+    "lot_rate": 60.0,
+    "n1_hits": 3,
+    "n1_rate": 60.0,
     "cang_tt_hits": 0,
     "cang_tt_rate": 0.0,
     "cang_bt_hits": 0,
     "cang_bt_rate": 0.0
   },
-  "last_updated": "18:22:12 18/10/2026"
+  "last_updated": "18:30:33 18/10/2026"
 }
