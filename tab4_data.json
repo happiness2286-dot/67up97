@@ -2,8 +2,8 @@
   "lich_su": [
     {
       "ngay": "Chủ nhật ngày 25-10-2026",
-      "de": "--",
-      "de_ve": "--",
+      "de": "28",
+      "de_ve": "28",
       "dan_cau_dong": [
         "00",
         "01",
@@ -229,12 +229,12 @@
       ],
       "canh_bao": {
         "canh_bao": false,
-        "bach_thu": "99",
+        "bach_thu": "44",
         "tu_thu": [
-          "91",
           "11",
           "12",
-          "51"
+          "51",
+          "91"
         ],
         "so_ngay_max": 3
       },
@@ -618,7 +618,10 @@
           "55"
         ]
       },
-      "thoi_gian": "2026-10-25T17:20:13.298959"
+      "thoi_gian": "2026-10-25T18:36:32.802926",
+      "hit_top_1": false,
+      "hit_top_4": false,
+      "hit_dan_9": false
     },
     {
       "ngay": "Thứ bảy ngày 24-10-2026",
@@ -26104,7 +26107,7 @@
     }
   ],
   "latest": {
-    "ngay": "Chủ nhật ngày 25-10-2026",
+    "ngay": "Kỳ kế tiếp ngày 25-10-2026",
     "de": "--",
     "de_ve": "--",
     "dan_cau_dong": [
@@ -26304,53 +26307,47 @@
       "94",
       "98"
     ],
-    "bach_thu": "99",
+    "bach_thu": "44",
     "tu_thu": [
-      "91",
       "11",
       "12",
-      "51"
+      "51",
+      "91"
     ],
     "dan_9": [
-      "99",
-      "91",
-      "95",
-      "19",
+      "44",
+      "41",
+      "45",
+      "14",
       "11",
       "15",
-      "59",
+      "54",
       "51",
       "55"
     ],
     "dan_dao": [
-      "19",
-      "59",
-      "91",
+      "14",
+      "54",
+      "41",
       "51",
-      "95",
+      "45",
       "15"
     ],
     "canh_bao": {
       "canh_bao": false,
-      "bach_thu": "99",
+      "bach_thu": "44",
       "tu_thu": [
-        "91",
         "11",
         "12",
-        "51"
+        "51",
+        "91"
       ],
       "so_ngay_max": 3
     },
     "cau_chay": [
       {
-        "vi_tri": "g5.3.1",
-        "chu_so": "9",
-        "so_ngay": 3,
-        "diem": 3
-      },
-      {
-        "vi_tri": "g5.1.2",
-        "chu_so": "9",
+        "vi_tri": "g5.5.3",
+        "chu_so": "4",
         "so_ngay": 3,
         "diem": 3
       },
@@ -26373,20 +26370,38 @@
         "diem": 3
       },
       {
+        "vi_tri": "g3.1.0",
+        "chu_so": "9",
+        "so_ngay": 3,
+        "diem": 3
+      },
+      {
         "vi_tri": "g2.1.4",
         "chu_so": "5",
         "so_ngay": 3,
         "diem": 3
       },
       {
-        "vi_tri": "g5.5.3",
-        "chu_so": "4",
+        "vi_tri": "g1.0.2",
+        "chu_so": "6",
+        "so_ngay": 3,
+        "diem": 3
+      },
+      {
+        "vi_tri": "g1.0.0",
+        "chu_so": "1",
+        "so_ngay": 3,
+        "diem": 3
+      },
+      {
+        "vi_tri": "g5.5.1",
+        "chu_so": "9",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g5.5.0",
-        "chu_so": "8",
+        "chu_so": "0",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26403,8 +26418,8 @@
         "diem": 2
       },
       {
-        "vi_tri": "g5.4.0",
-        "chu_so": "5",
+        "vi_tri": "g5.4.1",
+        "chu_so": "1",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26416,7 +26431,13 @@
       },
       {
         "vi_tri": "g5.3.2",
-        "chu_so": "6",
+        "chu_so": "4",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g5.3.1",
+        "chu_so": "3",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26427,8 +26448,8 @@
         "diem": 2
       },
       {
-        "vi_tri": "g5.2.3",
-        "chu_so": "4",
+        "vi_tri": "g5.2.2",
+        "chu_so": "9",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26439,14 +26460,26 @@
         "diem": 2
       },
       {
+        "vi_tri": "g5.2.0",
+        "chu_so": "2",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
         "vi_tri": "g5.1.3",
         "chu_so": "0",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g5.1.1",
-        "chu_so": "8",
+        "vi_tri": "g5.1.2",
+        "chu_so": "9",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g5.1.0",
+        "chu_so": "3",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26458,31 +26491,25 @@
       },
       {
         "vi_tri": "g5.0.2",
-        "chu_so": "6",
+        "chu_so": "5",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g5.0.1",
-        "chu_so": "6",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g5.0.0",
-        "chu_so": "0",
+        "chu_so": "3",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g4.3.2",
-        "chu_so": "6",
+        "chu_so": "2",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g4.3.1",
-        "chu_so": "4",
+        "vi_tri": "g4.3.0",
+        "chu_so": "2",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26499,26 +26526,32 @@
         "diem": 2
       },
       {
-        "vi_tri": "g4.2.0",
+        "vi_tri": "g4.2.1",
         "chu_so": "9",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g4.1.0",
+        "vi_tri": "g4.2.0",
+        "chu_so": "7",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g4.1.2",
+        "chu_so": "2",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g4.1.1",
         "chu_so": "8",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g4.0.3",
-        "chu_so": "1",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g3.5.4",
-        "chu_so": "0",
+        "vi_tri": "g4.0.0",
+        "chu_so": "3",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26529,20 +26562,26 @@
         "diem": 2
       },
       {
-        "vi_tri": "g3.5.0",
-        "chu_so": "0",
+        "vi_tri": "g3.5.2",
+        "chu_so": "7",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g3.4.4",
-        "chu_so": "7",
+        "vi_tri": "g3.5.1",
+        "chu_so": "2",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g3.4.3",
         "chu_so": "1",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g3.4.2",
+        "chu_so": "0",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26554,13 +26593,13 @@
       },
       {
         "vi_tri": "g3.3.3",
-        "chu_so": "1",
+        "chu_so": "6",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g3.3.2",
-        "chu_so": "6",
+        "chu_so": "8",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26607,20 +26646,14 @@
         "diem": 2
       },
       {
-        "vi_tri": "g3.1.0",
-        "chu_so": "6",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g3.0.4",
-        "chu_so": "7",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
         "vi_tri": "g3.0.3",
         "chu_so": "7",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g3.0.2",
+        "chu_so": "9",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26631,26 +26664,26 @@
         "diem": 2
       },
       {
+        "vi_tri": "g2.1.3",
+        "chu_so": "8",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
         "vi_tri": "g2.1.2",
-        "chu_so": "5",
+        "chu_so": "4",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g2.1.1",
-        "chu_so": "1",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g2.1.0",
-        "chu_so": "1",
+        "chu_so": "9",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g2.0.3",
-        "chu_so": "9",
+        "chu_so": "4",
         "so_ngay": 2,
         "diem": 2
       },
@@ -26661,38 +26694,14 @@
         "diem": 2
       },
       {
-        "vi_tri": "g2.0.1",
-        "chu_so": "2",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
         "vi_tri": "g2.0.0",
-        "chu_so": "8",
+        "chu_so": "0",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g1.0.4",
-        "chu_so": "1",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g1.0.2",
-        "chu_so": "6",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g1.0.1",
-        "chu_so": "2",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g1.0.0",
-        "chu_so": "1",
+        "chu_so": "3",
         "so_ngay": 2,
         "diem": 2
       }
@@ -26702,25 +26711,25 @@
       "dan_tinh_size": 61,
       "trung_size": 41,
       "ty_le_trung": 64.06,
-      "bach_thu": "99",
+      "bach_thu": "44",
       "tu_thu": [
-        "91",
         "11",
         "12",
-        "51"
+        "51",
+        "91"
       ],
       "dan_9": [
-        "99",
-        "91",
-        "95",
-        "19",
+        "44",
+        "41",
+        "45",
+        "14",
         "11",
         "15",
-        "59",
+        "54",
         "51",
         "55"
       ]
     },
-    "thoi_gian": "2026-10-25T17:20:13.298959"
+    "thoi_gian": "2026-10-25T18:36:32.802926"
   }
 }
