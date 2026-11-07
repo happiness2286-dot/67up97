@@ -2,8 +2,8 @@
   "lich_su": [
     {
       "ngay": "Thứ bảy ngày 07-11-2026",
-      "de": "--",
-      "de_ve": "--",
+      "de": "14",
+      "de_ve": "14",
       "dan_cau_dong": [
         "00",
         "01",
@@ -233,8 +233,8 @@
         "tu_thu": [
           "11",
           "42",
-          "91",
-          "12"
+          "43",
+          "31"
         ],
         "so_ngay_max": 3
       },
@@ -642,7 +642,10 @@
           "99"
         ]
       },
-      "thoi_gian": "2026-11-07T17:20:16.541548"
+      "thoi_gian": "2026-11-07T18:36:23.917444",
+      "hit_top_1": false,
+      "hit_top_4": false,
+      "hit_dan_9": true
     },
     {
       "ngay": "Thứ sáu ngày 06-11-2026",
@@ -34301,7 +34304,7 @@
     }
   ],
   "latest": {
-    "ngay": "Thứ bảy ngày 07-11-2026",
+    "ngay": "Kỳ kế tiếp ngày 07-11-2026",
     "de": "--",
     "de_ve": "--",
     "dan_cau_dong": [
@@ -34505,27 +34508,27 @@
     "tu_thu": [
       "11",
       "42",
-      "91",
-      "12"
+      "43",
+      "31"
     ],
     "dan_9": [
       "44",
       "41",
-      "49",
+      "43",
       "14",
       "11",
-      "19",
-      "94",
-      "91",
-      "99"
+      "13",
+      "34",
+      "31",
+      "33"
     ],
     "dan_dao": [
       "14",
-      "94",
+      "34",
       "41",
-      "91",
-      "49",
-      "19"
+      "31",
+      "43",
+      "13"
     ],
     "canh_bao": {
       "canh_bao": false,
@@ -34533,8 +34536,8 @@
       "tu_thu": [
         "11",
         "42",
-        "91",
-        "12"
+        "43",
+        "31"
       ],
       "so_ngay_max": 3
     },
@@ -34558,26 +34561,26 @@
         "diem": 3
       },
       {
-        "vi_tri": "g5.2.2",
-        "chu_so": "9",
+        "vi_tri": "g5.2.1",
+        "chu_so": "4",
         "so_ngay": 3,
         "diem": 3
       },
       {
-        "vi_tri": "g4.0.0",
-        "chu_so": "1",
+        "vi_tri": "g5.0.0",
+        "chu_so": "3",
+        "so_ngay": 3,
+        "diem": 3
+      },
+      {
+        "vi_tri": "g4.2.0",
+        "chu_so": "3",
         "so_ngay": 3,
         "diem": 3
       },
       {
         "vi_tri": "g3.5.3",
         "chu_so": "1",
-        "so_ngay": 3,
-        "diem": 3
-      },
-      {
-        "vi_tri": "g3.0.3",
-        "chu_so": "8",
         "so_ngay": 3,
         "diem": 3
       },
@@ -34600,38 +34603,32 @@
         "diem": 2
       },
       {
-        "vi_tri": "g5.3.3",
-        "chu_so": "9",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g5.3.1",
+        "vi_tri": "g5.4.2",
         "chu_so": "2",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g5.2.3",
-        "chu_so": "7",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g5.2.1",
         "chu_so": "4",
         "so_ngay": 2,
         "diem": 2
       },
       {
+        "vi_tri": "g5.2.2",
+        "chu_so": "9",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
         "vi_tri": "g5.1.3",
-        "chu_so": "3",
+        "chu_so": "1",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g5.1.2",
-        "chu_so": "5",
+        "chu_so": "7",
         "so_ngay": 2,
         "diem": 2
       },
@@ -34643,43 +34640,31 @@
       },
       {
         "vi_tri": "g5.0.2",
-        "chu_so": "0",
+        "chu_so": "5",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g5.0.1",
-        "chu_so": "0",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g5.0.0",
         "chu_so": "3",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g4.3.1",
-        "chu_so": "4",
+        "chu_so": "3",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g4.3.0",
-        "chu_so": "4",
+        "chu_so": "3",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g4.2.3",
-        "chu_so": "4",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g4.2.0",
-        "chu_so": "4",
+        "chu_so": "0",
         "so_ngay": 2,
         "diem": 2
       },
@@ -34702,6 +34687,18 @@
         "diem": 2
       },
       {
+        "vi_tri": "g4.1.0",
+        "chu_so": "0",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g4.0.3",
+        "chu_so": "9",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
         "vi_tri": "g4.0.2",
         "chu_so": "1",
         "so_ngay": 2,
@@ -34709,25 +34706,25 @@
       },
       {
         "vi_tri": "g4.0.1",
-        "chu_so": "7",
+        "chu_so": "9",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g3.5.4",
+        "vi_tri": "g4.0.0",
         "chu_so": "1",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g3.5.2",
+        "vi_tri": "g3.5.4",
         "chu_so": "4",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g3.5.0",
-        "chu_so": "4",
+        "vi_tri": "g3.5.2",
+        "chu_so": "5",
         "so_ngay": 2,
         "diem": 2
       },
@@ -34739,19 +34736,13 @@
       },
       {
         "vi_tri": "g3.4.3",
-        "chu_so": "9",
+        "chu_so": "0",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g3.4.2",
         "chu_so": "7",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g3.4.1",
-        "chu_so": "1",
         "so_ngay": 2,
         "diem": 2
       },
@@ -34774,6 +34765,12 @@
         "diem": 2
       },
       {
+        "vi_tri": "g3.3.1",
+        "chu_so": "8",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
         "vi_tri": "g3.3.0",
         "chu_so": "3",
         "so_ngay": 2,
@@ -34781,13 +34778,19 @@
       },
       {
         "vi_tri": "g3.2.4",
-        "chu_so": "7",
+        "chu_so": "0",
         "so_ngay": 2,
         "diem": 2
       },
       {
-        "vi_tri": "g3.2.3",
-        "chu_so": "3",
+        "vi_tri": "g3.2.2",
+        "chu_so": "1",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g3.2.1",
+        "chu_so": "0",
         "so_ngay": 2,
         "diem": 2
       },
@@ -34798,20 +34801,8 @@
         "diem": 2
       },
       {
-        "vi_tri": "g3.1.3",
-        "chu_so": "9",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
         "vi_tri": "g3.1.2",
-        "chu_so": "2",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g3.1.1",
-        "chu_so": "3",
+        "chu_so": "9",
         "so_ngay": 2,
         "diem": 2
       },
@@ -34824,6 +34815,12 @@
       {
         "vi_tri": "g3.0.4",
         "chu_so": "6",
+        "so_ngay": 2,
+        "diem": 2
+      },
+      {
+        "vi_tri": "g3.0.3",
+        "chu_so": "8",
         "so_ngay": 2,
         "diem": 2
       },
@@ -34858,12 +34855,6 @@
         "diem": 2
       },
       {
-        "vi_tri": "g2.1.1",
-        "chu_so": "3",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
         "vi_tri": "g2.0.4",
         "chu_so": "4",
         "so_ngay": 2,
@@ -34876,12 +34867,6 @@
         "diem": 2
       },
       {
-        "vi_tri": "g2.0.2",
-        "chu_so": "1",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
         "vi_tri": "g2.0.1",
         "chu_so": "7",
         "so_ngay": 2,
@@ -34889,19 +34874,13 @@
       },
       {
         "vi_tri": "g2.0.0",
-        "chu_so": "3",
-        "so_ngay": 2,
-        "diem": 2
-      },
-      {
-        "vi_tri": "g1.0.4",
-        "chu_so": "1",
+        "chu_so": "7",
         "so_ngay": 2,
         "diem": 2
       },
       {
         "vi_tri": "g1.0.3",
-        "chu_so": "8",
+        "chu_so": "7",
         "so_ngay": 2,
         "diem": 2
       },
@@ -34927,21 +34906,21 @@
       "tu_thu": [
         "11",
         "42",
-        "91",
-        "12"
+        "43",
+        "31"
       ],
       "dan_9": [
         "44",
         "41",
-        "49",
+        "43",
         "14",
         "11",
-        "19",
-        "94",
-        "91",
-        "99"
+        "13",
+        "34",
+        "31",
+        "33"
       ]
     },
-    "thoi_gian": "2026-11-07T17:20:16.541548"
+    "thoi_gian": "2026-11-07T18:36:23.917444"
   }
 }
