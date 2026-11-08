@@ -910,55 +910,110 @@ def analyze_all(data_2026):
     head_scoring_breakdown = get_dynamic_top_digits(chrono, 0, None)
     tail_scoring_breakdown = get_dynamic_top_digits(chrono, 1, None)
 
-    # 6. Backtest 1-Day & 3-Day Frames for Top 20
+    # 6. Walk-Forward Adaptive 60s N1 & 3-Day Frame Engine (Zero Look-Ahead Bias)
+    def build_adaptive_dan_60(sub_hist, target_size=60):
+        cur_row = sub_hist[-1]
+        # Xếp hạng vị trí G7 dựa trên cửa sổ 14 kỳ gần nhất tính đến thời điểm hiện tại
+        recent_slice = sub_hist[-15:]
+        local_g7_hits = {'g7_1': 0, 'g7_2': 0, 'g7_3': 0, 'g7_4': 0}
+        for r_i in range(len(recent_slice) - 1):
+            t_de = recent_slice[r_i + 1]['de']
+            for k_g in ['g7_1', 'g7_2', 'g7_3', 'g7_4']:
+                if t_de in get_set_20(recent_slice[r_i][k_g]):
+                    local_g7_hits[k_g] += 1
+        sorted_local_g7 = [x[0] for x in sorted(local_g7_hits.items(), key=lambda x: x[1], reverse=True)]
+        local_top3_g7 = sorted_local_g7[:3]
+
+        top3_pool = set()
+        for k_g in local_top3_g7:
+            top3_pool.update(get_set_20(cur_row[k_g]))
+
+        chams_direct = get_cham_g7(cur_row['g7_1'], cur_row['g7_2'], cur_row['g7_3'], cur_row['g7_4'])
+        chams_bong = get_g7_cham(cur_row['g7_1'], cur_row['g7_2'], cur_row['g7_3'], cur_row['g7_4'])
+
+        h_g71 = int(cur_row['g7_1'][0]) if cur_row['g7_1'] and cur_row['g7_1'][0].isdigit() else 0
+        t_g74 = int(cur_row['g7_4'][1]) if len(cur_row['g7_4']) > 1 and cur_row['g7_4'][1].isdigit() else 0
+        c_sum = (h_g71 + t_g74) % 10
+        c_bong = get_bong(c_sum)
+
+        sub_des = [r['de'] for r in sub_hist if r.get('de')]
+        f30_s = Counter(sub_des[-30:])
+        f60_s = Counter(sub_des[-60:])
+        f90_s = Counter(sub_des[-90:])
+        last_de_val = cur_row.get('de', '')
+
+        scored_100 = []
+        for num in range(100):
+            n_str = f"{num:02d}"
+            d_t, d_u = num // 10, num % 10
+            d_sum = (d_t + d_u) % 10
+
+            sc = 0.0
+            if n_str in top3_pool:
+                sc += 35.0
+            if (d_t in chams_direct) or (d_u in chams_direct):
+                sc += 18.0
+            elif (d_t in chams_bong) or (d_u in chams_bong):
+                sc += 10.0
+            if d_sum in (c_sum, c_bong):
+                sc += 12.0
+
+            sc += (f30_s[n_str] * 3.0) + (f60_s[n_str] * 1.8) + (f90_s[n_str] * 0.8)
+
+            # Điểm nhịp phục hồi Gaussian (chỉ tính trên sub_des quá khứ)
+            nhip_local = 999
+            for back_i, past_de in enumerate(reversed(sub_des)):
+                if past_de == n_str:
+                    nhip_local = back_i
+                    break
+            sc += get_gaussian_rhythm_score(nhip_local)
+
+            # Trừ điểm bão hòa nếu vừa nổ ngay hôm qua
+            if n_str == last_de_val:
+                sc -= 12.0
+
+            scored_100.append((n_str, sc))
+
+        scored_100.sort(key=lambda x: x[1], reverse=True)
+        dan_60 = set(x[0] for x in scored_100[:target_size])
+        local_score_map = {x[0]: x[1] for x in scored_100}
+        return dan_60, top3_pool, local_score_map
+
     history_records = []
     total_hits_1day = 0
-    frame_hits = {1: 0, 2: 0, 3: 0}
-    
-    for idx in range(len(chrono) - 1):
-        cur_row = chrono[idx]
-        next_row = chrono[idx + 1]
-        target_de = next_row['de']
-        
-        # Determine G7 Top 1-3 for day idx
+    date_to_dan60_map = {}
+
+    # Tính trước dàn 60s động cho từng ngày (Walk-Forward 100% không rò rỉ tương lai)
+    step_dan60_list = []
+    step_score_map_list = []
+    for idx in range(len(chrono)):
         sub_hist = chrono[:idx+1]
-        top3_pool = set()
-        for k in top_weekly_keys:
-            top3_pool.update(get_set_20(cur_row[k]))
-            
-        hit = target_de in top3_pool
-        if hit: total_hits_1day += 1
-        
-        history_records.append({
-            'stt': idx + 1,
-            'date': cur_row['date'],
-            'db': next_row['db'],
-            'de': target_de,
-            'head': f"Đầu {target_de[0]}" if len(target_de)>=2 else "",
-            'tail': f"Đuôi {target_de[1]}" if len(target_de)>=2 else "",
-            'pred_nums': ", ".join(sorted(list(top3_pool))),
-            'result': "TRÚNG 🎯" if hit else "TRƯỢT ❌"
-        })
+        dan_60_idx, top3_pool_idx, sc_map_idx = build_adaptive_dan_60(sub_hist, target_size=60)
+        step_dan60_list.append(dan_60_idx)
+        step_score_map_list.append(sc_map_idx)
 
-    # Consensus score map for weighting
-    consensus_score_map = {item['number']: item['score'] for item in candidate_2d}
+        if idx < len(chrono) - 1:
+            cur_row = chrono[idx]
+            next_row = chrono[idx + 1]
+            target_de = next_row['de']
+            date_to_dan60_map[next_row['date']] = sorted(list(dan_60_idx))
 
-    # Pre-calculate N1 Hit pattern frequencies from N1-winning records
-    n1_head_freq = Counter()
-    n1_tail_freq = Counter()
-    n1_sum_freq = Counter()
-    for rec in history_records:
-        if rec['result'] == "TRÚNG 🎯":
-            de_val = rec['de']
-            if len(de_val) >= 2 and de_val.isdigit():
-                h_d = de_val[0]
-                t_d = de_val[1]
-                s_v = (int(h_d) + int(t_d)) % 10
-                n1_head_freq[h_d] += 1
-                n1_tail_freq[t_d] += 1
-                n1_sum_freq[s_v] += 1
+            hit = target_de in dan_60_idx
+            if hit:
+                total_hits_1day += 1
 
-    # Dedicated Frame 3-day history with Dynamic Head Filter & Super-Filtered N2/N3 Matrix
+            history_records.append({
+                'stt': idx + 1,
+                'date': cur_row['date'],
+                'db': next_row['db'],
+                'de': target_de,
+                'head': f"Đầu {target_de[0]}" if len(target_de) >= 2 else "",
+                'tail': f"Đuôi {target_de[1]}" if len(target_de) >= 2 else "",
+                'pred_nums': ", ".join(sorted(list(dan_60_idx))),
+                'result': "TRÚNG 🎯" if hit else "TRƯỢT ❌"
+            })
+
+    # Dedicated Frame 3-day history with Walk-Forward Dynamic Head Filter & Super-Filtered N2/N3 (36s)
     frame3_records = []
     total_frames = 0
     frame_success_count = 0
@@ -969,39 +1024,64 @@ def analyze_all(data_2026):
     n3_super_hits = 0
     miss_n1_count = 0
     stl_hits = 0
-    
+
+    running_n1_head_freq = Counter()
+    running_n1_tail_freq = Counter()
+    running_n1_sum_freq = Counter()
+
     for idx in range(len(chrono) - 3):
         total_frames += 1
         c_row = chrono[idx]
         d1_row = chrono[idx + 1]
         d2_row = chrono[idx + 2]
         d3_row = chrono[idx + 3]
-        
-        pred_set_n1 = set()
-        for k in top_weekly_keys:
-            pred_set_n1.update(get_set_20(c_row[k]))
-            
+
+        pred_set_n1 = step_dan60_list[idx]
+        local_sc_map = step_score_map_list[idx]
         stl_pair = extract_song_thu_lo_roi(pred_set_n1, c_row)
-        
+
         de_n1 = d1_row['de']
         de_n2 = d2_row['de']
         de_n3 = d3_row['de']
-        
+
         h1 = de_n1 in pred_set_n1
         stl_h1 = de_n1 in stl_pair
-        
-        # N2: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N1 (~40 số) -> Ép Dàn Siêu Lọc N2 (25-28 số)
+
+        # N2 (36 số): Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N1 + Ma trận Siêu Lọc tính đến thời điểm idx
         pred_set_n2_std = filter_dan_by_head_trend(pred_set_n1, de_n1)
-        pred_set_n2_super = get_super_filtered_dan(pred_set_n2_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=28)
+        if len(pred_set_n2_std) < 36:
+            # Bổ sung các số điểm cao nhất từ pred_set_n1 để đủ tập lọc 36 số
+            for cand_n, _ in sorted(local_sc_map.items(), key=lambda x: x[1], reverse=True):
+                if cand_n in pred_set_n1:
+                    pred_set_n2_std.add(cand_n)
+                if len(pred_set_n2_std) >= 42:
+                    break
+        pred_set_n2_super = get_super_filtered_dan(
+            pred_set_n2_std, running_n1_head_freq, running_n1_tail_freq, running_n1_sum_freq, step_score_map_list[idx + 1], target_size=36
+        )
         h2 = de_n2 in pred_set_n2_super
         stl_h2 = de_n2 in stl_pair
-        
-        # N3: Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N2 (~35 số) -> Ép Dàn Siêu Lọc N3 (25-28 số)
-        pred_set_n3_std = filter_dan_by_head_trend(pred_set_n2_std, de_n2)
-        pred_set_n3_super = get_super_filtered_dan(pred_set_n3_std, n1_head_freq, n1_tail_freq, n1_sum_freq, consensus_score_map, target_size=28)
+
+        # N3 (36 số): Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N2 + Ma trận Siêu Lọc tính đến thời điểm idx+2
+        pred_set_n3_std = filter_dan_by_head_trend(pred_set_n1, de_n2)
+        if len(pred_set_n3_std) < 36:
+            for cand_n, _ in sorted(step_score_map_list[idx + 2].items(), key=lambda x: x[1], reverse=True):
+                if cand_n in pred_set_n1:
+                    pred_set_n3_std.add(cand_n)
+                if len(pred_set_n3_std) >= 42:
+                    break
+        pred_set_n3_super = get_super_filtered_dan(
+            pred_set_n3_std, running_n1_head_freq, running_n1_tail_freq, running_n1_sum_freq, step_score_map_list[idx + 2], target_size=36
+        )
         h3 = de_n3 in pred_set_n3_super
         stl_h3 = de_n3 in stl_pair
-        
+
+        # Cập nhật tần suất N1 trúng luỹ tiến sau khi đã qua ngày N1 (Walk-Forward 100%)
+        if h1 and len(de_n1) >= 2 and de_n1.isdigit():
+            running_n1_head_freq[de_n1[0]] += 1
+            running_n1_tail_freq[de_n1[1]] += 1
+            running_n1_sum_freq[(int(de_n1[0]) + int(de_n1[1])) % 10] += 1
+
         if h1:
             n1_hits += 1
             frame_success_count += 1
@@ -1018,13 +1098,13 @@ def analyze_all(data_2026):
             f_res = "TRÚNG N3 (Siêu Lọc 🎯)"
         else:
             f_res = "TRƯỢT KHUNG ❌"
-            
+
         if not h1:
             miss_n1_count += 1
-            
+
         if stl_h1 or stl_h2 or stl_h3:
             stl_hits += 1
-            
+
         frame3_records.append({
             'stt': total_frames,
             'start_date': c_row['date'],
@@ -1044,6 +1124,51 @@ def analyze_all(data_2026):
             'sz_n2': len(pred_set_n2_super),
             'sz_n3': len(pred_set_n3_super),
         })
+
+    # Tính toán Dàn Động Thích Nghi (Adaptive Frame) cho Kỳ Tiếp Theo (sau chrono[-1])
+    next_dan_60_n1 = sorted(list(step_dan60_list[-1]))
+    latest_score_map = step_score_map_list[-1]
+    latest_de_val = chrono[-1]['de']
+
+    # Kiểm tra xem kỳ vừa quay hôm nay (chrono[-1]) đã TRÚNG N1 của kỳ hôm qua (step_dan60_list[-2]) hay chưa
+    prev_dan_60_n1 = step_dan60_list[-2] if len(step_dan60_list) >= 2 else step_dan60_list[-1]
+    hit_n1_latest = (latest_de_val in prev_dan_60_n1)
+
+    # Tạo dàn N2 (36s) và N3 (36s) chuẩn bị sẵn cho kỳ tới
+    n2_base_pool = filter_dan_by_head_trend(prev_dan_60_n1 if not hit_n1_latest else step_dan60_list[-1], latest_de_val)
+    if len(n2_base_pool) < 36:
+        for cand_n, _ in sorted(latest_score_map.items(), key=lambda x: x[1], reverse=True):
+            n2_base_pool.add(cand_n)
+            if len(n2_base_pool) >= 45:
+                break
+    next_dan_36_n2 = sorted(list(get_super_filtered_dan(
+        n2_base_pool, running_n1_head_freq, running_n1_tail_freq, running_n1_sum_freq, latest_score_map, target_size=36
+    )))
+
+    # Dàn N3 (36s) gồm các số bù hoặc lọc sâu từ dàn gốc
+    n3_base_pool = set(step_dan60_list[-1]) - set(next_dan_36_n2[:24])
+    for cand_n, _ in sorted(latest_score_map.items(), key=lambda x: x[1], reverse=True):
+        if len(n3_base_pool) >= 42:
+            break
+        n3_base_pool.add(cand_n)
+    next_dan_36_n3 = sorted(list(get_super_filtered_dan(
+        n3_base_pool, running_n1_head_freq, running_n1_tail_freq, running_n1_sum_freq, latest_score_map, target_size=36
+    )))
+    next_stl_pair = extract_song_thu_lo_roi(step_dan60_list[-1], chrono[-1])
+
+    adaptive_frame_info = {
+        'last_completed_date': chrono[-1]['date'],
+        'last_completed_de': latest_de_val,
+        'hit_n1_latest': hit_n1_latest,
+        'current_active_day': 1 if hit_n1_latest else 2,
+        'last_result': f"Kỳ gần nhất ({chrono[-1]['date']}) Đề về {latest_de_val}: {'🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI' if hit_n1_latest else '❌ TRƯỢT N1 → GIỮ NGUYÊN KHUNG, ĐÁNH N2 (36 SỐ)'}",
+        'status_badge': 'ĐÃ TRÚNG N1 → RESET CẦU MỚI' if hit_n1_latest else 'ĐANG ĐÁNH N2 (36 SỐ)',
+        'dan_n1': next_dan_60_n1,
+        'dan_n2': next_dan_36_n2,
+        'dan_n3': next_dan_36_n3,
+        'stl_pair': ", ".join(next_stl_pair),
+        'date_to_dan60_map': {k: v for k, v in list(date_to_dan60_map.items())[-45:]}
+    }
 
     # 7. Top 3/4/5 Head & Tail Backtest
     history_top3_dau_duoi_records = []
@@ -1390,9 +1515,10 @@ def analyze_all(data_2026):
         'hit_rate_2026': round(total_hits_1day / max(len(chrono)-1,1) * 100, 2),
         'frame_stats': {
             1: {'hits': total_hits_1day, 'evals': len(chrono)-1, 'rate': round(total_hits_1day / max(len(chrono)-1,1) * 100, 2)},
-            2: {'hits': int(total_hits_1day * 1.6), 'evals': len(chrono)-1, 'rate': round(min(total_hits_1day * 1.6 / max(len(chrono)-1,1) * 100, 72.5), 2)},
-            3: {'hits': int(total_hits_1day * 1.98), 'evals': len(chrono)-1, 'rate': round(min(total_hits_1day * 1.98 / max(len(chrono)-1,1) * 100, 87.5), 2)}
+            2: {'hits': n1_hits + n2_hits, 'evals': max(total_frames, 1), 'rate': round((n1_hits + n2_hits) / max(total_frames, 1) * 100, 2)},
+            3: {'hits': frame_success_count, 'evals': max(total_frames, 1), 'rate': round(frame_success_count / max(total_frames, 1) * 100, 2)}
         },
+        'adaptive_frame': adaptive_frame_info,
         'frame3_records': frame3_records,
         'frame3_summary': {
             'total_frames': total_frames,

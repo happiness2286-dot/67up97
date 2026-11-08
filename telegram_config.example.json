@@ -1,0 +1,6 @@
+{
+  "enabled": false,
+  "bot_token": "NHAP_TELEGRAM_BOT_TOKEN_CUA_BAN_VAO_DAY",
+  "chat_id": "NHAP_CHAT_ID_CUA_BAN_VAO_DAY",
+  "note": "Đổi tên file này thành telegram_config.json và đặt enabled = true để nhận thông báo đẩy tức thì (<0.5 giây) ngay khi hệ thống chốt khóa G5.5 lúc ~18h23 hàng ngày."
+}

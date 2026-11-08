@@ -3,7 +3,9 @@ __pycache__/
 ~$*.xlsx
 .DS_Store
 backup/
+archive/
 cron_history.log
+telegram_config.json
 *.png
 *.lock
 *.tmp

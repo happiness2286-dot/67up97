@@ -39,20 +39,20 @@ foreach ($t in $cleanupList) {
 
 $commonSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -WakeToRun -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
 
-# 1. TASK 17h00: Chuan bi dan so & dong bo Cho Quay
-$action17h00 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`"" -WorkingDirectory $scriptDir
+# 1. TASK 17h00: Chuan bi dan so & dong bo Cho Quay (Mode Prep17h - 3s thoat ngay)
+$action17h00 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`" -Mode Prep17h" -WorkingDirectory $scriptDir
 $trigger17h00 = New-ScheduledTaskTrigger -Daily -At "17:00"
-Register-ScheduledTask -TaskName "XSMB_AI_AutoUpdate_17h00" -Action $action17h00 -Trigger $trigger17h00 -Settings $commonSettings -Description "Kich hoat chuan bi dan so luc 17h00" -Force
+Register-ScheduledTask -TaskName "XSMB_AI_AutoUpdate_17h00" -Action $action17h00 -Trigger $trigger17h00 -Settings $commonSettings -Description "Kich hoat chuan bi dan so luc 17h00 (Prep17h)" -Force
 
 # 2. TASK 18h15: Du phong truc tiep don long cau quay (lech gio Logic 18h14:14)
-$action18h15 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`"" -WorkingDirectory $scriptDir
+$action18h15 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`" -Mode Live18h15" -WorkingDirectory $scriptDir
 $trigger18h15 = New-ScheduledTaskTrigger -Daily -At "18:15"
-Register-ScheduledTask -TaskName "XSMB_AI_AutoLive_18h15" -Action $action18h15 -Trigger $trigger18h15 -Settings $commonSettings -Description "Don quay truc tiep luc 18h15 khoa chot tai G5.5" -Force
+Register-ScheduledTask -TaskName "XSMB_AI_AutoLive_18h15" -Action $action18h15 -Trigger $trigger18h15 -Settings $commonSettings -Description "Don quay truc tiep luc 18h15 khoa chot tai G5.5 (Live18h15)" -Force
 
-# 3. TASK 18h37: Chot toan dien va day ket qua len GitHub (lech gio Logic 18h35:35)
-$action18h37 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`"" -WorkingDirectory $scriptDir
+# 3. TASK 18h37: Chot toan dien va day ket qua len GitHub (lech gio Logic 18h35:35, tu bo qua neu Live18h15 vua chot)
+$action18h37 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`" -Mode Daily18h37" -WorkingDirectory $scriptDir
 $trigger18h37 = New-ScheduledTaskTrigger -Daily -At "18:37"
-Register-ScheduledTask -TaskName "XSMB_AI_AutoDaily_18h37" -Action $action18h37 -Trigger $trigger18h37 -Settings $commonSettings -Description "Chot ket qua va phan tich Khung 3N luc 18h37" -Force
+Register-ScheduledTask -TaskName "XSMB_AI_AutoDaily_18h37" -Action $action18h37 -Trigger $trigger18h37 -Settings $commonSettings -Description "Chot ket qua va phan tich Khung 3N luc 18h37 (Daily18h37)" -Force
 
 # 4. TASK TU DONG BU (CATCH-UP ON LOGON): Tu kiem tra va cao bu ngay khi mo may / dang nhap
 $actionCatchup = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$catchupPy`"" -WorkingDirectory $scriptDir
