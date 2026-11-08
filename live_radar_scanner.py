@@ -89,6 +89,11 @@ def send_telegram_alert(message_text):
             return False
         token = str(cfg['bot_token']).strip()
         chat_id = str(cfg['chat_id']).strip()
+        # KHÓA AN TOÀN TUYỆT ĐỐI: Chỉ cho phép gửi duy nhất vào Chat ID cá nhân của Hoàng Ngọc Hà (5422717407)
+        # Tuyệt đối chặn mọi Chat ID khác hoặc Group ID để không bao giờ gửi nhầm sang người khác
+        if chat_id != "5422717407":
+            print(f"[!] CHẶN AN TOÀN: Từ chối gửi Telegram tới chat_id lạ ({chat_id}). Chỉ gửi duy nhất cho 5422717407.")
+            return False
         url = f"https://api.telegram.org/bot{token}/sendMessage"
         payload = {
             'chat_id': chat_id,
