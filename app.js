@@ -53,34 +53,7 @@ function buildUnifiedHistoryMap() {
         });
     }
 
-    // 2. Quét từ liveRadarState.history_records
-    if (window.liveRadarState && Array.isArray(window.liveRadarState.history_records)) {
-        window.liveRadarState.history_records.forEach(item => {
-            const k = parseDateKey(item.date);
-            if (!k) return;
-            const bt = item.top_1 || '';
-            const tt = Array.isArray(item.top_4) ? item.top_4 : [];
-            const d9 = Array.isArray(item.dan_9_so) ? item.dan_9_so : [];
-            const lot = Array.isArray(item.dan_lot) ? item.dan_lot : [];
-            const dd = [];
-            d9.forEach(s => {
-                if (typeof s === 'string' && s.length === 2 && s[0] !== s[1]) {
-                    const rev = s[1] + s[0];
-                    if (!d9.includes(rev) && !dd.includes(rev)) dd.push(rev);
-                }
-            });
-            map[k] = {
-                source: 'radar',
-                bach_thu: bt,
-                tu_thu: tt,
-                dan_9: d9,
-                dan_dao: dd.slice(0, 6),
-                dan_lot_count: lot.length > 0 ? `${lot.length} số` : (map[k] ? map[k].dan_lot_count : '---')
-            };
-        });
-    }
-
-    // 3. Quét từ tab4Data.lich_su
+    // 2. Quét từ tab4Data.lich_su
     if (window.tab4Data && Array.isArray(window.tab4Data.lich_su)) {
         window.tab4Data.lich_su.forEach(item => {
             const k = parseDateKey(item.ngay);
@@ -109,6 +82,33 @@ function buildUnifiedHistoryMap() {
                 dan_9: d9,
                 dan_dao: dd.slice(0, 6),
                 dan_lot_count: lotCnt
+            };
+        });
+    }
+
+    // 3. Quét từ liveRadarState.history_records (Ưu tiên cao nhất cho các kỳ đã khóa G5.5 & có kết quả)
+    if (window.liveRadarState && Array.isArray(window.liveRadarState.history_records)) {
+        window.liveRadarState.history_records.forEach(item => {
+            const k = parseDateKey(item.date);
+            if (!k) return;
+            const bt = item.top_1 || '';
+            const tt = Array.isArray(item.top_4) ? item.top_4 : [];
+            const d9 = Array.isArray(item.dan_9_so) ? item.dan_9_so : [];
+            const lot = Array.isArray(item.dan_lot) ? item.dan_lot : [];
+            const dd = [];
+            d9.forEach(s => {
+                if (typeof s === 'string' && s.length === 2 && s[0] !== s[1]) {
+                    const rev = s[1] + s[0];
+                    if (!d9.includes(rev) && !dd.includes(rev)) dd.push(rev);
+                }
+            });
+            map[k] = {
+                source: 'radar',
+                bach_thu: bt,
+                tu_thu: tt,
+                dan_9: d9,
+                dan_dao: dd.slice(0, 6),
+                dan_lot_count: lot.length > 0 ? `${lot.length} số` : (map[k] ? map[k].dan_lot_count : '---')
             };
         });
     }
@@ -561,31 +561,67 @@ function renderTabFrame3Day() {
     }
     window.currentN1List = n1List.join(' ');
     
-    // Card 2: Dàn Siêu Lọc N2 (36 Số)
+    // Card 2: Dàn Siêu Lọc N2 (36 Số) với highlight Bạch Thủ N2 / Tứ Thủ N2 / Dàn 9 N2
     const gridN2 = document.getElementById('gridN2Numbers');
     if (gridN2) {
         gridN2.innerHTML = '';
+        const btN2 = af.bt_n2 ? String(af.bt_n2).padStart(2, '0') : '';
+        const ttN2 = Array.isArray(af.tt_n2) ? af.tt_n2.map(x => String(x).padStart(2, '0')) : [];
+        const d9N2 = Array.isArray(af.d9_n2) ? af.d9_n2.map(x => String(x).padStart(2, '0')) : [];
         n2List.forEach(num => {
+            const numStr = String(num).padStart(2, '0');
             const tag = document.createElement('div');
-            tag.className = 'num-tag gold';
-            tag.textContent = num;
+            if (btN2 && numStr === btN2) {
+                tag.className = 'num-tag tag-bach-thu';
+                tag.setAttribute('title', '👑 Bạch thủ N2 (Siêu Lọc 36s)');
+                tag.innerHTML = `<span class="num-badge-icon">👑</span>${numStr}`;
+            } else if (ttN2.includes(numStr)) {
+                tag.className = 'num-tag tag-tu-thu';
+                tag.setAttribute('title', '🔥 Tứ thủ N2 (Siêu Lọc 36s)');
+                tag.innerHTML = `<span class="num-badge-icon">🔥</span>${numStr}`;
+            } else if (d9N2.includes(numStr)) {
+                tag.className = 'num-tag tag-dan-9';
+                tag.setAttribute('title', '⭐ Dàn 9 N2');
+                tag.innerHTML = `<span class="num-badge-icon">⭐</span>${numStr}`;
+            } else {
+                tag.className = 'num-tag gold';
+                tag.textContent = numStr;
+            }
             gridN2.appendChild(tag);
         });
     }
     window.currentN2List = n2List.join(' ');
 
-    // Card 2B: Dàn Hỏa Lực N3 (36 Số)
+    // Card 2B: Dàn Hỏa Lực N3 (36 Số) với highlight Bạch Thủ N3 / Tứ Thủ N3 / Dàn 9 N3
     const gridN3 = document.getElementById('gridN3Numbers');
     if (gridN3) {
         gridN3.innerHTML = '';
+        const btN3 = af.bt_n3 ? String(af.bt_n3).padStart(2, '0') : '';
+        const ttN3 = Array.isArray(af.tt_n3) ? af.tt_n3.map(x => String(x).padStart(2, '0')) : [];
+        const d9N3 = Array.isArray(af.d9_n3) ? af.d9_n3.map(x => String(x).padStart(2, '0')) : [];
         n3List.forEach(num => {
+            const numStr = String(num).padStart(2, '0');
             const tag = document.createElement('div');
-            tag.className = 'num-tag';
-            tag.style.background = 'rgba(244, 63, 94, 0.15)';
-            tag.style.borderColor = 'rgba(244, 63, 94, 0.4)';
-            tag.style.color = '#FB7185';
-            tag.style.fontWeight = '800';
-            tag.textContent = num;
+            if (btN3 && numStr === btN3) {
+                tag.className = 'num-tag tag-bach-thu';
+                tag.setAttribute('title', '👑 Bạch thủ N3 (Hỏa Lực 36s)');
+                tag.innerHTML = `<span class="num-badge-icon">👑</span>${numStr}`;
+            } else if (ttN3.includes(numStr)) {
+                tag.className = 'num-tag tag-tu-thu';
+                tag.setAttribute('title', '🔥 Tứ thủ N3 (Hỏa Lực 36s)');
+                tag.innerHTML = `<span class="num-badge-icon">🔥</span>${numStr}`;
+            } else if (d9N3.includes(numStr)) {
+                tag.className = 'num-tag tag-dan-9';
+                tag.setAttribute('title', '⭐ Dàn 9 N3');
+                tag.innerHTML = `<span class="num-badge-icon">⭐</span>${numStr}`;
+            } else {
+                tag.className = 'num-tag';
+                tag.style.background = 'rgba(244, 63, 94, 0.15)';
+                tag.style.borderColor = 'rgba(244, 63, 94, 0.4)';
+                tag.style.color = '#FB7185';
+                tag.style.fontWeight = '800';
+                tag.textContent = numStr;
+            }
             gridN3.appendChild(tag);
         });
     }
@@ -656,6 +692,72 @@ function renderTabHistoryStats() {
 
     // B. Render Table
     renderHistoryTableRecords();
+}
+
+function getFrameRowUnifiedInfo(r) {
+    const isN1Hit = r.hit_n1 === 'Trúng';
+    const isN2Hit = !isN1Hit && (r.hit_n2 === 'Trúng');
+    const isN3Hit = !isN1Hit && !isN2Hit && (r.hit_n3 === 'Trúng');
+
+    let targetDateStr = r.date_n1 || r.start_date;
+    let fallbackBt = r.bt_n1 || r.active_bt || '';
+    let fallbackTt = Array.isArray(r.tt_n1) ? r.tt_n1 : (Array.isArray(r.active_tt) ? r.active_tt : []);
+    let fallbackD9 = Array.isArray(r.d9_n1) ? r.d9_n1 : (Array.isArray(r.active_d9) ? r.active_d9 : []);
+    let poolSize = r.sz_n1 || 60;
+    let stageTag = 'N1';
+
+    if (isN2Hit) {
+        targetDateStr = r.date_n2 || r.start_date;
+        fallbackBt = r.bt_n2 || r.active_bt || fallbackBt;
+        fallbackTt = Array.isArray(r.tt_n2) ? r.tt_n2 : fallbackTt;
+        fallbackD9 = Array.isArray(r.d9_n2) ? r.d9_n2 : fallbackD9;
+        poolSize = r.sz_n2 || 36;
+        stageTag = 'N2';
+    } else if (isN3Hit) {
+        targetDateStr = r.date_n3 || r.start_date;
+        fallbackBt = r.bt_n3 || r.active_bt || fallbackBt;
+        fallbackTt = Array.isArray(r.tt_n3) ? r.tt_n3 : fallbackTt;
+        fallbackD9 = Array.isArray(r.d9_n3) ? r.d9_n3 : fallbackD9;
+        poolSize = r.sz_n3 || 36;
+        stageTag = 'N3';
+    } else if (!isN1Hit) {
+        targetDateStr = r.date_n2 || r.date_n1 || r.start_date;
+        fallbackBt = r.bt_n2 || r.bt_n1 || r.active_bt || '';
+        fallbackTt = Array.isArray(r.tt_n2) ? r.tt_n2 : fallbackTt;
+        fallbackD9 = Array.isArray(r.d9_n2) ? r.d9_n2 : fallbackD9;
+        poolSize = r.sz_n2 || 36;
+        stageTag = 'N2';
+    }
+
+    const dateKey = parseDateKey(targetDateStr);
+    const mapInfo = (window.historyUnifiedMap && dateKey && window.historyUnifiedMap[dateKey]) ? window.historyUnifiedMap[dateKey] : null;
+
+    const bt = mapInfo?.bach_thu || fallbackBt || '';
+    const tt = (mapInfo?.tu_thu && mapInfo.tu_thu.length > 0) ? mapInfo.tu_thu : fallbackTt;
+    const d9 = (mapInfo?.dan_9 && mapInfo.dan_9.length > 0) ? mapInfo.dan_9 : fallbackD9;
+    let dd = (mapInfo?.dan_dao && mapInfo.dan_dao.length > 0) ? mapInfo.dan_dao : [];
+    if (dd.length === 0 && d9.length > 0) {
+        d9.forEach(s => {
+            if (typeof s === 'string' && s.length === 2 && s[0] !== s[1]) {
+                const rev = s[1] + s[0];
+                if (!d9.includes(rev) && !dd.includes(rev)) dd.push(rev);
+            }
+        });
+        dd = dd.slice(0, 6);
+    }
+    const usedCnt = new Set([bt, ...tt, ...d9, ...dd].filter(Boolean)).size;
+    const lotCnt = (mapInfo?.dan_lot_count && mapInfo.dan_lot_count !== '---')
+        ? mapInfo.dan_lot_count
+        : `${Math.max(poolSize - usedCnt, 20)} số`;
+
+    return {
+        bach_thu: bt,
+        tu_thu: tt,
+        dan_9: d9,
+        dan_dao: dd,
+        dan_lot_count: lotCnt,
+        stage_tag: stageTag
+    };
 }
 
 function renderHistoryTableRecords() {
@@ -739,9 +841,8 @@ function renderHistoryTableRecords() {
 
         const stlColor = (r.stl_hit && r.stl_hit.includes('ĂN')) ? '#34D399' : '#64748B';
 
-        // Lấy thông tin 5 cột mới từ window.historyUnifiedMap
-        const dateKey = parseDateKey(r.start_date);
-        const info = (window.historyUnifiedMap && window.historyUnifiedMap[dateKey]) ? window.historyUnifiedMap[dateKey] : null;
+        // Lấy thông tin 5 cột chuẩn xác theo đúng ngày nổ (N1, N2 hoặc N3)
+        const info = getFrameRowUnifiedInfo(r);
 
         let btHtml = '<span style="color:#64748B;">---</span>';
         let ttHtml = '<span style="color:#64748B;">---</span>';
@@ -751,7 +852,10 @@ function renderHistoryTableRecords() {
 
         if (info) {
             if (info.bach_thu) {
-                btHtml = `<span class="cell-tag-bt">👑 ${info.bach_thu}</span>`;
+                const winDe = isN1Hit ? r.de_n1 : (isN2Hit ? r.de_n2 : (isN3Hit ? r.de_n3 : ''));
+                const isBtHit = winDe && info.bach_thu === winDe;
+                const btGlow = isBtHit ? 'box-shadow: 0 0 12px rgba(250,204,21,0.75); border: 1.5px solid #FACC15;' : '';
+                btHtml = `<span class="cell-tag-bt" style="${btGlow}">👑 ${info.bach_thu}</span>`;
             }
             if (info.tu_thu && info.tu_thu.length > 0) {
                 ttHtml = `<span class="cell-tag-tt">${info.tu_thu.join(', ')}</span>`;
@@ -786,8 +890,7 @@ function renderHistoryTableRecords() {
 
     // Cập nhật text xuất bản ghi (bao gồm 5 cột mới)
     window.currentHistoryTableText = reversed.map(r => {
-        const k = parseDateKey(r.start_date);
-        const info = (window.historyUnifiedMap && window.historyUnifiedMap[k]) ? window.historyUnifiedMap[k] : null;
+        const info = getFrameRowUnifiedInfo(r);
         const bt = info?.bach_thu || '---';
         const tt = (info?.tu_thu && info.tu_thu.length) ? info.tu_thu.join(' ') : '---';
         const d9 = (info?.dan_9 && info.dan_9.length) ? info.dan_9.join(' ') : '---';
@@ -810,8 +913,7 @@ function exportHistoryDetailedCSV() {
     csvRows.push(['Khung STT', 'Ngày Bắt Đầu', 'Đề N1', 'Đề N2', 'Đề N3', 'Bạch Thủ (1 số)', 'Tứ Thủ (4 số)', 'Dàn 9 (9 số)', 'Dàn Đảo (6 số)', 'Dàn Lót (SL)', 'STL Rơi', 'Kết Quả Khung Nuôi']);
 
     records.forEach(r => {
-        const k = parseDateKey(r.start_date);
-        const info = (window.historyUnifiedMap && window.historyUnifiedMap[k]) ? window.historyUnifiedMap[k] : null;
+        const info = getFrameRowUnifiedInfo(r);
         const bt = info?.bach_thu || '---';
         const tt = (info?.tu_thu && info.tu_thu.length) ? info.tu_thu.join(' ') : '---';
         const d9 = (info?.dan_9 && info.dan_9.length) ? info.dan_9.join(' ') : '---';

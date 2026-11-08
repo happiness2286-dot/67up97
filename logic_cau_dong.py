@@ -550,10 +550,10 @@ def so_sanh_dan(dan_dong, dan_60s, bt, tt, dan_9):
     }
 
 
-def tinh_toan_ngay_cau_dong(sub_draws, target_date=None, target_de=None):
+def tinh_toan_ngay_cau_dong(sub_draws, target_date=None, target_de=None, target_draw_obj=None, summary_data=None):
     """
     Tính toán logic Cầu Vị Trí Ăn Thông cho một cửa sổ lịch sử sub_draws (tối thiểu 5-6 ngày trước kỳ mục tiêu).
-    Tuyệt đối không nhìn trước kết quả của target_date!
+    Đồng bộ trực tiếp với lõi Hội Tụ Đa Tầng & Cứu Khung N2/N3 của live_radar_scanner.
     """
     cur_draw = sub_draws[0]
     ngay = target_date if target_date else cur_draw.get('date', '')
@@ -569,6 +569,34 @@ def tinh_toan_ngay_cau_dong(sub_draws, target_date=None, target_de=None):
     dan_dong = tao_dan_cau_dong(touch_scores, pair_scores)
     giao_thoa, ngoai = loc_voi_dan_tinh(dan_dong, dan_60s)
     bt, tt, dan_9 = tao_dan_9_so_va_top(head_scores, tail_scores, pair_scores, dan_60s)
+
+    # Đồng bộ kết quả Bạch Thủ, Tứ Thủ, Dàn 9s với bộ hội tụ Radar (bao gồm Cứu Khung N2/N3)
+    try:
+        import live_radar_scanner as lrs
+        if target_draw_obj and target_draw_obj.get('prizes'):
+            conv = lrs.compute_radar_convergence([target_draw_obj] + list(sub_draws), set(dan_60s), summary_data)
+            if conv:
+                bt = conv.get('top_1') or bt
+                tt = conv.get('top_4') or tt
+                dan_9 = conv.get('dan_9_so') or dan_9
+                for n_top in [bt] + list(tt) + list(dan_9):
+                    if n_top in dan_60s and n_top not in giao_thoa:
+                        giao_thoa.append(n_top)
+                giao_thoa = sorted(list(set(giao_thoa)))
+        elif summary_data:
+            af = summary_data.get('adaptive_frame', {})
+            active_day = af.get('current_active_day', 1)
+            if active_day == 2 and af.get('bt_n2'):
+                bt = af.get('bt_n2', bt)
+                tt = af.get('tt_n2', tt)
+                dan_9 = af.get('d9_n2', dan_9)
+            elif af.get('bt_n1'):
+                bt = af.get('bt_n1', bt)
+                tt = af.get('tt_n1', tt)
+                dan_9 = af.get('d9_n1', dan_9)
+    except Exception:
+        pass
+
     dan_dao = tao_dan_dao(dan_9)
     canh_bao = xu_ly_cau_4d(cau_chay, bt, tt)
     so_sanh = so_sanh_dan(dan_dong, dan_60s, bt, tt, dan_9)
@@ -693,6 +721,14 @@ def main():
         print("⚠️ Chưa đủ dữ liệu cào tối thiểu 6 kỳ!")
         return
 
+    summary_data = None
+    if os.path.exists('analysis_summary.json'):
+        try:
+            with open('analysis_summary.json', 'r', encoding='utf-8') as f:
+                summary_data = json.load(f)
+        except Exception:
+            summary_data = None
+
     thu_map = {0: 'Thứ hai', 1: 'Thứ ba', 2: 'Thứ tư', 3: 'Thứ năm', 4: 'Thứ sáu', 5: 'Thứ bảy', 6: 'Chủ nhật'}
     has_completed_draw0 = bool(draws[0].get('de'))
     first_draw_date = draws[0].get('date', '')
@@ -709,24 +745,24 @@ def main():
             target_pred_date = f"{thu_map[now.weekday()]} ngày {now.strftime('%d-%m-%Y')}"
 
         sub_latest = draws[0:7]
-        latest_rec = tinh_toan_ngay_cau_dong(sub_latest, target_date=target_pred_date, target_de="")
+        latest_rec = tinh_toan_ngay_cau_dong(sub_latest, target_date=target_pred_date, target_de="", target_draw_obj=None, summary_data=summary_data)
 
         history_items = []
-        for i in range(0, min(25, len(draws) - 5)):
+        for i in range(0, min(28, len(draws) - 5)):
             h_target = draws[i]
             h_win = draws[i + 1 : i + 8]
-            h_rec = tinh_toan_ngay_cau_dong(h_win, target_date=h_target.get('date', ''), target_de=h_target.get('de', ''))
+            h_rec = tinh_toan_ngay_cau_dong(h_win, target_date=h_target.get('date', ''), target_de=h_target.get('de', ''), target_draw_obj=h_target, summary_data=summary_data)
             history_items.append(h_rec)
     else:
         target_pred_date = first_draw_date
         sub_latest = draws[1:8]
-        latest_rec = tinh_toan_ngay_cau_dong(sub_latest, target_date=target_pred_date, target_de="")
+        latest_rec = tinh_toan_ngay_cau_dong(sub_latest, target_date=target_pred_date, target_de="", target_draw_obj=draws[0], summary_data=summary_data)
 
         history_items = []
-        for i in range(1, min(26, len(draws) - 5)):
+        for i in range(1, min(29, len(draws) - 5)):
             h_target = draws[i]
             h_win = draws[i + 1 : i + 8]
-            h_rec = tinh_toan_ngay_cau_dong(h_win, target_date=h_target.get('date', ''), target_de=h_target.get('de', ''))
+            h_rec = tinh_toan_ngay_cau_dong(h_win, target_date=h_target.get('date', ''), target_de=h_target.get('de', ''), target_draw_obj=h_target, summary_data=summary_data)
             history_items.append(h_rec)
 
     ngay = latest_rec['ngay']

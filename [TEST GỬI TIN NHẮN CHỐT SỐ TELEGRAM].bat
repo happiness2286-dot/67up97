@@ -7,3 +7,4 @@ echo =======================================================
 python live_radar_scanner.py --test_telegram
 echo.
 pause
+

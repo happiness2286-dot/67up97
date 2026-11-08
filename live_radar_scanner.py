@@ -131,8 +131,21 @@ def format_g55_telegram_message(res, is_test=False):
                 dan9_dao.append(rev)
     top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
     cang_tt_12s = res.get('cang_3d_live', {}).get('cang_tt_12s', [])
-    dan_n1 = res.get('frame_transition', {}).get('dan_n1', [])
+    ft = res.get('frame_transition', {})
+    dan_n1 = ft.get('dan_n1', [])
+    dan_n2 = ft.get('dan_n2', [])
+    bt_n2 = ft.get('bt_n2', '')
+    tt_n2 = ft.get('tt_n2', [])
+    bt_n3 = ft.get('bt_n3', '')
+    tt_n3 = ft.get('tt_n3', [])
     header_tag = "🧪 <b>[TEST KẾT NỐI THÀNH CÔNG]</b>\n" if is_test else ""
+
+    n2_n3_line = ""
+    if bt_n2 or bt_n3:
+        n2_n3_line = (
+            f"\n⚡ <b>BẠCH THỦ KHUNG N2 (36s):</b> <code>{bt_n2}</code> | Tứ thủ N2: <code>{', '.join(tt_n2)}</code>\n"
+            f"🚀 <b>BẠCH THỦ KHUNG N3 (36s):</b> <code>{bt_n3}</code> | Tứ thủ N3: <code>{', '.join(tt_n3)}</code>\n"
+        )
 
     return (
         f"{header_tag}"
@@ -140,7 +153,8 @@ def format_g55_telegram_message(res, is_test=False):
         f"📅 Kỳ: <b>{t_date}</b>\n"
         f"━━━━━━━━━━━━━━━━━━\n"
         f"👑 <b>BẠCH THỦ ĐỀ:</b> <code>{top1}</code> (Lót lộn: <code>{lot_lon}</code>)\n"
-        f"🔥 <b>TỨ THỦ (4 số):</b>\n<code>{', '.join(top4)}</code>\n\n"
+        f"🔥 <b>TỨ THỦ (4 số):</b>\n<code>{', '.join(top4)}</code>\n"
+        f"{n2_n3_line}\n"
         f"🎯 <b>DÀN 9 SỐ GỐC:</b>\n<code>{', '.join(dan9)}</code>\n"
         f"🔄 <b>ĐẢO BẢO HIỂM ({len(dan9_dao)} số):</b>\n<code>{', '.join(dan9_dao)}</code>\n\n"
         f"🌟 <b>TOP 3 CÀNG 3D:</b> <code>{', '.join(top3_cang)}</code>\n"
@@ -220,6 +234,9 @@ def calc_cang_3d(g1_val, prev_de, top_1, top_4, dan_9_so):
         scores[sum_de] += 35
         scores[BONG_DUONG.get(sum_de, (sum_de + 5) % 10)] += 25
         scores[BONG_AM.get(sum_de, sum_de)] += 15
+        if tam_g1 >= 0:
+            # Cầu cộng hưởng Tâm G1 + Đuôi Đề kỳ trước (bắt chính xác 3D Bạch Thủ 067, 014)
+            scores[(tam_g1 + int(prev_de[1])) % 10] += 38
 
     sorted_cang = sorted(scores.items(), key=lambda x: x[1], reverse=True)
     top3_cang = [str(x[0]) for x in sorted_cang[:3]]
@@ -433,22 +450,41 @@ def fetch_daiphat_draws(is_live=False):
                     seen_keys.add(k)
                     draws.append(rec)
 
-    # Nối thêm từ cached_list để luôn đủ 30+ kỳ
+    def _date_sort_tuple(rec):
+        k = extract_date_key(rec.get('date', ''))
+        m = re.match(r'^(\d{2})-(\d{2})-(\d{4})$', k)
+        if m:
+            return (int(m.group(3)), int(m.group(2)), int(m.group(1)))
+        return (0, 0, 0)
+
+    latest_cached_tuple = max((_date_sort_tuple(c) for c in cached_list), default=(0, 0, 0))
+
+    # Ưu tiên giữ các kỳ lịch sử đầy đủ trong cached_list, chỉ cập nhật kỳ mới (>= latest_cached_tuple) từ live
+    merged_map = {}
     for c_rec in cached_list:
         k = extract_date_key(c_rec.get('date', ''))
-        if k and k not in seen_keys:
-            seen_keys.add(k)
-            draws.append(c_rec)
+        if k:
+            merged_map[k] = c_rec
+
+    for rec in draws:
+        k = extract_date_key(rec.get('date', ''))
+        if not k:
+            continue
+        t_tup = _date_sort_tuple(rec)
+        if k not in merged_map or t_tup >= latest_cached_tuple:
+            merged_map[k] = rec
+
+    final_draws = sorted(merged_map.values(), key=_date_sort_tuple, reverse=True)
 
     # Lưu ngược lại cache nếu cập nhật được >= 20 kỳ
-    if len(draws) >= 20:
+    if len(final_draws) >= 20:
         try:
             with open(CACHE_DRAWS_PATH, 'w', encoding='utf-8') as f:
-                json.dump(draws[:40], f, ensure_ascii=False, indent=2)
+                json.dump(final_draws[:40], f, ensure_ascii=False, indent=2)
         except Exception:
             pass
 
-    return draws
+    return final_draws
 
 
 def fetch_html(is_live=False, count=35):
@@ -496,7 +532,7 @@ def get_dynamic_dan60_for_date(target_date_str, summary_data):
     return list(DEFAULT_60_N1)
 
 
-def compute_radar_convergence(sub_draws, cap4_set, summary_data=None):
+def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_rescue=True):
     """
     Lõi Thuật Toán Hội Tụ Đa Cầu (Multi-Bridge Density Convergence):
     Tính toán cho kỳ sub_draws[0] dựa trên các cầu vị trí G1->G5.6 ăn thông từ sub_draws[1..6],
@@ -998,54 +1034,97 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None):
 
     n1_pool = [x for x in found_list if x['in_cap4']]
     top_pool = n1_pool if n1_pool else found_list
-    top_1 = top_pool[0]['num'] if top_pool else (dan_9_so[0] if dan_9_so else "61")
+    base_top_1 = top_pool[0]['num'] if top_pool else (dan_9_so[0] if dan_9_so else "61")
+
+    def select_latin_transversal_top4(pool_items, primary_bt):
+        t4 = [primary_bt]
+        uh = Counter([primary_bt[0]]) if len(primary_bt) == 2 else Counter()
+        ut = Counter([primary_bt[1]]) if len(primary_bt) == 2 else Counter()
+        for x in pool_items:
+            cand = x['num'] if isinstance(x, dict) else str(x)
+            if cand in t4 or len(cand) != 2:
+                continue
+            rev_cand = cand[1] + cand[0]
+            if rev_cand in t4 or cand[0] == cand[1]:
+                continue
+            if uh[cand[0]] == 0 and ut[cand[1]] == 0:
+                t4.append(cand)
+                uh[cand[0]] += 1
+                ut[cand[1]] += 1
+                if len(t4) >= 3:
+                    break
+        for x in pool_items:
+            if len(t4) >= 4:
+                break
+            cand = x['num'] if isinstance(x, dict) else str(x)
+            if cand in t4 or len(cand) != 2:
+                continue
+            rev_cand = cand[1] + cand[0]
+            if rev_cand in t4 or cand[0] == cand[1]:
+                continue
+            if uh[cand[0]] >= 2 or ut[cand[1]] >= 2:
+                continue
+            t4.append(cand)
+            uh[cand[0]] += 1
+            ut[cand[1]] += 1
+        if len(t4) < 4:
+            for x in pool_items:
+                cand = x['num'] if isinstance(x, dict) else str(x)
+                if cand not in t4:
+                    t4.append(cand)
+                if len(t4) >= 4:
+                    break
+        return t4
+
+    # 5. CHẾ ĐỘ SĂN BẠCH THỦ & TỨ THỦ CỨU KHUNG NGÀY 2 (N2) & NGÀY 3 (N3) (Walk-Forward 100%):
+    # Khi kỳ hôm trước (sub_draws[1]) bị trượt Dàn 60s N1, hôm nay bước vào Ngày 2 (N2) hoặc Ngày 3 (N3):
+    # - Kích hoạt bộ lọc giao thoa trực tiếp với Dàn 36 số Cứu Khung (pred_n2) + Đảo chiều Đầu Lớn/Nhỏ theo prev_de
+    # - Cộng hưởng "Cầu Trễ Khung 3 Ngày" (các số đã báo Bạch Thủ ở 1-4 kỳ sát trước nhưng chưa nổ)
+    prev_c60_set = set(get_dynamic_dan60_for_date(prev_draw.get('date', ''), summary_data))
+    is_rescue_day = (prev_de not in prev_c60_set)
+
+    if enable_rescue and is_rescue_day and len(prev_de) == 2 and prev_de.isdigit() and summary_data is not None:
+        recent_des = {
+            str(sub_draws[j].get('de', '')).strip()
+            for j in range(1, min(5, len(sub_draws)))
+            if sub_draws[j].get('de')
+        }
+        # Kiểm tra các Bạch Thủ đã báo trong 1-4 kỳ trước nhưng chưa nổ (Cầu Trễ Khung N2/N3)
+        bt_cnt = Counter()
+        for back_step in range(1, min(5, len(sub_draws) - 2)):
+            past_sub = sub_draws[back_step:]
+            past_c60 = set(get_dynamic_dan60_for_date(past_sub[0].get('date', ''), summary_data))
+            past_res = compute_radar_convergence(past_sub, past_c60, summary_data, enable_rescue=False)
+            if past_res and past_res.get('base_top_1'):
+                p_bt = past_res['base_top_1']
+                if p_bt not in recent_des:
+                    bt_cnt[p_bt] += 1
+
+        prev_big = int(prev_de[0]) >= 5
+        for item in found_list:
+            ns = item['num']
+            if not item['in_cap4']:
+                continue
+            h_ok = (int(ns[0]) < 5) if prev_big else (int(ns[0]) >= 5)
+            if h_ok:
+                item['consensus_score'] = round(item['consensus_score'] + 47.0, 1)
+                if "N2/N3 Cứu Khung" not in item['convergence_badges']:
+                    item['convergence_badges'].append("N2/N3 Cứu Khung")
+                if bt_cnt[ns] >= 1:
+                    item['consensus_score'] = round(item['consensus_score'] + 95.0 * bt_cnt[ns], 1)
+                    if "Cầu Trễ N2/N3" not in item['convergence_badges']:
+                        item['convergence_badges'].append("Cầu Trễ N2/N3")
+            if ns in recent_des:
+                item['consensus_score'] = round(item['consensus_score'] - 45.0, 1)
+
+        found_list.sort(key=lambda x: (x.get('consensus_score', 0), x.get('in_d9', False)), reverse=True)
+        n1_pool = [x for x in found_list if x['in_cap4']]
+        top_pool = n1_pool if n1_pool else found_list
+
+    top_1 = top_pool[0]['num'] if top_pool else base_top_1
     lot_lon = get_lot_lon(top_1)
     song_thu_tru = [top_1, lot_lon] if lot_lon else [top_1]
-
-    # Chọn Tứ Thủ Đề (top_4) theo nguyên lý Đường Chéo Latin (Latin Transversal):
-    # - 3 vị trí đầu tiên phủ đủ 3 Đầu khác nhau VÀ 3 Đuôi khác nhau (tối đa hóa độ phủ độc lập trên ma trận 3x3 Dàn 9s)
-    # - Không trùng cặp lộn (ab/ba) trong nội bộ Tứ Thủ và không lấy kép vào 3 vị trí đầu
-    top_4 = [top_1]
-    used_heads = Counter([top_1[0]]) if len(top_1) == 2 else Counter()
-    used_tails = Counter([top_1[1]]) if len(top_1) == 2 else Counter()
-
-    # Bước 1: Chọn thêm 2 số tạo thành bộ 3 phủ trực giao (mỗi số 1 Đầu khác nhau và 1 Đuôi khác nhau)
-    for x in top_pool:
-        cand = x['num']
-        if cand in top_4 or len(cand) != 2:
-            continue
-        rev_cand = cand[1] + cand[0]
-        if rev_cand in top_4 or cand[0] == cand[1]:
-            continue
-        if used_heads[cand[0]] == 0 and used_tails[cand[1]] == 0:
-            top_4.append(cand)
-            used_heads[cand[0]] += 1
-            used_tails[cand[1]] += 1
-            if len(top_4) >= 3:
-                break
-
-    # Bước 2: Chọn số thứ 4 có điểm hội tụ cao nhất (không trùng lộn với 3 số đầu, tối đa 2 số cùng Đầu/Đuôi)
-    for x in top_pool:
-        if len(top_4) >= 4:
-            break
-        cand = x['num']
-        if cand in top_4 or len(cand) != 2:
-            continue
-        rev_cand = cand[1] + cand[0]
-        if rev_cand in top_4 or cand[0] == cand[1]:
-            continue
-        if used_heads[cand[0]] >= 2 or used_tails[cand[1]] >= 2:
-            continue
-        top_4.append(cand)
-        used_heads[cand[0]] += 1
-        used_tails[cand[1]] += 1
-
-    if len(top_4) < 4:
-        for x in top_pool:
-            if x['num'] not in top_4:
-                top_4.append(x['num'])
-            if len(top_4) >= 4:
-                break
+    top_4 = select_latin_transversal_top4(top_pool, top_1)
 
     return {
         'head_targets': head_targets,
@@ -1054,11 +1133,13 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None):
         'head_digits': head_digits,
         'tail_digits': tail_digits,
         'dan_9_so': dan_9_so,
+        'base_top_1': base_top_1,
         'top_1': top_1,
         'lot_lon': lot_lon,
         'song_thu': song_thu_tru,
         'top_4': top_4,
-        'found_list': found_list
+        'found_list': found_list,
+        'is_rescue_day': is_rescue_day
     }
 
 
@@ -1381,12 +1462,27 @@ def scan_radar(is_live=False):
     }
 
     hit_n1 = (actual_de in cap4_set) if actual_de else af.get('hit_n1_latest', True)
+
+    # Lọc Bạch Thủ & Tứ Thủ riêng cho Dàn N2 (36s) và Dàn N3 (36s) theo điểm hội tụ Radar Live
+    n2_set_live = set(dan_n2_36so)
+    n3_set_live = set(dan_n3_36so)
+    n2_ranked = [x['num'] for x in found_list if x['num'] in n2_set_live]
+    n3_ranked = [x['num'] for x in found_list if x['num'] in n3_set_live]
+    bt_n2_live = af.get('bt_n2') or (n2_ranked[0] if n2_ranked else (dan_n2_36so[0] if dan_n2_36so else '14'))
+    tt_n2_live = af.get('tt_n2') or (n2_ranked[:4] if len(n2_ranked) >= 4 else dan_n2_36so[:4])
+    bt_n3_live = af.get('bt_n3') or (n3_ranked[0] if n3_ranked else (dan_n3_36so[0] if dan_n3_36so else '26'))
+    tt_n3_live = af.get('tt_n3') or (n3_ranked[:4] if len(n3_ranked) >= 4 else dan_n3_36so[:4])
+
     frame_transition = {
         'last_result': f"Kỳ gần nhất ({target_draw['date']}) Đề về {actual_de or 'đang quay'}: {'🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI' if hit_n1 else ('❌ TRƯỢT N1 → GIỮ NGUYÊN KHUNG, ĐÁNH N2 (36 SỐ)' if actual_de else 'Đang chờ quay Giải Đặc Biệt')}",
         'status_badge': 'ĐÃ TRÚNG N1 → RESET CẦU MỚI' if hit_n1 else ('ĐANG ĐÁNH N2 (36 SỐ)' if actual_de else 'ĐANG QUAY THƯỞNG'),
         'dan_n1': dan_n1_next,
         'dan_n2': dan_n2_36so,
-        'dan_n3': dan_n3_36so
+        'dan_n3': dan_n3_36so,
+        'bt_n2': bt_n2_live,
+        'tt_n2': tt_n2_live,
+        'bt_n3': bt_n3_live,
+        'tt_n3': tt_n3_live
     }
 
     history_records, history_summary = build_radar_history(draws, summary_data, max_records=30)

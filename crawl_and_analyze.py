@@ -254,20 +254,26 @@ def crawl_xsmb():
         except Exception:
             pass
 
-    if incoming_recs:
+    if incoming_recs or existing_records:
         seen_dates = set()
         merged = []
-        for r in incoming_recs:
-            d_key = r['date'].split()[-1]
-            if d_key not in seen_dates:
-                seen_dates.add(d_key)
-                merged.append(r)
+        max_existing_dt = max((parse_date(r['date']) or datetime.datetime.min for r in existing_records), default=datetime.datetime.min)
+        # Ưu tiên giữ nguyên bản ghi lịch sử đã chuẩn hóa trong data_2026.json
         for r in existing_records:
             d_key = r['date'].split()[-1]
-            if d_key not in seen_dates:
+            if d_key not in seen_dates and r.get('db'):
                 seen_dates.add(d_key)
                 merged.append(r)
-        print(f"[✓ API 383 & xosodaiphat] Cào thành công! Tổng hợp được {len(merged)} bản ghi năm 2026.", flush=True)
+        # Chỉ bổ sung kỳ quay MỚI (> max_existing_dt) chưa có trong data_2026.json
+        for r in incoming_recs:
+            d_key = r['date'].split()[-1]
+            r_dt = parse_date(r['date']) or datetime.datetime.min
+            if d_key not in seen_dates and r.get('db') and r_dt > max_existing_dt:
+                seen_dates.add(d_key)
+                merged.append(r)
+        # Sắp xếp chuẩn thứ tự thời gian giảm dần (kỳ mới nhất ở index 0)
+        merged.sort(key=lambda r: parse_date(r['date']) or datetime.datetime.min, reverse=True)
+        print(f"[✓ API 383 & xosodaiphat] Đồng bộ thành công! Tổng hợp được {len(merged)} bản ghi năm 2026.", flush=True)
         return merged
 
     if existing_records:
@@ -550,6 +556,17 @@ def analyze_all(data_2026):
     total_dan_sz_all_dow = 0
     total_ha_sz_all_dow = 0
 
+    existing_dow_ha_so_map = {}
+    if os.path.exists('analysis_summary.json'):
+        try:
+            with open('analysis_summary.json', 'r', encoding='utf-8') as _f_old:
+                _old_sum = json.load(_f_old)
+                for _r_old in _old_sum.get('dow_model', {}).get('history_log_dow', []):
+                    if _r_old.get('date') and _r_old.get('dan_ha_so_str'):
+                        existing_dow_ha_so_map[_r_old['date']] = [x.strip() for x in _r_old['dan_ha_so_str'].split(',') if x.strip()]
+        except Exception:
+            pass
+
     for idx in range(total_evals_dow):
         curr_d = chrono[idx]
         dt = curr_d.get('datetime') or parse_date(curr_d['date'])
@@ -618,12 +635,15 @@ def analyze_all(data_2026):
                 num_nhip_sub[num_str] = 999
                 
         scored_dan = []
-        for num_str in dan_giao_thoa:
+        for num_str in sorted(dan_giao_thoa):
             rhythm_s = get_gaussian_rhythm_score(num_nhip_sub[num_str])
             score = (f30_sub[num_str] * 3.5) + (f60_sub[num_str] * 2.0) + (f90_sub[num_str] * 1.0) + rhythm_s
             scored_dan.append((num_str, score))
         scored_dan.sort(key=lambda x: x[1], reverse=True)
-        dan_ha_so = set(x[0] for x in scored_dan[:20])
+        if target_d['date'] in existing_dow_ha_so_map:
+            dan_ha_so = set(existing_dow_ha_so_map[target_d['date']])
+        else:
+            dan_ha_so = set(x[0] for x in scored_dan[:20])
 
         hit_1d = target_de in dan_giao_thoa
         hit_ha_so = target_de in dan_ha_so
@@ -740,7 +760,7 @@ def analyze_all(data_2026):
             num_nhip_full[num_str] = 999
 
     scored_next_dan = []
-    for num_str in next_dan_giao_thoa:
+    for num_str in sorted(next_dan_giao_thoa):
         rhythm_s = get_gaussian_rhythm_score(num_nhip_full[num_str])
         score = (f30_full[num_str] * 3.5) + (f60_full[num_str] * 2.0) + (f90_full[num_str] * 1.0) + rhythm_s
         scored_next_dan.append((num_str, score))
@@ -983,14 +1003,32 @@ def analyze_all(data_2026):
     total_hits_1day = 0
     date_to_dan60_map = {}
 
-    # Tính trước dàn 60s động cho từng ngày (Walk-Forward 100% không rò rỉ tương lai)
+    # Tính trước dàn 60s động & Dàn 9s Đầu-Đuôi động cho từng ngày (Walk-Forward 100% không rò rỉ tương lai)
     step_dan60_list = []
     step_score_map_list = []
+    step_comb9_list = []
+    step_dow_hs_list = []
+    step_dow_gt_list = []
+
     for idx in range(len(chrono)):
         sub_hist = chrono[:idx+1]
         dan_60_idx, top3_pool_idx, sc_map_idx = build_adaptive_dan_60(sub_hist, target_size=60)
         step_dan60_list.append(dan_60_idx)
         step_score_map_list.append(sc_map_idx)
+
+        ph3 = get_dynamic_top_digits(sub_hist, 0, 3)
+        pt3 = get_dynamic_top_digits(sub_hist, 1, 3)
+        c9_idx = [f"{h}{t}" for h in ph3 for t in pt3]
+        step_comb9_list.append(c9_idx)
+
+        if idx < len(history_log_dow):
+            hs_str = history_log_dow[idx].get('dan_ha_so_str', '')
+            gt_str = history_log_dow[idx].get('dan_str', '')
+            step_dow_hs_list.append(set(hs_str.split(', ')) if hs_str else set())
+            step_dow_gt_list.append(set(gt_str.split(', ')) if gt_str else set())
+        else:
+            step_dow_hs_list.append(set(next_dan_ha_so))
+            step_dow_gt_list.append(set(next_dan_giao_thoa))
 
         if idx < len(chrono) - 1:
             cur_row = chrono[idx]
@@ -1013,7 +1051,81 @@ def analyze_all(data_2026):
                 'result': "TRÚNG 🎯" if hit else "TRƯỢT ❌"
             })
 
-    # Dedicated Frame 3-day history with Walk-Forward Dynamic Head Filter & Super-Filtered N2/N3 (36s)
+    def build_dynamic_rescue_36_and_top(step_idx, orig_n1_set, prev_de_val, recent_des_set):
+        """
+        Xây dựng Dàn 36 số Cứu Khung Động (N2 hoặc N3) tại thời điểm step_idx
+        bằng cách hội tụ Dàn 60s Động mới của ngày đó + Hạ Số 20s Theo Thứ + Dàn 9s Đầu-Đuôi Động
+        + Giao thoa giữ nhịp N1 gốc + Đảo chiều Đầu Lớn/Nhỏ theo Đề vừa về.
+        Đồng thời trích xuất Bạch Thủ (1 số) & Tứ Thủ (4 số trực giao) trực tiếp từ 36 số này.
+        """
+        d60_cur = step_dan60_list[step_idx]
+        sc_map_cur = step_score_map_list[step_idx]
+        hs_cur = step_dow_hs_list[step_idx]
+        gt_cur = step_dow_gt_list[step_idx]
+        d9_cur = step_comb9_list[step_idx]
+        d9_set = set(d9_cur)
+        d9_dao = {x[1] + x[0] for x in d9_cur if len(x) == 2 and x[0] != x[1]}
+        rev_set = filter_dan_by_head_trend(d60_cur | orig_n1_set, prev_de_val)
+
+        scored_36 = []
+        for n in range(100):
+            ns = f"{n:02d}"
+            pts = (
+                (42.0 if ns in d60_cur else 0.0)
+                + (22.0 if ns in orig_n1_set else 0.0)
+                + (42.0 if ns in hs_cur else (28.0 if ns in gt_cur else 0.0))
+                + (32.0 if ns in d9_set else (22.0 if ns in d9_dao else 0.0))
+                + (12.0 if ns in rev_set else 0.0)
+                + sc_map_cur.get(ns, 0.0) * 0.15
+                - (40.0 if ns == prev_de_val else 0.0)
+                - (20.0 if ns in recent_des_set else 0.0)
+                - (10.0 if ns[0] == ns[1] else 0.0)
+            )
+            scored_36.append((ns, pts))
+        scored_36.sort(key=lambda x: x[1], reverse=True)
+        dan_36_list = [x[0] for x in scored_36[:36]]
+        dan_36_set = set(dan_36_list)
+
+        # Trích xuất Bạch Thủ & Tứ Thủ trực giao (Latin Transversal) ngay trong lòng 36 số
+        bt_val = dan_36_list[0] if dan_36_list else "14"
+        tt_list = [bt_val]
+        uh = Counter([bt_val[0]])
+        ut = Counter([bt_val[1]])
+        for cand, _ in scored_36[:36]:
+            if cand in tt_list or (cand[1] + cand[0]) in tt_list or cand[0] == cand[1]:
+                continue
+            if uh[cand[0]] == 0 and ut[cand[1]] == 0:
+                tt_list.append(cand)
+                uh[cand[0]] += 1
+                ut[cand[1]] += 1
+                if len(tt_list) >= 3:
+                    break
+        for cand, _ in scored_36[:36]:
+            if len(tt_list) >= 4:
+                break
+            if cand in tt_list or (cand[1] + cand[0]) in tt_list or cand[0] == cand[1]:
+                continue
+            if uh[cand[0]] >= 2 or ut[cand[1]] >= 2:
+                continue
+            tt_list.append(cand)
+            uh[cand[0]] += 1
+            ut[cand[1]] += 1
+        for cand in dan_36_list:
+            if len(tt_list) >= 4:
+                break
+            if cand not in tt_list:
+                tt_list.append(cand)
+
+        d9_in_36 = [x for x in d9_cur if x in dan_36_set]
+        for cand in dan_36_list:
+            if len(d9_in_36) >= 9:
+                break
+            if cand not in d9_in_36:
+                d9_in_36.append(cand)
+
+        return dan_36_set, bt_val, tt_list[:4], d9_in_36[:9]
+
+    # Dedicated Frame 3-day history with Walk-Forward Dynamic Convergence N1 (60s) -> N2 (36s) -> N3 (36s)
     frame3_records = []
     total_frames = 0
     frame_success_count = 0
@@ -1028,6 +1140,7 @@ def analyze_all(data_2026):
     running_n1_head_freq = Counter()
     running_n1_tail_freq = Counter()
     running_n1_sum_freq = Counter()
+    date_to_dan_n2_map = {}
 
     for idx in range(len(chrono) - 3):
         total_frames += 1
@@ -1047,32 +1160,20 @@ def analyze_all(data_2026):
         h1 = de_n1 in pred_set_n1
         stl_h1 = de_n1 in stl_pair
 
-        # N2 (36 số): Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N1 + Ma trận Siêu Lọc tính đến thời điểm idx
-        pred_set_n2_std = filter_dan_by_head_trend(pred_set_n1, de_n1)
-        if len(pred_set_n2_std) < 36:
-            # Bổ sung các số điểm cao nhất từ pred_set_n1 để đủ tập lọc 36 số
-            for cand_n, _ in sorted(local_sc_map.items(), key=lambda x: x[1], reverse=True):
-                if cand_n in pred_set_n1:
-                    pred_set_n2_std.add(cand_n)
-                if len(pred_set_n2_std) >= 42:
-                    break
-        pred_set_n2_super = get_super_filtered_dan(
-            pred_set_n2_std, running_n1_head_freq, running_n1_tail_freq, running_n1_sum_freq, step_score_map_list[idx + 1], target_size=36
-        )
+        # Bạch Thủ & Tứ Thủ Ngày 1 (tính tại thời điểm idx)
+        recent_n1 = {chrono[j]['de'] for j in range(max(0, idx - 3), idx + 1)}
+        _, bt_n1, tt_n1, d9_n1 = build_dynamic_rescue_36_and_top(idx, pred_set_n1, c_row['de'], recent_n1)
+
+        # N2 (36 số Động tính tại thời điểm idx + 1 sau khi biết de_n1)
+        recent_n2 = {chrono[j]['de'] for j in range(max(0, idx - 2), idx + 2)}
+        pred_set_n2_super, bt_n2, tt_n2, d9_n2 = build_dynamic_rescue_36_and_top(idx + 1, pred_set_n1, de_n1, recent_n2)
+        date_to_dan_n2_map[d2_row['date']] = sorted(list(pred_set_n2_super))
         h2 = de_n2 in pred_set_n2_super
         stl_h2 = de_n2 in stl_pair
 
-        # N3 (36 số): Lọc đảo chiều Đầu Lớn/Nhỏ theo Đề N2 + Ma trận Siêu Lọc tính đến thời điểm idx+2
-        pred_set_n3_std = filter_dan_by_head_trend(pred_set_n1, de_n2)
-        if len(pred_set_n3_std) < 36:
-            for cand_n, _ in sorted(step_score_map_list[idx + 2].items(), key=lambda x: x[1], reverse=True):
-                if cand_n in pred_set_n1:
-                    pred_set_n3_std.add(cand_n)
-                if len(pred_set_n3_std) >= 42:
-                    break
-        pred_set_n3_super = get_super_filtered_dan(
-            pred_set_n3_std, running_n1_head_freq, running_n1_tail_freq, running_n1_sum_freq, step_score_map_list[idx + 2], target_size=36
-        )
+        # N3 (36 số Động tính tại thời điểm idx + 2 sau khi biết de_n2)
+        recent_n3 = {chrono[j]['de'] for j in range(max(0, idx - 1), idx + 3)}
+        pred_set_n3_super, bt_n3, tt_n3, d9_n3 = build_dynamic_rescue_36_and_top(idx + 2, pred_set_n1, de_n2, recent_n3)
         h3 = de_n3 in pred_set_n3_super
         stl_h3 = de_n3 in stl_pair
 
@@ -1086,18 +1187,22 @@ def analyze_all(data_2026):
             n1_hits += 1
             frame_success_count += 1
             f_res = "TRÚNG N1 🎯"
+            active_bt, active_tt, active_d9 = bt_n1, tt_n1, d9_n1
         elif h2:
             n2_hits += 1
             n2_super_hits += 1
             frame_success_count += 1
             f_res = "TRÚNG N2 (Siêu Lọc 🎯)"
+            active_bt, active_tt, active_d9 = bt_n2, tt_n2, d9_n2
         elif h3:
             n3_hits += 1
             n3_super_hits += 1
             frame_success_count += 1
             f_res = "TRÚNG N3 (Siêu Lọc 🎯)"
+            active_bt, active_tt, active_d9 = bt_n3, tt_n3, d9_n3
         else:
             f_res = "TRƯỢT KHUNG ❌"
+            active_bt, active_tt, active_d9 = bt_n2, tt_n2, d9_n2
 
         if not h1:
             miss_n1_count += 1
@@ -1108,6 +1213,9 @@ def analyze_all(data_2026):
         frame3_records.append({
             'stt': total_frames,
             'start_date': c_row['date'],
+            'date_n1': d1_row['date'],
+            'date_n2': d2_row['date'],
+            'date_n3': d3_row['date'],
             'de_n1': de_n1,
             'hit_n1': "Trúng" if h1 else "Không",
             'de_n2': de_n2,
@@ -1123,6 +1231,18 @@ def analyze_all(data_2026):
             'sz_n1': len(pred_set_n1),
             'sz_n2': len(pred_set_n2_super),
             'sz_n3': len(pred_set_n3_super),
+            'bt_n1': bt_n1,
+            'tt_n1': tt_n1,
+            'd9_n1': d9_n1,
+            'bt_n2': bt_n2,
+            'tt_n2': tt_n2,
+            'd9_n2': d9_n2,
+            'bt_n3': bt_n3,
+            'tt_n3': tt_n3,
+            'd9_n3': d9_n3,
+            'active_bt': active_bt,
+            'active_tt': active_tt,
+            'active_d9': active_d9
         })
 
     # Tính toán Dàn Động Thích Nghi (Adaptive Frame) cho Kỳ Tiếp Theo (sau chrono[-1])
@@ -1134,26 +1254,21 @@ def analyze_all(data_2026):
     prev_dan_60_n1 = step_dan60_list[-2] if len(step_dan60_list) >= 2 else step_dan60_list[-1]
     hit_n1_latest = (latest_de_val in prev_dan_60_n1)
 
-    # Tạo dàn N2 (36s) và N3 (36s) chuẩn bị sẵn cho kỳ tới
-    n2_base_pool = filter_dan_by_head_trend(prev_dan_60_n1 if not hit_n1_latest else step_dan60_list[-1], latest_de_val)
-    if len(n2_base_pool) < 36:
-        for cand_n, _ in sorted(latest_score_map.items(), key=lambda x: x[1], reverse=True):
-            n2_base_pool.add(cand_n)
-            if len(n2_base_pool) >= 45:
-                break
-    next_dan_36_n2 = sorted(list(get_super_filtered_dan(
-        n2_base_pool, running_n1_head_freq, running_n1_tail_freq, running_n1_sum_freq, latest_score_map, target_size=36
-    )))
+    recent_latest = {chrono[j]['de'] for j in range(max(0, len(chrono) - 4), len(chrono))}
+    _, next_bt_n1, next_tt_n1, next_d9_n1 = build_dynamic_rescue_36_and_top(
+        len(chrono) - 1, step_dan60_list[-1], latest_de_val, recent_latest
+    )
+    next_set_36_n2, next_bt_n2, next_tt_n2, next_d9_n2 = build_dynamic_rescue_36_and_top(
+        len(chrono) - 1, prev_dan_60_n1 if not hit_n1_latest else step_dan60_list[-1], latest_de_val, recent_latest
+    )
+    next_dan_36_n2 = sorted(list(next_set_36_n2))
 
-    # Dàn N3 (36s) gồm các số bù hoặc lọc sâu từ dàn gốc
-    n3_base_pool = set(step_dan60_list[-1]) - set(next_dan_36_n2[:24])
-    for cand_n, _ in sorted(latest_score_map.items(), key=lambda x: x[1], reverse=True):
-        if len(n3_base_pool) >= 42:
-            break
-        n3_base_pool.add(cand_n)
-    next_dan_36_n3 = sorted(list(get_super_filtered_dan(
-        n3_base_pool, running_n1_head_freq, running_n1_tail_freq, running_n1_sum_freq, latest_score_map, target_size=36
-    )))
+    # Dàn N3 (36s) gồm các số bù hoặc lọc sâu từ dàn gốc kết hợp hội tụ động
+    n3_orig_pool = set(step_dan60_list[-1]) - set(next_dan_36_n2[:18])
+    next_set_36_n3, next_bt_n3, next_tt_n3, next_d9_n3 = build_dynamic_rescue_36_and_top(
+        len(chrono) - 1, n3_orig_pool, next_bt_n2, recent_latest | {next_bt_n2}
+    )
+    next_dan_36_n3 = sorted(list(next_set_36_n3))
     next_stl_pair = extract_song_thu_lo_roi(step_dan60_list[-1], chrono[-1])
 
     adaptive_frame_info = {
@@ -1166,8 +1281,18 @@ def analyze_all(data_2026):
         'dan_n1': next_dan_60_n1,
         'dan_n2': next_dan_36_n2,
         'dan_n3': next_dan_36_n3,
+        'bt_n1': next_bt_n1,
+        'tt_n1': next_tt_n1,
+        'd9_n1': next_d9_n1,
+        'bt_n2': next_bt_n2,
+        'tt_n2': next_tt_n2,
+        'd9_n2': next_d9_n2,
+        'bt_n3': next_bt_n3,
+        'tt_n3': next_tt_n3,
+        'd9_n3': next_d9_n3,
         'stl_pair': ", ".join(next_stl_pair),
-        'date_to_dan60_map': {k: v for k, v in list(date_to_dan60_map.items())[-45:]}
+        'date_to_dan60_map': {k: v for k, v in list(date_to_dan60_map.items())[-45:]},
+        'date_to_dan_n2_map': {k: v for k, v in list(date_to_dan_n2_map.items())[-45:]}
     }
 
     # 7. Top 3/4/5 Head & Tail Backtest
