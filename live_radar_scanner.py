@@ -90,18 +90,61 @@ def send_telegram_alert(message_text):
         token = str(cfg['bot_token']).strip()
         chat_id = str(cfg['chat_id']).strip()
         url = f"https://api.telegram.org/bot{token}/sendMessage"
-        payload = {'chat_id': chat_id, 'text': message_text, 'parse_mode': 'HTML'}
+        payload = {
+            'chat_id': chat_id,
+            'text': message_text,
+            'parse_mode': 'HTML',
+            'disable_web_page_preview': True
+        }
         if HAS_LIBS:
-            r = requests.post(url, json=payload, timeout=3)
+            r = requests.post(url, json=payload, timeout=5)
             return r.status_code == 200
         else:
+            import ssl
+            ctx = ssl._create_unverified_context()
             data = urllib.parse.urlencode(payload).encode('utf-8')
             req = urllib.request.Request(url, data=data)
-            with urllib.request.urlopen(req, timeout=3) as resp:
+            with urllib.request.urlopen(req, timeout=5, context=ctx) as resp:
                 return resp.status == 200
     except Exception as e:
         print(f"[!] Lưu ý gửi Telegram: {e}")
         return False
+
+
+def format_g55_telegram_message(res, is_test=False):
+    """Định dạng tin nhắn chốt số lúc 18h23 (G5.5) rõ nét trên màn hình điện thoại."""
+    t_date = res.get('target_date', '')
+    top1 = res.get('top_1', '--')
+    lot_lon = res.get('lot_lon', '--')
+    top4 = res.get('top_4', [])
+    dan9 = res.get('dan_9_so', [])
+    dan9_dao = []
+    for s in dan9:
+        if len(s) == 2 and s[0] != s[1]:
+            rev = s[1] + s[0]
+            if rev not in dan9 and rev not in dan9_dao:
+                dan9_dao.append(rev)
+    top3_cang = res.get('cang_3d_live', {}).get('top3_cang', [])
+    cang_tt_12s = res.get('cang_3d_live', {}).get('cang_tt_12s', [])
+    dan_n1 = res.get('frame_transition', {}).get('dan_n1', [])
+    header_tag = "🧪 <b>[TEST KẾT NỐI THÀNH CÔNG]</b>\n" if is_test else ""
+
+    return (
+        f"{header_tag}"
+        f"🔒 <b>CHỐT KHÓA G5.5 XSMB (18H23)</b>\n"
+        f"📅 Kỳ: <b>{t_date}</b>\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"👑 <b>BẠCH THỦ ĐỀ:</b> <code>{top1}</code> (Lót lộn: <code>{lot_lon}</code>)\n"
+        f"🔥 <b>TỨ THỦ (4 số):</b>\n<code>{', '.join(top4)}</code>\n\n"
+        f"🎯 <b>DÀN 9 SỐ GỐC:</b>\n<code>{', '.join(dan9)}</code>\n"
+        f"🔄 <b>ĐẢO BẢO HIỂM ({len(dan9_dao)} số):</b>\n<code>{', '.join(dan9_dao)}</code>\n\n"
+        f"🌟 <b>TOP 3 CÀNG 3D:</b> <code>{', '.join(top3_cang)}</code>\n"
+        f"💎 <b>3D TỨ THỦ (12 số):</b>\n<code>{', '.join(cang_tt_12s)}</code>\n\n"
+        f"🛡️ <b>DÀN 60s N1 ĐỘNG:</b>\n<code>{', '.join(dan_n1)}</code>\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"⏱️ <i>Chạm vào dãy số để copy nhanh • Vào tiền trước 18h28!</i>\n"
+        f"🌐 Web App: https://happiness2286-dot.github.io/67up97/"
+    )
 
 
 def get_lot_lon(num_str):
@@ -1429,6 +1472,7 @@ if __name__ == "__main__":
     parser.add_argument('--interval', type=int, default=5, help="Chu kỳ giây quét (mặc định 5s)")
     parser.add_argument('--duration', type=int, default=0, help="Thời gian tối đa chạy live tính bằng giây (0 = vô hạn)")
     parser.add_argument('--auto_push', action='store_true', help="Tự động git push ngay khi chốt G5 và khi có GĐB")
+    parser.add_argument('--test_telegram', action='store_true', help="Gửi ngay 1 tin nhắn mẫu chốt số G5.5 về điện thoại để kiểm tra")
     args = parser.parse_args()
 
     def do_quick_git_push(commit_msg):
@@ -1452,6 +1496,17 @@ if __name__ == "__main__":
                 print(f"🚀 [GIT PUSH] {commit_msg} -> Đã đồng bộ lên GitHub thành công!", flush=True)
         except Exception as ex:
             print(f"⚠️ Không thể git push nhanh: {ex}", flush=True)
+
+    if args.test_telegram:
+        res = scan_radar(is_live=False)
+        if res:
+            msg = format_g55_telegram_message(res, is_test=True)
+            ok = send_telegram_alert(msg)
+            if ok:
+                print("✅ Đã gửi tin nhắn chốt số mẫu (G5.5) về Telegram điện thoại thành công!")
+            else:
+                print("❌ Gửi tin nhắn Telegram thất bại. Vui lòng kiểm tra telegram_config.json.")
+        sys.exit(0)
 
     if args.live:
         print(f"[*] Bắt đầu radar live polling mỗi {args.interval} giây (Thời lượng tối đa: {args.duration if args.duration else 'Vô hạn'}s)...")
@@ -1481,15 +1536,8 @@ if __name__ == "__main__":
                         print(f"⏱️ HẠN CHỐT VÀO TIỀN: TRƯỚC 18H28!", flush=True)
                         print(f"=======================================================\n", flush=True)
 
-                        # Gửi thông báo tức thì (<0.5s) qua Telegram nếu đã cấu hình
-                        tg_msg = (
-                            f"🔒 <b>CHỐT KHÓA G5.5 XSMB ({t_date})</b>\n"
-                            f"👑 Bạch Thủ: <b>{top1}</b> (Lót: <b>{lot_lon}</b>)\n"
-                            f"🔥 Tứ Thủ: <b>{', '.join(top4)}</b>\n"
-                            f"🎯 Dàn 9s: <b>{', '.join(dan9)}</b>\n"
-                            f"🌟 3 Càng: <b>{', '.join(top3_cang)}</b>\n"
-                            f"⏱️ Vào tiền ngay trước 18h28!"
-                        )
+                        # Gửi thông báo tức thì (<0.5s) qua Telegram về điện thoại
+                        tg_msg = format_g55_telegram_message(res, is_test=False)
                         send_telegram_alert(tg_msg)
 
                         if args.auto_push:
@@ -1498,8 +1546,37 @@ if __name__ == "__main__":
                     # 2. BƯỚC ĐỐI CHIẾU KHI CÓ GIẢI ĐẶC BIỆT (chỉ kết thúc sau 18h30 khi thực sự có GĐB hôm nay)
                     now_t = datetime.now()
                     if res.get('actual_de') and (now_t.hour > 18 or (now_t.hour == 18 and now_t.minute >= 30)):
-                        print(f"\n🎯 [KẾT THÚC QUAY - {now_t.strftime('%H:%M:%S')}] Đã có Giải Đặc Biệt: {res.get('actual_de')}.", flush=True)
+                        act_de = res.get('actual_de', '')
+                        act_3d = res.get('actual_3d', '')
+                        t_date = res.get('target_date', '')
+                        print(f"\n🎯 [KẾT THÚC QUAY - {now_t.strftime('%H:%M:%S')}] Đã có Giải Đặc Biệt: {act_de}.", flush=True)
                         final_completed = True
+
+                        # Gửi tin nhắn đối chiếu kết quả lúc 18h30 về điện thoại
+                        top1 = res.get('top_1', '')
+                        lot_lon = res.get('lot_lon', '')
+                        top4 = res.get('top_4', [])
+                        dan9 = res.get('dan_9_so', [])
+                        dan9_dao = [s[1] + s[0] for s in dan9 if len(s) == 2 and s[0] != s[1]]
+                        dan_n1 = res.get('frame_transition', {}).get('dan_n1', [])
+                        hit_badges = []
+                        if act_de == top1:
+                            hit_badges.append("🏆 NỔ BẠCH THỦ TOP 1")
+                        elif act_de == lot_lon:
+                            hit_badges.append("🎯 NỔ LÓT LỘN SONG THỦ")
+                        if act_de in top4:
+                            hit_badges.append("🔥 NỔ TỨ THỦ TOP 4")
+                        if act_de in dan9 or act_de in dan9_dao:
+                            hit_badges.append("🎯 NỔ DÀN 9s/ĐẢO")
+                        if act_de in dan_n1:
+                            hit_badges.append("✅ TRÚNG DÀN 60s N1 ĐỘNG")
+                        res_str = " | ".join(hit_badges) if hit_badges else "❌ Trượt N1 -> Mai đánh N2 (36 số)"
+                        send_telegram_alert(
+                            f"🎉 <b>KẾT QUẢ ĐỀ XSMB ({t_date})</b>\n"
+                            f"🎰 Giải Đặc Biệt: <b>{act_3d}</b> (Đề về: <b>{act_de}</b>)\n"
+                            f"📊 Đối chiếu: <b>{res_str}</b>"
+                        )
+
                         if args.auto_push:
                             do_quick_git_push(f"Finish XSMB {res.get('target_date')} (DB {res.get('actual_de')})")
                         break
