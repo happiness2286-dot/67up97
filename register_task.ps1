@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
-$psPath = "powershell.exe"
 $pythonPath = "C:\Users\Admin\AppData\Local\Programs\Python\Python311\python.exe"
 if (-not (Test-Path $pythonPath)) { $pythonPath = "python.exe" }
 
@@ -10,11 +8,8 @@ $scriptDir = $PSScriptRoot
 if (-not $scriptDir) {
     $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 }
-if (-not $scriptDir) {
-    $scriptDir = "e:\DONGBO~1\NEWHAG~1\NM2026~1\DNAI_A~1\67_up_95"
-}
 
-$cronPs1 = Join-Path $scriptDir "AUTO_CRON_18H15.ps1"
+$runnerPy = Join-Path $scriptDir "auto_cron_runner.py"
 $catchupPy = Join-Path $scriptDir "catchup_check.py"
 
 # Don dep cac Task rieng cua 67_up_95 (KHONG dung toi Task cua Logic hay 58_up_75)
@@ -39,18 +34,18 @@ foreach ($t in $cleanupList) {
 
 $commonSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -WakeToRun -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
 
-# 1. TASK 17h00: Chuan bi dan so & dong bo Cho Quay (Mode Prep17h - 3s thoat ngay)
-$action17h00 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`" -Mode Prep17h" -WorkingDirectory $scriptDir
+# 1. TASK 17h00: Chuan bi dan so & dong bo Cho Quay (chay truc tiep python.exe auto_cron_runner.py)
+$action17h00 = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$runnerPy`" --mode Prep17h" -WorkingDirectory $scriptDir
 $trigger17h00 = New-ScheduledTaskTrigger -Daily -At "17:00"
 Register-ScheduledTask -TaskName "XSMB_AI_AutoUpdate_17h00" -Action $action17h00 -Trigger $trigger17h00 -Settings $commonSettings -Description "Kich hoat chuan bi dan so luc 17h00 (Prep17h)" -Force
 
-# 2. TASK 18h15: Du phong truc tiep don long cau quay (lech gio Logic 18h14:14)
-$action18h15 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`" -Mode Live18h15" -WorkingDirectory $scriptDir
+# 2. TASK 18h15: Don quay truc tiep 18h15 -> khoa chot & gui Telegram tai G5.5 (18h23)
+$action18h15 = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$runnerPy`" --mode Live18h15" -WorkingDirectory $scriptDir
 $trigger18h15 = New-ScheduledTaskTrigger -Daily -At "18:15"
 Register-ScheduledTask -TaskName "XSMB_AI_AutoLive_18h15" -Action $action18h15 -Trigger $trigger18h15 -Settings $commonSettings -Description "Don quay truc tiep luc 18h15 khoa chot tai G5.5 (Live18h15)" -Force
 
-# 3. TASK 18h37: Chot toan dien va day ket qua len GitHub (lech gio Logic 18h35:35, tu bo qua neu Live18h15 vua chot)
-$action18h37 = New-ScheduledTaskAction -Execute $psPath -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$cronPs1`" -Mode Daily18h37" -WorkingDirectory $scriptDir
+# 3. TASK 18h37: Chot toan dien va day ket qua len GitHub (tu gui bu Telegram neu 18h23 bi lo)
+$action18h37 = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$runnerPy`" --mode Daily18h37" -WorkingDirectory $scriptDir
 $trigger18h37 = New-ScheduledTaskTrigger -Daily -At "18:37"
 Register-ScheduledTask -TaskName "XSMB_AI_AutoDaily_18h37" -Action $action18h37 -Trigger $trigger18h37 -Settings $commonSettings -Description "Chot ket qua va phan tich Khung 3N luc 18h37 (Daily18h37)" -Force
 
@@ -64,10 +59,5 @@ $triggerEvening = New-ScheduledTaskTrigger -Daily -At "19:00"
 Register-ScheduledTask -TaskName "XSMB_AI_Catchup_Evening" -Action $actionCatchup -Trigger $triggerEvening -Settings $commonSettings -Description "Quet du phong cao bu luc 19h00 neu 18h35 may tat" -Force
 
 Write-Host "=================================================================" -ForegroundColor Cyan
-Write-Host "DA CAU HINH HE THONG CRON 5 TANG TU DONG CHO 67_UP_95 THANH CONG!" -ForegroundColor Green
-Write-Host "   1. 17h00: Chuan bi dan so Cho Quay" -ForegroundColor White
-Write-Host "   2. 18h15: Tu kich hoat quay truc tiep (khoa chot tai G5.5)" -ForegroundColor White
-Write-Host "   3. 18h37: Chot toan dien va day GitHub (lech gio Logic)" -ForegroundColor White
-Write-Host "   4. Tu dong bu khi Mo may/Dang nhap (AtLogOn)" -ForegroundColor White
-Write-Host "   5. Quet du phong buoi toi (19h00) co StartWhenAvailable" -ForegroundColor White
+Write-Host "DA CAU HINH HE THONG CRON 5 TANG (TRUC TIEP QUA PYTHON.EXE) THANH CONG!" -ForegroundColor Green
 Write-Host "=================================================================" -ForegroundColor Cyan

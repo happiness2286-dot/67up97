@@ -39,6 +39,7 @@ STATE_JSON_PATH = os.path.join(BASE_DIR, 'live_radar_state.json')
 SUMMARY_JSON_PATH = os.path.join(BASE_DIR, 'analysis_summary.json')
 CACHE_DRAWS_PATH = os.path.join(BASE_DIR, 'cached_draws.json')
 TELEGRAM_CFG_PATH = os.path.join(BASE_DIR, 'telegram_config.json')
+TELEGRAM_SENT_LOG_PATH = os.path.join(BASE_DIR, 'telegram_sent_log.json')
 
 API_383_LIVE_URL = "https://api.383.im/lottery/live.json"
 DAIPHAT_LIVE_URL = "https://xosodaiphat.com/xsmb-xo-so-mien-bac.html"
@@ -164,6 +165,80 @@ def format_g55_telegram_message(res, is_test=False):
         f"⏱️ <i>Chạm vào dãy số để copy nhanh • Vào tiền trước 18h28!</i>\n"
         f"🌐 Web App: https://happiness2286-dot.github.io/67up97/"
     )
+
+
+def ensure_daily_telegram_sent(res):
+    """
+    Đảm bảo tin nhắn chốt số G5.5 (18h23) và tin nhắn kết quả GĐB (18h30) của ngày hôm nay
+    LUÔN được gửi tới Telegram cá nhân (5422717407) đúng 1 lần mỗi ngày — kể cả khi chạy live
+    lúc 18h23 hay khi chạy bù (catch-up) lúc 18h37 / 19h00.
+    """
+    if not res:
+        return
+    t_date = res.get('target_date', '')
+    t_key = extract_date_key(t_date)
+    today_key = datetime.now().strftime('%d-%m-%Y')
+    if not t_key or t_key != today_key:
+        return
+
+    sent_log = {}
+    if os.path.exists(TELEGRAM_SENT_LOG_PATH):
+        try:
+            with open(TELEGRAM_SENT_LOG_PATH, 'r', encoding='utf-8') as f:
+                sent_log = json.load(f)
+        except Exception:
+            sent_log = {}
+
+    changed = False
+    # 1. Gửi bản tin chốt khóa G5.5 nếu hôm nay đã có G5.5 mà chưa gửi
+    if res.get('is_g5_finished') and sent_log.get('last_g55_date') != today_key:
+        tg_msg = format_g55_telegram_message(res, is_test=False)
+        if send_telegram_alert(tg_msg):
+            sent_log['last_g55_date'] = today_key
+            sent_log['last_g55_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            changed = True
+            print(f"📲 [TELEGRAM] Đã gửi bản tin chốt khóa G5.5 kỳ {t_date} về điện thoại (5422717407)!")
+
+    # 2. Gửi bản tin đối chiếu kết quả GĐB nếu hôm nay đã có GĐB mà chưa gửi
+    now_t = datetime.now()
+    act_de = res.get('actual_de', '')
+    if act_de and (now_t.hour > 18 or (now_t.hour == 18 and now_t.minute >= 30)) and sent_log.get('last_result_date') != today_key:
+        act_3d = res.get('actual_3d', '')
+        top1 = res.get('top_1', '')
+        lot_lon = res.get('lot_lon', '')
+        top4 = res.get('top_4', [])
+        dan9 = res.get('dan_9_so', [])
+        dan9_dao = [s[1] + s[0] for s in dan9 if len(s) == 2 and s[0] != s[1]]
+        dan_n1 = res.get('frame_transition', {}).get('dan_n1', [])
+        hit_badges = []
+        if act_de == top1:
+            hit_badges.append("🏆 NỔ BẠCH THỦ TOP 1")
+        elif act_de == lot_lon:
+            hit_badges.append("🎯 NỔ LÓT LỘN SONG THỦ")
+        if act_de in top4:
+            hit_badges.append("🔥 NỔ TỨ THỦ TOP 4")
+        if act_de in dan9 or act_de in dan9_dao:
+            hit_badges.append("🎯 NỔ DÀN 9s/ĐẢO")
+        if act_de in dan_n1:
+            hit_badges.append("✅ TRÚNG DÀN 60s N1 ĐỘNG")
+        res_str = " | ".join(hit_badges) if hit_badges else "❌ Trượt N1 -> Mai đánh N2 (36 số)"
+        ok_res = send_telegram_alert(
+            f"🎉 <b>KẾT QUẢ ĐỀ XSMB ({t_date})</b>\n"
+            f"🎰 Giải Đặc Biệt: <b>{act_3d}</b> (Đề về: <b>{act_de}</b>)\n"
+            f"📊 Đối chiếu: <b>{res_str}</b>"
+        )
+        if ok_res:
+            sent_log['last_result_date'] = today_key
+            sent_log['last_result_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            changed = True
+            print(f"📲 [TELEGRAM] Đã gửi bản tin đối chiếu kết quả Đề {act_de} kỳ {t_date} về điện thoại (5422717407)!")
+
+    if changed:
+        try:
+            with open(TELEGRAM_SENT_LOG_PATH, 'w', encoding='utf-8') as f:
+                json.dump(sent_log, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
 
 
 def get_lot_lon(num_str):
@@ -1740,6 +1815,7 @@ def scan_radar(is_live=False):
         pass
 
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Đã cập nhật live_radar_state.json: {filled_prizes}/19 giải | Bạch Thủ: {top_1} (Lót lộn: {lot_lon}) | Tứ Thủ: {top_4} | Dàn 9s: {len(dan_9_so)}s | Dàn Lót: {len(dan_lot_valid)}s | Lịch sử: {len(history_records)} kỳ")
+    ensure_daily_telegram_sent(final_state)
     return final_state
 
 
@@ -1813,9 +1889,7 @@ if __name__ == "__main__":
                         print(f"⏱️ HẠN CHỐT VÀO TIỀN: TRƯỚC 18H28!", flush=True)
                         print(f"=======================================================\n", flush=True)
 
-                        # Gửi thông báo tức thì (<0.5s) qua Telegram về điện thoại
-                        tg_msg = format_g55_telegram_message(res, is_test=False)
-                        send_telegram_alert(tg_msg)
+                        ensure_daily_telegram_sent(res)
 
                         if args.auto_push:
                             do_quick_git_push(f"Lock Radar G5.5 {t_date} (BT {top1}, TT {top4})")
@@ -1824,35 +1898,11 @@ if __name__ == "__main__":
                     now_t = datetime.now()
                     if res.get('actual_de') and (now_t.hour > 18 or (now_t.hour == 18 and now_t.minute >= 30)):
                         act_de = res.get('actual_de', '')
-                        act_3d = res.get('actual_3d', '')
                         t_date = res.get('target_date', '')
                         print(f"\n🎯 [KẾT THÚC QUAY - {now_t.strftime('%H:%M:%S')}] Đã có Giải Đặc Biệt: {act_de}.", flush=True)
                         final_completed = True
 
-                        # Gửi tin nhắn đối chiếu kết quả lúc 18h30 về điện thoại
-                        top1 = res.get('top_1', '')
-                        lot_lon = res.get('lot_lon', '')
-                        top4 = res.get('top_4', [])
-                        dan9 = res.get('dan_9_so', [])
-                        dan9_dao = [s[1] + s[0] for s in dan9 if len(s) == 2 and s[0] != s[1]]
-                        dan_n1 = res.get('frame_transition', {}).get('dan_n1', [])
-                        hit_badges = []
-                        if act_de == top1:
-                            hit_badges.append("🏆 NỔ BẠCH THỦ TOP 1")
-                        elif act_de == lot_lon:
-                            hit_badges.append("🎯 NỔ LÓT LỘN SONG THỦ")
-                        if act_de in top4:
-                            hit_badges.append("🔥 NỔ TỨ THỦ TOP 4")
-                        if act_de in dan9 or act_de in dan9_dao:
-                            hit_badges.append("🎯 NỔ DÀN 9s/ĐẢO")
-                        if act_de in dan_n1:
-                            hit_badges.append("✅ TRÚNG DÀN 60s N1 ĐỘNG")
-                        res_str = " | ".join(hit_badges) if hit_badges else "❌ Trượt N1 -> Mai đánh N2 (36 số)"
-                        send_telegram_alert(
-                            f"🎉 <b>KẾT QUẢ ĐỀ XSMB ({t_date})</b>\n"
-                            f"🎰 Giải Đặc Biệt: <b>{act_3d}</b> (Đề về: <b>{act_de}</b>)\n"
-                            f"📊 Đối chiếu: <b>{res_str}</b>"
-                        )
+                        ensure_daily_telegram_sent(res)
 
                         if args.auto_push:
                             do_quick_git_push(f"Finish XSMB {res.get('target_date')} (DB {res.get('actual_de')})")
