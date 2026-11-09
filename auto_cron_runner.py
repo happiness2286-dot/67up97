@@ -120,8 +120,8 @@ def main():
         try:
             with open(LOCK_FILE, 'w', encoding='utf-8') as lf:
                 lf.write(str(os.getpid()))
-            log("[LIVE 18H15] Đang chạy Live Radar Scanner G1->G5.5 (khóa chốt & bắn Telegram tại G5.5 / 18h23)...")
-            run_step([PYTHON_EXE, 'live_radar_scanner.py', '--live', '--interval', '5', '--duration', '1200', '--auto_push'])
+            log("[LIVE 18H15] Đang chạy Live Radar Scanner G1->G5.5 (quét siêu tốc mỗi 2 giây, khóa chốt & bắn Telegram TRƯỚC 18h23:00)...")
+            run_step([PYTHON_EXE, 'live_radar_scanner.py', '--live', '--interval', '2', '--duration', '1200', '--auto_push'])
 
             now_after = datetime.now()
             if now_after.hour == 18 and now_after.minute < 36:
@@ -164,3 +164,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

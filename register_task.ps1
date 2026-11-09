@@ -39,10 +39,15 @@ $action17h00 = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$runner
 $trigger17h00 = New-ScheduledTaskTrigger -Daily -At "17:00"
 Register-ScheduledTask -TaskName "XSMB_AI_AutoUpdate_17h00" -Action $action17h00 -Trigger $trigger17h00 -Settings $commonSettings -Description "Kich hoat chuan bi dan so luc 17h00 (Prep17h)" -Force
 
-# 2. TASK 18h15: Don quay truc tiep 18h15 -> khoa chot & gui Telegram tai G5.5 (18h23)
+# 2. TASK 18h14 - 18h22 (4 MOC KICH HOAT DU PHONG LIEN TUC): Dam bao 100% quet & gui Telegram TRUOC 18h23:00
 $action18h15 = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$runnerPy`" --mode Live18h15" -WorkingDirectory $scriptDir
-$trigger18h15 = New-ScheduledTaskTrigger -Daily -At "18:15"
-Register-ScheduledTask -TaskName "XSMB_AI_AutoLive_18h15" -Action $action18h15 -Trigger $trigger18h15 -Settings $commonSettings -Description "Don quay truc tiep luc 18h15 khoa chot tai G5.5 (Live18h15)" -Force
+$triggersLive = @(
+    (New-ScheduledTaskTrigger -Daily -At "18:14"),
+    (New-ScheduledTaskTrigger -Daily -At "18:18"),
+    (New-ScheduledTaskTrigger -Daily -At "18:21"),
+    (New-ScheduledTaskTrigger -Daily -At "18:22")
+)
+Register-ScheduledTask -TaskName "XSMB_AI_AutoLive_18h15" -Action $action18h15 -Trigger $triggersLive -Settings $commonSettings -Description "Don quay truc tiep 18h14-18h22 khoa chot & gui Telegram TRUOC 18h23 (Live18h15)" -Force
 
 # 3. TASK 18h37: Chot toan dien va day ket qua len GitHub (tu gui bu Telegram neu 18h23 bi lo)
 $action18h37 = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$runnerPy`" --mode Daily18h37" -WorkingDirectory $scriptDir

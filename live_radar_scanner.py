@@ -1530,6 +1530,11 @@ def build_radar_history(draws, summary_data, max_records=30):
 
 
 def scan_radar(is_live=False):
+    today_dt = datetime.now()
+    today_str = today_dt.strftime('%d-%m-%Y')
+    dow_map = {0: 'Thứ hai', 1: 'Thứ ba', 2: 'Thứ tư', 3: 'Thứ năm', 4: 'Thứ sáu', 5: 'Thứ bảy', 6: 'Chủ nhật'}
+    today_date_str = f"{dow_map[today_dt.weekday()]} ngày {today_str}"
+
     live_383 = None
     if is_live:
         try:
@@ -1540,18 +1545,25 @@ def scan_radar(is_live=False):
     daiphat_draws = fetch_daiphat_draws(is_live=is_live)
     draws = []
     if live_383:
-        draws = [live_383]
         live_k = extract_date_key(live_383.get('date', ''))
+        # Hợp nhất từng giải từ cả API 383.im và xosodaiphat.com để nguồn nào có giải G1..G5.5 trước đều bắt được ngay tức thì
+        for d in daiphat_draws:
+            if extract_date_key(d.get('date', '')) == live_k:
+                dp_p = d.get('prizes', {})
+                l_p = live_383.setdefault('prizes', {})
+                for pk, pv in dp_p.items():
+                    if pv and not l_p.get(pk):
+                        l_p[pk] = pv
+                if d.get('db') and not live_383.get('db'):
+                    live_383['db'] = d['db']
+                    live_383['de'] = d.get('de', d['db'][-2:])
+                break
+        draws = [live_383]
         for d in daiphat_draws:
             if extract_date_key(d.get('date', '')) != live_k:
                 draws.append(d)
     else:
         draws = daiphat_draws
-
-    today_dt = datetime.now()
-    today_str = today_dt.strftime('%d-%m-%Y')
-    dow_map = {0: 'Thứ hai', 1: 'Thứ ba', 2: 'Thứ tư', 3: 'Thứ năm', 4: 'Thứ sáu', 5: 'Thứ bảy', 6: 'Chủ nhật'}
-    today_date_str = f"{dow_map[today_dt.weekday()]} ngày {today_str}"
 
     is_today = False
     if draws and draws[0].get('date'):
@@ -1623,8 +1635,9 @@ def scan_radar(is_live=False):
     filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
     has_g5_5 = bool(live_p.get('G5.5', ''))
     now_curr = datetime.now()
-    is_timeout_backup = (now_curr.hour == 18 and (now_curr.minute > 23 or (now_curr.minute == 23 and now_curr.second >= 30)))
-    is_completed = (filled_prizes >= 19) or (has_g5_5 and filled_prizes >= 18) or (is_timeout_backup and filled_prizes >= 10)
+    # Khóa sổ ngay lập tức khi có G5.5 (~18h22:15) hoặc hạn chót 18h22:48 (ĐẢM BẢO 100% TRƯỚC 18H23:00!)
+    is_timeout_backup = (now_curr.hour == 18 and (now_curr.minute > 22 or (now_curr.minute == 22 and now_curr.second >= 48))) or (now_curr.hour > 18)
+    is_completed = (filled_prizes >= 19) or (has_g5_5 and filled_prizes >= 17) or (is_timeout_backup and filled_prizes >= 10)
 
     dan_lot_valid = []
     table_5cols = []
@@ -1736,7 +1749,18 @@ def scan_radar(is_live=False):
         'tt_n3': tt_n3_live
     }
 
-    history_records, history_summary = build_radar_history(draws, summary_data, max_records=30)
+    history_records, history_summary = None, None
+    if is_live and not actual_de and os.path.exists(STATE_JSON_PATH):
+        try:
+            with open(STATE_JSON_PATH, 'r', encoding='utf-8') as f_st:
+                old_st = json.load(f_st)
+                if len(old_st.get('history_records', [])) >= 25 and old_st.get('history_summary'):
+                    history_records = old_st['history_records']
+                    history_summary = old_st['history_summary']
+        except Exception:
+            pass
+    if not history_records or not history_summary:
+        history_records, history_summary = build_radar_history(draws, summary_data, max_records=30)
 
     final_state = {
         'target_date': target_draw['date'],
