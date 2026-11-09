@@ -772,6 +772,7 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
     # Trích xuất Dàn Hạ Số Nhịp Vàng (20 số) & Dàn Giao Thoa Theo Thứ (Walk-Forward 100% từ dow_model)
     dow_ha_so_list = []
     dow_giao_thoa_set = set()
+    dow_sums = set()
     if summary_data and 'dow_model' in summary_data:
         dm = summary_data['dow_model']
         t_key = extract_date_key(target_draw.get('date', ''))
@@ -780,11 +781,17 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
             if extract_date_key(r_dow.get('date', '')) == t_key:
                 dow_ha_so_list = [x.strip() for x in r_dow.get('dan_ha_so_str', '').split(',') if x.strip()]
                 dow_giao_thoa_set = set(x.strip() for x in r_dow.get('dan_str', '').split(',') if x.strip())
+                dow_sums = {
+                    int(x.strip().replace('Tổng ', ''))
+                    for x in r_dow.get('target_sums_str', '').split(',')
+                    if 'Tổng ' in x and x.strip().replace('Tổng ', '').isdigit()
+                }
                 matched_dow_log = True
                 break
         if not matched_dow_log:
             dow_ha_so_list = list(dm.get('next_dan_ha_so', []))
             dow_giao_thoa_set = set(dm.get('next_dan_giao_thoa', []))
+            dow_sums = {int(s) for s in dm.get('next_target_sums', []) if str(s).isdigit()}
     dow_ha_so_set = set(dow_ha_so_list)
 
     # Cộng hưởng định hướng Đầu/Đuôi từ Dàn Hạ Số 20s Theo Thứ + 4 Mỏ Neo Live 18h23 + Dàn 60s N1 Động
@@ -1125,6 +1132,175 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
     lot_lon = get_lot_lon(top_1)
     song_thu_tru = [top_1, lot_lon] if lot_lon else [top_1]
     top_4 = select_latin_transversal_top4(top_pool, top_1)
+
+    # 6. KHÓA NGHIỆM PHƯƠNG TRÌNH MA TRẬN (TỔNG VỊ TRÍ ∩ CHẠM NGÀY DÀN ĐỘNG):
+    # - Khử các ô "chết" (Kép lệch tổng / nằm ngoài Dàn Động & Hạ Số) trong Dàn 9s, thay bằng nghiệm (Hạ Số 20s ∩ Dàn Động 60s ∩ Chạm Ngày)
+    # - Hoàn thiện ô thứ 4 của Tứ Thủ và đôn Bạch Thủ bằng Đỉnh Tổng Hạ Số (max_hs_sum) ∩ Hạ Số 20s ∩ Dàn 9s
+    if enable_rescue and summary_data is not None and dow_ha_so_list:
+        hs20_set = dow_ha_so_set
+        d60 = cap4_set
+        old_d9 = list(dan_9_so)
+        t4 = list(top_4)
+        bt = top_1
+
+        hs_sum_cnt = Counter((int(x[0]) + int(x[1])) % 10 for x in dow_ha_so_list if len(x) == 2 and x.isdigit())
+        d60_sum_cnt = Counter((int(x[0]) + int(x[1])) % 10 for x in d60 if len(x) == 2 and x.isdigit())
+        max_hs_sum = max(hs_sum_cnt.values()) if hs_sum_cnt else 0
+
+        found_sc = {x['num']: x['consensus_score'] for x in found_list}
+        found_wt = {x['num']: x.get('weight', 0.8) for x in found_list}
+
+        cand_pool = set(old_d9)
+        if bt in hs20_set and bt in d60:
+            cand_pool.add(bt)
+        for x_hs in dow_ha_so_list:
+            if x_hs in d60 and (
+                x_hs[0] in head_digits or x_hs[1] in tail_digits
+                or x_hs[0] in tail_digits or x_hs[1] in head_digits
+            ):
+                cand_pool.add(x_hs)
+
+        scored_d9 = []
+        for ns in cand_pool:
+            rev = ns[1] + ns[0]
+            s_v = (int(ns[0]) + int(ns[1])) % 10
+            in_old = (ns in old_d9 or rev in old_d9)
+            in_d60_either = (ns in d60 or rev in d60)
+            in_hs_either = (ns in hs20_set or rev in hs20_set)
+            is_kep = (ns[0] == ns[1])
+
+            sc = 0.0
+            if in_old and (in_d60_either or in_hs_either) and not is_kep:
+                sc += 300.0
+            elif (ns == bt or rev == bt) and in_hs_either and in_d60_either:
+                sc += 220.0
+            elif in_hs_either and (ns in d60) and not is_kep:
+                sc += 140.0
+            elif in_old and not is_kep:
+                sc += 80.0
+            else:
+                sc += 20.0
+
+            if ns in hs20_set:
+                sc += 45.0
+            elif rev in hs20_set:
+                sc += 35.0
+            if ns in d60:
+                sc += 35.0
+            elif rev in d60:
+                sc += 25.0
+
+            sc += hs_sum_cnt[s_v] * 8.0 + d60_sum_cnt[s_v] * 4.0
+            if s_v in dow_sums:
+                sc += 20.0
+            sc += max(found_sc.get(ns, 0.0), found_sc.get(rev, 0.0)) * 0.20
+
+            best_orient = ns
+            if (rev in d60 and ns not in d60) or (rev in hs20_set and ns not in hs20_set):
+                best_orient = rev
+            scored_d9.append((best_orient, sc))
+
+        scored_d9.sort(key=lambda x: x[1], reverse=True)
+        new_d9 = []
+        for ns, _ in scored_d9:
+            rev = ns[1] + ns[0]
+            if ns not in new_d9 and rev not in new_d9:
+                new_d9.append(ns)
+            if len(new_d9) >= 9:
+                break
+        new_d9 = sorted(new_d9)
+        new_dao = [s[1] + s[0] for s in new_d9 if s[0] != s[1]]
+        new_d9_all = set(new_d9) | set(new_dao)
+
+        if len(t4) >= 4:
+            covered_heads = {x[0] for x in t4}
+            missing_heads = [h for h in head_digits if h not in covered_heads]
+            replaced_t4 = False
+            for mh in missing_heads:
+                for x_item in found_list:
+                    c_num = x_item['num']
+                    if c_num[0] == mh and c_num in new_d9_all and c_num in hs20_set and c_num in d60:
+                        s_c = (int(c_num[0]) + int(c_num[1])) % 10
+                        if hs_sum_cnt[s_c] == max_hs_sum and c_num not in t4 and (c_num[1] + c_num[0]) not in t4:
+                            t4[3] = c_num
+                            replaced_t4 = True
+                            break
+                if replaced_t4:
+                    break
+
+            if not replaced_t4:
+                covered_tails = {x[1] for x in t4}
+                missing_tails = [t for t in tail_digits if t not in covered_tails]
+                for mt in missing_tails:
+                    for x_item in found_list:
+                        c_num = x_item['num']
+                        if c_num[1] == mt and c_num in new_d9_all and c_num in hs20_set and c_num in d60:
+                            s_c = (int(c_num[0]) + int(c_num[1])) % 10
+                            if hs_sum_cnt[s_c] == max_hs_sum and c_num not in t4 and (c_num[1] + c_num[0]) not in t4:
+                                t4[3] = c_num
+                                replaced_t4 = True
+                                break
+                    if replaced_t4:
+                        break
+
+            if not replaced_t4 and t4[3] not in hs20_set:
+                for x_item in found_list:
+                    c_num = x_item['num']
+                    if c_num in new_d9_all and c_num in hs20_set and c_num in d60:
+                        s_c = (int(c_num[0]) + int(c_num[1])) % 10
+                        if hs_sum_cnt[s_c] == max_hs_sum and c_num not in t4 and (c_num[1] + c_num[0]) not in t4:
+                            t4[3] = c_num
+                            replaced_t4 = True
+                            break
+
+        bt_sum = (int(bt[0]) + int(bt[1])) % 10 if (len(bt) == 2 and bt.isdigit()) else -1
+        if (bt not in hs20_set) or (
+            not is_rescue_day and (hs_sum_cnt[bt_sum] < max_hs_sum or (bt not in new_d9 and bt not in old_d9))
+        ):
+            peak_cands = [
+                cand for cand in t4
+                if cand in hs20_set
+                and (cand in new_d9 or cand in old_d9)
+                and hs_sum_cnt[(int(cand[0]) + int(cand[1])) % 10] == max_hs_sum
+            ]
+            if peak_cands:
+                orig_bt = bt
+                peak_cands.sort(
+                    key=lambda c: (
+                        (c[0] != orig_bt[0] and c[1] != orig_bt[1]) or c == orig_bt,
+                        found_wt.get(c, 0.8) >= 1.0,
+                        found_sc.get(c, 0.0)
+                    ),
+                    reverse=True
+                )
+                bt = peak_cands[0]
+                t4.remove(bt)
+                t4.insert(0, bt)
+
+        dan_9_so = new_d9
+        top_1 = bt
+        lot_lon = get_lot_lon(top_1)
+        song_thu_tru = [top_1, lot_lon] if lot_lon else [top_1]
+        top_4 = t4
+
+        for item in found_list:
+            if item['num'] in new_d9:
+                item['in_d9'] = True
+                if "Dàn 9s AI" not in item['convergence_badges']:
+                    item['convergence_badges'].append("Dàn 9s AI")
+            if item['num'] == top_1 or item['num'] in top_4:
+                if item['num'] in hs20_set and hs_sum_cnt[(int(item['num'][0]) + int(item['num'][1])) % 10] == max_hs_sum:
+                    if "Khóa Nghiệm Tổng×Chạm" not in item['convergence_badges']:
+                        item['convergence_badges'].append("Khóa Nghiệm Tổng×Chạm")
+        found_list.sort(
+            key=lambda x: (
+                x['num'] == top_1,
+                x['num'] in top_4,
+                x.get('consensus_score', 0),
+                x.get('in_d9', False)
+            ),
+            reverse=True
+        )
 
     return {
         'head_targets': head_targets,

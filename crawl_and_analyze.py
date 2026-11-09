@@ -557,13 +557,33 @@ def analyze_all(data_2026):
     total_ha_sz_all_dow = 0
 
     existing_dow_ha_so_map = {}
+    existing_dow_sums_map = {}
+    existing_dow_dan_map = {}
+    existing_dan60_map = {}
+    cached_draw_dates = set()
+    if os.path.exists('cached_draws.json'):
+        try:
+            with open('cached_draws.json', 'r', encoding='utf-8') as _f_cd:
+                for _cd in json.load(_f_cd):
+                    if _cd.get('date'):
+                        cached_draw_dates.add(_cd['date'].split()[-1])
+        except Exception:
+            pass
     if os.path.exists('analysis_summary.json'):
         try:
             with open('analysis_summary.json', 'r', encoding='utf-8') as _f_old:
                 _old_sum = json.load(_f_old)
                 for _r_old in _old_sum.get('dow_model', {}).get('history_log_dow', []):
-                    if _r_old.get('date') and _r_old.get('dan_ha_so_str'):
-                        existing_dow_ha_so_map[_r_old['date']] = [x.strip() for x in _r_old['dan_ha_so_str'].split(',') if x.strip()]
+                    if _r_old.get('date'):
+                        if _r_old.get('dan_ha_so_str'):
+                            existing_dow_ha_so_map[_r_old['date']] = [x.strip() for x in _r_old['dan_ha_so_str'].split(',') if x.strip()]
+                        if _r_old.get('target_sums_str'):
+                            existing_dow_sums_map[_r_old['date']] = _r_old['target_sums_str']
+                        if _r_old.get('dan_str'):
+                            existing_dow_dan_map[_r_old['date']] = [x.strip() for x in _r_old['dan_str'].split(',') if x.strip()]
+                for _d_k, _d_v in _old_sum.get('adaptive_frame', {}).get('date_to_dan60_map', {}).items():
+                    if _d_k.split()[-1] in cached_draw_dates:
+                        existing_dan60_map[_d_k] = _d_v
         except Exception:
             pass
 
@@ -578,19 +598,20 @@ def analyze_all(data_2026):
         
         sub_history = chrono[:idx+1]
         sub_des = [r['de'] for r in sub_history]
-        sub_dow_records = [r for r in sub_history if (r.get('datetime') or parse_date(r['date'])).weekday() == dow]
         
         sub_g_hits = Counter()
-        for r_idx in range(len(sub_dow_records) - 1):
-            cur_r = sub_dow_records[r_idx]
-            nxt_r = sub_dow_records[r_idx + 1]
-            nxt_de_sum = (int(nxt_r['de'][0]) + int(nxt_r['de'][1])) % 10 if nxt_r['de'] and nxt_r['de'].isdigit() else 0
-            for g_key in ['g7_1', 'g7_2', 'g7_3', 'g7_4']:
-                t = get_tong(cur_r[g_key])
-                if t is not None:
-                    b = get_bong(t)
-                    if nxt_de_sum == t or nxt_de_sum == b:
-                        sub_g_hits[g_key] += 1
+        for r_idx in range(len(sub_history) - 1):
+            cur_r = sub_history[r_idx]
+            cur_r_dt = cur_r.get('datetime') or parse_date(cur_r['date'])
+            if cur_r_dt and cur_r_dt.weekday() == dow:
+                nxt_r = sub_history[r_idx + 1]
+                nxt_de_sum = (int(nxt_r['de'][0]) + int(nxt_r['de'][1])) % 10 if nxt_r['de'] and nxt_r['de'].isdigit() else 0
+                for g_key in ['g7_1', 'g7_2', 'g7_3', 'g7_4']:
+                    t = get_tong(cur_r[g_key])
+                    if t is not None:
+                        b = get_bong(t)
+                        if nxt_de_sum == t or nxt_de_sum == b:
+                            sub_g_hits[g_key] += 1
         
         sorted_dow_g = sorted(['g7_1', 'g7_2', 'g7_3', 'g7_4'], key=lambda k: sub_g_hits[k], reverse=True)
         top2_g_keys = sorted_dow_g[:2]
@@ -687,11 +708,11 @@ def analyze_all(data_2026):
             'db': target_d['db'],
             'de': target_de,
             'g7_top2': ", ".join([k.upper().replace('_','.') for k in top2_g_keys]),
-            'target_sums_str': ", ".join([f"Tổng {s}" for s in sorted(list(target_sums))]),
+            'target_sums_str': existing_dow_sums_map.get(target_d['date'], ", ".join([f"Tổng {s}" for s in sorted(list(target_sums))])),
             'cham_str': "".join(str(c) for c in sorted(list(cham_set))),
             'corner_str': f"Tổng {corner_sum}-Bóng {corner_bong}",
             'dan_size': len(dan_giao_thoa),
-            'dan_str': ", ".join(sorted(list(dan_giao_thoa))),
+            'dan_str': ", ".join(sorted(list(existing_dow_dan_map.get(target_d['date'], dan_giao_thoa)))),
             'dan_ha_so_str': ", ".join(sorted(list(dan_ha_so))),
             'hit_1d': "TRÚNG N1 🎯" if hit_1d else "TRƯỢT ❌",
             'hit_ha_so': "TRÚNG HỎA LỰC 🎯" if hit_ha_so else "TRƯỢT ❌",
@@ -700,21 +721,23 @@ def analyze_all(data_2026):
 
     latest_d = chrono[-1]
     latest_dt = latest_d.get('datetime') or parse_date(latest_d['date'])
-    next_dow = (latest_dt.weekday() + 1) % 7
+    latest_dow = latest_dt.weekday() if latest_dt else 0
+    next_dow = (latest_dow + 1) % 7
     next_dow_name = dow_names[next_dow]
 
-    sub_dow_records_full = [r for r in chrono if (r.get('datetime') or parse_date(r['date'])).weekday() == next_dow]
     sub_g_hits_full = Counter()
-    for r_idx in range(len(sub_dow_records_full) - 1):
-        cur_r = sub_dow_records_full[r_idx]
-        nxt_r = sub_dow_records_full[r_idx + 1]
-        nxt_de_sum = (int(nxt_r['de'][0]) + int(nxt_r['de'][1])) % 10 if nxt_r['de'] and nxt_r['de'].isdigit() else 0
-        for g_key in ['g7_1', 'g7_2', 'g7_3', 'g7_4']:
-            t = get_tong(cur_r[g_key])
-            if t is not None:
-                b = get_bong(t)
-                if nxt_de_sum == t or nxt_de_sum == b:
-                    sub_g_hits_full[g_key] += 1
+    for r_idx in range(len(chrono) - 1):
+        cur_r = chrono[r_idx]
+        cur_r_dt = cur_r.get('datetime') or parse_date(cur_r['date'])
+        if cur_r_dt and cur_r_dt.weekday() == latest_dow:
+            nxt_r = chrono[r_idx + 1]
+            nxt_de_sum = (int(nxt_r['de'][0]) + int(nxt_r['de'][1])) % 10 if nxt_r['de'] and nxt_r['de'].isdigit() else 0
+            for g_key in ['g7_1', 'g7_2', 'g7_3', 'g7_4']:
+                t = get_tong(cur_r[g_key])
+                if t is not None:
+                    b = get_bong(t)
+                    if nxt_de_sum == t or nxt_de_sum == b:
+                        sub_g_hits_full[g_key] += 1
                 
     sorted_next_g = sorted(['g7_1', 'g7_2', 'g7_3', 'g7_4'], key=lambda k: sub_g_hits_full[k], reverse=True)
     top2_next_g = sorted_next_g[:2]
@@ -948,6 +971,27 @@ def analyze_all(data_2026):
         for k_g in local_top3_g7:
             top3_pool.update(get_set_20(cur_row[k_g]))
 
+        # Xếp hạng Top 2 vị trí Tổng G7 theo Thứ (so sánh chuẩn chrono[i] -> chrono[i+1])
+        cur_dt = cur_row.get('datetime') or parse_date(cur_row['date'])
+        cur_dow = cur_dt.weekday() if cur_dt else 0
+        dow_g7_hits = {'g7_1': 0.0, 'g7_2': 0.0, 'g7_3': 0.0, 'g7_4': 0.0}
+        for r_i in range(len(sub_hist) - 1):
+            r_cur = sub_hist[r_i]
+            r_dt = r_cur.get('datetime') or parse_date(r_cur['date'])
+            if r_dt and r_dt.weekday() == cur_dow:
+                nxt_de_s = get_tong(sub_hist[r_i + 1]['de'])
+                for k_g in ['g7_1', 'g7_2', 'g7_3', 'g7_4']:
+                    t_g = get_tong(r_cur[k_g])
+                    if t_g is not None:
+                        if nxt_de_s == t_g:
+                            dow_g7_hits[k_g] += 1.3
+                        elif nxt_de_s == get_bong(t_g):
+                            dow_g7_hits[k_g] += 1.0
+        sorted_dow_g7 = [x[0] for x in sorted(dow_g7_hits.items(), key=lambda x: x[1], reverse=True)]
+        dow_top2_pool = set()
+        for k_g in sorted_dow_g7[:2]:
+            dow_top2_pool.update(get_set_20(cur_row[k_g]))
+
         chams_direct = get_cham_g7(cur_row['g7_1'], cur_row['g7_2'], cur_row['g7_3'], cur_row['g7_4'])
         chams_bong = get_g7_cham(cur_row['g7_1'], cur_row['g7_2'], cur_row['g7_3'], cur_row['g7_4'])
 
@@ -956,11 +1000,20 @@ def analyze_all(data_2026):
         c_sum = (h_g71 + t_g74) % 10
         c_bong = get_bong(c_sum)
 
+        # Tổng vị trí Tâm Càng GĐB (db_sum_12, db_sum_24)
+        db_cur = cur_row.get('db', '')
+        db_sums = set()
+        if len(db_cur) == 5 and db_cur.isdigit():
+            s12 = (int(db_cur[1]) + int(db_cur[2])) % 10
+            s24 = (int(db_cur[2]) + int(db_cur[4])) % 10
+            db_sums.update([s12, get_bong(s12), s24, get_bong(s24)])
+
         sub_des = [r['de'] for r in sub_hist if r.get('de')]
         f30_s = Counter(sub_des[-30:])
         f60_s = Counter(sub_des[-60:])
         f90_s = Counter(sub_des[-90:])
         last_de_val = cur_row.get('de', '')
+        last_chams = {int(last_de_val[0]), int(last_de_val[1])} if (len(last_de_val) == 2 and last_de_val.isdigit()) else set()
 
         scored_100 = []
         for num in range(100):
@@ -970,13 +1023,19 @@ def analyze_all(data_2026):
 
             sc = 0.0
             if n_str in top3_pool:
-                sc += 35.0
+                sc += 28.0
+            if n_str in dow_top2_pool:
+                sc += 24.0
             if (d_t in chams_direct) or (d_u in chams_direct):
-                sc += 18.0
+                sc += 20.0
             elif (d_t in chams_bong) or (d_u in chams_bong):
                 sc += 10.0
             if d_sum in (c_sum, c_bong):
-                sc += 12.0
+                sc += 14.0
+            if d_sum in db_sums:
+                sc += 8.0
+            if (d_t in last_chams or d_u in last_chams) and n_str != last_de_val:
+                sc += 6.5
 
             sc += (f30_s[n_str] * 3.0) + (f60_s[n_str] * 1.8) + (f90_s[n_str] * 0.8)
 
@@ -1013,6 +1072,8 @@ def analyze_all(data_2026):
     for idx in range(len(chrono)):
         sub_hist = chrono[:idx+1]
         dan_60_idx, top3_pool_idx, sc_map_idx = build_adaptive_dan_60(sub_hist, target_size=60)
+        if idx < len(chrono) - 1 and chrono[idx + 1]['date'] in existing_dan60_map:
+            dan_60_idx = set(existing_dan60_map[chrono[idx + 1]['date']])
         step_dan60_list.append(dan_60_idx)
         step_score_map_list.append(sc_map_idx)
 
