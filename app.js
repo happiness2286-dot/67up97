@@ -289,25 +289,26 @@ function renderHeaderAndHero() {
 // 2. TAB 1: KHUNG NUÔI 3 NGÀY & DÀN GỐC N1 (HỖ TRỢ AUTO-SHIFT REALTIME)
 function renderTabFrame3Day() {
     if (!appData) return;
+
+    const af = (appData && appData.adaptive_frame) ? appData.adaptive_frame : {};
+    let n1List = Array.isArray(af.dan_n1) ? [...af.dan_n1] : [];
+    let n2List = Array.isArray(af.dan_n2) ? [...af.dan_n2] : [];
+    let n3List = Array.isArray(af.dan_n3) ? [...af.dan_n3] : [];
+    let stlPair = af.stl_pair || '17, 19';
     
-    let n1List = [];
-    let n2List = [];
-    let n3List = [];
-    let stlPair = '17, 19';
-    
-    // Lấy dàn từ frame3_records mới nhất
+    // Lấy dàn từ frame3_records mới nhất nếu af chưa có
     if (appData.frame3_records && appData.frame3_records.length > 0) {
         const latestFrame = appData.frame3_records[appData.frame3_records.length - 1];
-        if (latestFrame.pred_n1) {
+        if (n1List.length === 0 && latestFrame.pred_n1) {
             n1List = latestFrame.pred_n1.split(',').map(s => s.trim()).filter(Boolean);
         }
-        if (latestFrame.pred_n2) {
+        if (n2List.length === 0 && latestFrame.pred_n2) {
             n2List = latestFrame.pred_n2.split(',').map(s => s.trim()).filter(Boolean);
         }
-        if (latestFrame.pred_n3) {
+        if (n3List.length === 0 && latestFrame.pred_n3) {
             n3List = latestFrame.pred_n3.split(',').map(s => s.trim()).filter(Boolean);
         }
-        if (latestFrame.stl_pair) {
+        if (!af.stl_pair && latestFrame.stl_pair) {
             stlPair = latestFrame.stl_pair;
         }
     }
@@ -526,9 +527,9 @@ function renderTabFrame3Day() {
     if (gridN1) {
         gridN1.innerHTML = '';
         const t4Latest = (window.tab4Data && window.tab4Data.latest) ? window.tab4Data.latest : null;
-        const bachThu = t4Latest && t4Latest.bach_thu ? String(t4Latest.bach_thu).padStart(2, '0') : '';
-        const tuThu = (t4Latest && Array.isArray(t4Latest.tu_thu)) ? t4Latest.tu_thu.map(x => String(x).padStart(2, '0')) : [];
-        const dan9 = (t4Latest && Array.isArray(t4Latest.dan_9)) ? t4Latest.dan_9.map(x => String(x).padStart(2, '0')) : [];
+        const bachThu = (t4Latest && t4Latest.bach_thu) ? String(t4Latest.bach_thu).padStart(2, '0') : (af.bt_n1 ? String(af.bt_n1).padStart(2, '0') : '');
+        const tuThu = (t4Latest && Array.isArray(t4Latest.tu_thu)) ? t4Latest.tu_thu.map(x => String(x).padStart(2, '0')) : (Array.isArray(af.tt_n1) ? af.tt_n1.map(x => String(x).padStart(2, '0')) : []);
+        const dan9 = (t4Latest && Array.isArray(t4Latest.dan_9)) ? t4Latest.dan_9.map(x => String(x).padStart(2, '0')) : (Array.isArray(af.d9_n1) ? af.d9_n1.map(x => String(x).padStart(2, '0')) : []);
         const danDao = (t4Latest && Array.isArray(t4Latest.dan_dao)) ? t4Latest.dan_dao.map(x => String(x).padStart(2, '0')) : [];
 
         n1List.forEach(num => {
@@ -647,10 +648,10 @@ function renderTabFrame3Day() {
             tr.innerHTML = `
                 <td><strong>#${rec.stt}</strong></td>
                 <td>${rec.start_date}</td>
-                <td>${rec.de_n1} <span class="${rec.hit_n1 === 'Trúng' || rec.hit_n1 === 'TRÚNG' ? 'tag-hit' : 'tag-miss'}">${rec.hit_n1}</span></td>
-                <td>${rec.de_n2} <span class="${rec.hit_n2 === 'Trúng' || rec.hit_n2 === 'TRÚNG' ? 'tag-hit' : 'tag-miss'}">${rec.hit_n2}</span></td>
-                <td>${rec.de_n3} <span class="${rec.hit_n3 === 'Trúng' || rec.hit_n3 === 'TRÚNG' ? 'tag-hit' : 'tag-miss'}">${rec.hit_n3}</span></td>
-                <td>${rec.stl_pair} <span class="${rec.stl_hit && rec.stl_hit.includes('TRÚNG') ? 'tag-hit' : 'tag-miss'}">${rec.stl_hit}</span></td>
+                <td>${rec.de_n1 || '--'} <span class="${rec.hit_n1 === 'Trúng' || rec.hit_n1 === 'TRÚNG' ? 'tag-hit' : 'tag-miss'}">${rec.hit_n1 || ''}</span></td>
+                <td>${rec.de_n2 || '--'} <span class="${rec.hit_n2 === 'Trúng' || rec.hit_n2 === 'TRÚNG' ? 'tag-hit' : 'tag-miss'}">${rec.hit_n2 || ''}</span></td>
+                <td>${rec.de_n3 || '--'} <span class="${rec.hit_n3 === 'Trúng' || rec.hit_n3 === 'TRÚNG' ? 'tag-hit' : 'tag-miss'}">${rec.hit_n3 || ''}</span></td>
+                <td>${rec.stl_pair || '--'} <span class="${rec.stl_hit && (rec.stl_hit.includes('TRÚNG') || rec.stl_hit.includes('ĂN')) ? 'tag-hit' : 'tag-miss'}">${rec.stl_hit || ''}</span></td>
                 <td>${resTag}</td>
             `;
             tbody.appendChild(tr);
