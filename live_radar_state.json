@@ -62,11 +62,11 @@
       "raw_streak": 2,
       "hits_5d": 2,
       "cycle_suffix": "2d",
-      "category": "Lót",
-      "label": "Lót ngày 2",
-      "color_type": "cycle_lot",
+      "category": "Chỉ đạo",
+      "label": "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)",
+      "color_type": "cycle_main",
       "is_direct": false,
-      "tooltip": "G1 vị trí 2: Đầu 3 (2d, 2/5 kỳ) | Lót ngày 2"
+      "tooltip": "G1 vị trí 2: Đầu 3 (2d, 2/5 kỳ) | 🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
     },
     "G2.1_1": {
       "pos_raw": "G2.1 vị trí 1",
@@ -79,11 +79,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G2.1 vị trí 1: Đuôi 2 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G2.1 vị trí 1: Đuôi 2 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G2.1_4": {
       "pos_raw": "G2.1 vị trí 4",
@@ -96,11 +96,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G2.1 vị trí 4: Đầu 1 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G2.1 vị trí 4: Đầu 1 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G2.1_5": {
       "pos_raw": "G2.1 vị trí 5",
@@ -113,11 +113,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G2.1 vị trí 5: Đuôi 2 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G2.1 vị trí 5: Đuôi 2 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G2.2_2": {
       "pos_raw": "G2.2 vị trí 2",
@@ -130,11 +130,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G2.2 vị trí 2: Đuôi 7 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G2.2 vị trí 2: Đuôi 7 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G2.2_3": {
       "pos_raw": "G2.2 vị trí 3",
@@ -147,11 +147,11 @@
       "raw_streak": 2,
       "hits_5d": 2,
       "cycle_suffix": "2d",
-      "category": "Lót",
-      "label": "Lót ngày 2",
-      "color_type": "cycle_lot",
+      "category": "Chỉ đạo",
+      "label": "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)",
+      "color_type": "cycle_main",
       "is_direct": true,
-      "tooltip": "G2.2 vị trí 3: Đuôi 8 (2d, 2/5 kỳ) | Lót ngày 2"
+      "tooltip": "G2.2 vị trí 3: Đuôi 8 (2d, 2/5 kỳ) | 🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
     },
     "G3.1_2": {
       "pos_raw": "G3.1 vị trí 2",
@@ -164,11 +164,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G3.1 vị trí 2: Đuôi 7 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.1 vị trí 2: Đuôi 7 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.1_5": {
       "pos_raw": "G3.1 vị trí 5",
@@ -181,11 +181,11 @@
       "raw_streak": 2,
       "hits_5d": 3,
       "cycle_suffix": "2d",
-      "category": "Lót",
-      "label": "Lót ngày 2",
-      "color_type": "cycle_lot",
+      "category": "Chỉ đạo",
+      "label": "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)",
+      "color_type": "cycle_main",
       "is_direct": false,
-      "tooltip": "G3.1 vị trí 5: Đuôi 7 (2d, 3/5 kỳ) | Lót ngày 2"
+      "tooltip": "G3.1 vị trí 5: Đuôi 7 (2d, 3/5 kỳ) | 🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
     },
     "G3.2_3": {
       "pos_raw": "G3.2 vị trí 3",
@@ -198,11 +198,11 @@
       "raw_streak": 2,
       "hits_5d": 2,
       "cycle_suffix": "2d",
-      "category": "Lót",
-      "label": "Lót ngày 2",
-      "color_type": "cycle_lot",
+      "category": "Chỉ đạo",
+      "label": "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)",
+      "color_type": "cycle_main",
       "is_direct": false,
-      "tooltip": "G3.2 vị trí 3: Đầu 0 (2d, 2/5 kỳ) | Lót ngày 2"
+      "tooltip": "G3.2 vị trí 3: Đầu 0 (2d, 2/5 kỳ) | 🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
     },
     "G3.2_5": {
       "pos_raw": "G3.2 vị trí 5",
@@ -215,11 +215,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G3.2 vị trí 5: Đuôi 4 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.2 vị trí 5: Đuôi 4 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.3_1": {
       "pos_raw": "G3.3 vị trí 1",
@@ -232,11 +232,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G3.3 vị trí 1: Đuôi 8 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.3 vị trí 1: Đuôi 8 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.3_4": {
       "pos_raw": "G3.3 vị trí 4",
@@ -249,11 +249,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G3.3 vị trí 4: Đầu 1 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.3 vị trí 4: Đầu 1 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.4_3": {
       "pos_raw": "G3.4 vị trí 3",
@@ -266,11 +266,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G3.4 vị trí 3: Đuôi 7 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.4 vị trí 3: Đuôi 7 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.4_4": {
       "pos_raw": "G3.4 vị trí 4",
@@ -283,11 +283,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G3.4 vị trí 4: Đầu 9 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.4 vị trí 4: Đầu 9 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.5_1": {
       "pos_raw": "G3.5 vị trí 1",
@@ -300,11 +300,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G3.5 vị trí 1: Đuôi 4 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.5 vị trí 1: Đuôi 4 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.5_2": {
       "pos_raw": "G3.5 vị trí 2",
@@ -317,11 +317,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G3.5 vị trí 2: Đầu 5 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.5 vị trí 2: Đầu 5 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.6_2": {
       "pos_raw": "G3.6 vị trí 2",
@@ -334,11 +334,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G3.6 vị trí 2: Đầu 3 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.6 vị trí 2: Đầu 3 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.6_3": {
       "pos_raw": "G3.6 vị trí 3",
@@ -351,11 +351,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G3.6 vị trí 3: Đầu 4 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.6 vị trí 3: Đầu 4 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G3.6_4": {
       "pos_raw": "G3.6 vị trí 4",
@@ -368,11 +368,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G3.6 vị trí 4: Đuôi 7 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G3.6 vị trí 4: Đuôi 7 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G4.1_3": {
       "pos_raw": "G4.1 vị trí 3",
@@ -385,11 +385,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G4.1 vị trí 3: Đầu 0 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G4.1 vị trí 3: Đầu 0 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G4.2_1": {
       "pos_raw": "G4.2 vị trí 1",
@@ -402,11 +402,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G4.2 vị trí 1: Đầu 4 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G4.2 vị trí 1: Đầu 4 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G4.2_2": {
       "pos_raw": "G4.2 vị trí 2",
@@ -419,11 +419,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G4.2 vị trí 2: Đuôi 5 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G4.2 vị trí 2: Đuôi 5 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G4.2_4": {
       "pos_raw": "G4.2 vị trí 4",
@@ -435,12 +435,12 @@
       "cycle": 2,
       "raw_streak": 1,
       "hits_5d": 3,
-      "cycle_suffix": "2d",
+      "cycle_suffix": "1d",
       "category": "Lót",
-      "label": "Lót ngày 2",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
       "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G4.2 vị trí 4: Đầu 8 (2d, 3/5 kỳ) | Lót ngày 2"
+      "tooltip": "G4.2 vị trí 4: Đầu 8 (1d, 3/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G4.3_2": {
       "pos_raw": "G4.3 vị trí 2",
@@ -453,11 +453,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G4.3 vị trí 2: Đuôi 9 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G4.3 vị trí 2: Đuôi 9 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G4.3_3": {
       "pos_raw": "G4.3 vị trí 3",
@@ -469,12 +469,12 @@
       "cycle": 2,
       "raw_streak": 1,
       "hits_5d": 3,
-      "cycle_suffix": "2d",
+      "cycle_suffix": "1d",
       "category": "Lót",
-      "label": "Lót ngày 2",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
       "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G4.3 vị trí 3: Đuôi 6 (2d, 3/5 kỳ) | Lót ngày 2"
+      "tooltip": "G4.3 vị trí 3: Đuôi 6 (1d, 3/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G4.4_1": {
       "pos_raw": "G4.4 vị trí 1",
@@ -487,11 +487,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G4.4 vị trí 1: Đuôi 8 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G4.4 vị trí 1: Đuôi 8 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G4.4_3": {
       "pos_raw": "G4.4 vị trí 3",
@@ -504,11 +504,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G4.4 vị trí 3: Đầu 6 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G4.4 vị trí 3: Đầu 6 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.1_2": {
       "pos_raw": "G5.1 vị trí 2",
@@ -520,12 +520,12 @@
       "cycle": 2,
       "raw_streak": 1,
       "hits_5d": 3,
-      "cycle_suffix": "2d",
+      "cycle_suffix": "1d",
       "category": "Lót",
-      "label": "Lót ngày 2",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
       "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G5.1 vị trí 2: Đầu 7 (2d, 3/5 kỳ) | Lót ngày 2"
+      "tooltip": "G5.1 vị trí 2: Đầu 7 (1d, 3/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.2_1": {
       "pos_raw": "G5.2 vị trí 1",
@@ -537,12 +537,12 @@
       "cycle": 2,
       "raw_streak": 1,
       "hits_5d": 3,
-      "cycle_suffix": "2d",
+      "cycle_suffix": "1d",
       "category": "Lót",
-      "label": "Lót ngày 2",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
       "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G5.2 vị trí 1: Đuôi 4 (2d, 3/5 kỳ) | Lót ngày 2"
+      "tooltip": "G5.2 vị trí 1: Đuôi 4 (1d, 3/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.2_2": {
       "pos_raw": "G5.2 vị trí 2",
@@ -555,11 +555,11 @@
       "raw_streak": 2,
       "hits_5d": 3,
       "cycle_suffix": "2d",
-      "category": "Lót",
-      "label": "Lót ngày 2",
-      "color_type": "cycle_lot",
+      "category": "Chỉ đạo",
+      "label": "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)",
+      "color_type": "cycle_main",
       "is_direct": false,
-      "tooltip": "G5.2 vị trí 2: Đuôi 2 (2d, 3/5 kỳ) | Lót ngày 2"
+      "tooltip": "G5.2 vị trí 2: Đuôi 2 (2d, 3/5 kỳ) | 🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
     },
     "G5.2_3": {
       "pos_raw": "G5.2 vị trí 3",
@@ -572,11 +572,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G5.2 vị trí 3: Đuôi 3 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G5.2 vị trí 3: Đuôi 3 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.3_3": {
       "pos_raw": "G5.3 vị trí 3",
@@ -589,11 +589,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G5.3 vị trí 3: Đầu 0 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G5.3 vị trí 3: Đầu 0 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.4_1": {
       "pos_raw": "G5.4 vị trí 1",
@@ -606,11 +606,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G5.4 vị trí 1: Đầu 3 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G5.4 vị trí 1: Đầu 3 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.4_4": {
       "pos_raw": "G5.4 vị trí 4",
@@ -623,11 +623,11 @@
       "raw_streak": 2,
       "hits_5d": 3,
       "cycle_suffix": "2d",
-      "category": "Lót",
-      "label": "Lót ngày 2",
-      "color_type": "cycle_lot",
+      "category": "Chỉ đạo",
+      "label": "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)",
+      "color_type": "cycle_main",
       "is_direct": true,
-      "tooltip": "G5.4 vị trí 4: Đuôi 9 (2d, 3/5 kỳ) | Lót ngày 2"
+      "tooltip": "G5.4 vị trí 4: Đuôi 9 (2d, 3/5 kỳ) | 🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
     },
     "G5.5_1": {
       "pos_raw": "G5.5 vị trí 1",
@@ -640,11 +640,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G5.5 vị trí 1: Đầu 8 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G5.5 vị trí 1: Đầu 8 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.5_2": {
       "pos_raw": "G5.5 vị trí 2",
@@ -657,11 +657,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G5.5 vị trí 2: Đầu 2 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G5.5 vị trí 2: Đầu 2 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.5_4": {
       "pos_raw": "G5.5 vị trí 4",
@@ -674,11 +674,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G5.5 vị trí 4: Đầu 3 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G5.5 vị trí 4: Đầu 3 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G5.6_4": {
       "pos_raw": "G5.6 vị trí 4",
@@ -691,11 +691,11 @@
       "raw_streak": 2,
       "hits_5d": 2,
       "cycle_suffix": "2d",
-      "category": "Lót",
-      "label": "Lót ngày 2",
-      "color_type": "cycle_lot",
+      "category": "Chỉ đạo",
+      "label": "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)",
+      "color_type": "cycle_main",
       "is_direct": true,
-      "tooltip": "G5.6 vị trí 4: Đầu 5 (2d, 2/5 kỳ) | Lót ngày 2"
+      "tooltip": "G5.6 vị trí 4: Đầu 5 (2d, 2/5 kỳ) | 🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
     },
     "G6.1_1": {
       "pos_raw": "G6.1 vị trí 1",
@@ -708,11 +708,11 @@
       "raw_streak": 1,
       "hits_5d": 2,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": true,
-      "tooltip": "G6.1 vị trí 1: Đuôi 1 (1d, 2/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G6.1 vị trí 1: Đuôi 1 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     },
     "G6.3_1": {
       "pos_raw": "G6.3 vị trí 1",
@@ -725,11 +725,11 @@
       "raw_streak": 2,
       "hits_5d": 2,
       "cycle_suffix": "2d",
-      "category": "Lót",
-      "label": "Lót ngày 2",
-      "color_type": "cycle_lot",
+      "category": "Chỉ đạo",
+      "label": "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)",
+      "color_type": "cycle_main",
       "is_direct": true,
-      "tooltip": "G6.3 vị trí 1: Đuôi 4 (2d, 2/5 kỳ) | Lót ngày 2"
+      "tooltip": "G6.3 vị trí 1: Đuôi 4 (2d, 2/5 kỳ) | 🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
     },
     "G6.3_2": {
       "pos_raw": "G6.3 vị trí 2",
@@ -742,11 +742,11 @@
       "raw_streak": 1,
       "hits_5d": 1,
       "cycle_suffix": "1d",
-      "category": "Theo dõi",
-      "label": "Theo dõi ngày 1 (Mới chạm)",
-      "color_type": "cycle_watch",
+      "category": "Lót",
+      "label": "⚡ LÓT 1d (Săn Nổ Ngày 2)",
+      "color_type": "cycle_lot",
       "is_direct": false,
-      "tooltip": "G6.3 vị trí 2: Đuôi 9 (1d, 1/5 kỳ) | Theo dõi ngày 1 (Mới chạm)"
+      "tooltip": "G6.3 vị trí 2: Đuôi 9 (1d, 1/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     }
   },
   "filled_count": 19,
@@ -758,17 +758,17 @@
   "radar_status": "FINISHED_RESULT",
   "status_text": "ĐÃ HOÀN TẤT KỲ QUAY (ĐỀ VỀ 51)",
   "lock_badge": "🎯 ĐÃ CÓ KẾT QUẢ ĐỀ: 51",
-  "top_1": "17",
-  "lot_lon": "71",
+  "top_1": "51",
+  "lot_lon": "15",
   "song_thu_tru": [
-    "17",
-    "71"
+    "51",
+    "15"
   ],
   "top_4": [
+    "51",
     "17",
     "39",
-    "48",
-    "83"
+    "48"
   ],
   "cang_3d_live": {
     "tam_g1": "5",
@@ -785,79 +785,79 @@
       "4"
     ],
     "cang_bt_3s": [
-      "917",
-      "517",
-      "017"
+      "951",
+      "551",
+      "051"
     ],
     "cang_tt_12s": [
+      "951",
       "917",
       "939",
       "948",
-      "983",
+      "551",
       "517",
       "539",
       "548",
-      "583",
+      "051",
       "017",
       "039",
-      "048",
-      "083"
+      "048"
     ],
     "cang_d9_27s": [
       "908",
       "917",
+      "935",
       "938",
       "939",
       "947",
+      "948",
       "949",
-      "953",
-      "984",
-      "989",
+      "951",
       "980",
       "971",
+      "953",
       "983",
       "993",
       "974",
+      "984",
       "994",
-      "935",
-      "948",
-      "998",
+      "915",
       "508",
       "517",
+      "535",
       "538",
       "539",
       "547",
+      "548",
       "549",
-      "553",
-      "584",
-      "589",
+      "551",
       "580",
       "571",
+      "553",
       "583",
       "593",
       "574",
+      "584",
       "594",
-      "535",
-      "548",
-      "598",
+      "515",
       "008",
       "017",
+      "035",
       "038",
       "039",
       "047",
+      "048",
       "049",
-      "053",
-      "084",
-      "089",
+      "051",
       "080",
       "071",
+      "053",
       "083",
       "093",
       "074",
+      "084",
       "094",
-      "035",
-      "048",
-      "098"
+      "015"
     ],
     "target_date": "Thứ sáu ngày 13-11-2026",
     "target_note": "ĐÁNH NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY (Thứ sáu ngày 13-11-2026) - Khóa sổ khi hết G5, vào tiền trước 18h28!",
@@ -877,13 +877,13 @@
   "dan_9_so": [
     "08",
     "17",
+    "35",
     "38",
     "39",
     "47",
+    "48",
     "49",
-    "53",
-    "84",
-    "89"
+    "51"
   ],
   "dan_lot": [
     "01",
@@ -913,7 +913,6 @@
     "44",
     "47",
     "49",
-    "51",
     "52",
     "53",
     "56",
@@ -932,6 +931,7 @@
     "76",
     "79",
     "80",
+    "83",
     "84",
     "85",
     "88",
@@ -945,34 +945,34 @@
   ],
   "table_5cols": [
     {
-      "num": "17",
-      "c_digit": "1",
-      "d_digit": "7",
-      "c_cycle": 1,
+      "num": "51",
+      "c_digit": "5",
+      "d_digit": "1",
+      "c_cycle": 2,
       "d_cycle": 2,
-      "min_cycle": 1,
+      "min_cycle": 2,
       "cycle_days": 2,
       "category": "Lót",
       "cat_label": "Lót ngày 2",
       "weight": 1.0,
       "combo_type": "chính diện",
-      "score": 99.0,
-      "bridge_hits": 24,
-      "strong_bridge_hits": 0,
-      "h_pos": "G3.3 vị trí 4",
-      "t_pos": "G5.2 vị trí 2",
+      "score": 168.0,
+      "bridge_hits": 10,
+      "strong_bridge_hits": 2,
+      "h_pos": "G3.2 vị trí 3",
+      "t_pos": "G4.3 vị trí 3",
       "in_cap4": true,
       "in_cap4_str": "Có",
-      "consensus_score": 256.2,
+      "consensus_score": 288.3,
       "in_d9": true,
-      "in_tam": false,
+      "in_tam": true,
       "in_sum": true,
       "convergence_badges": [
         "N1 Động",
         "Hạ Số 20s",
-        "Tổng G7 (8)",
-        "Dàn 9s AI",
-        "Khóa Nghiệm Tổng×Chạm"
+        "Tâm G1 (5)",
+        "Tổng G7 (6)",
+        "Dàn 9s AI"
       ],
       "top_rank": "👑 Top 1 (Bạch thủ)"
     },
@@ -1039,32 +1039,34 @@
       "top_rank": "🔥 Top 4 (Tứ thủ)"
     },
     {
-      "num": "83",
-      "c_digit": "8",
-      "d_digit": "8",
-      "c_cycle": 2,
+      "num": "17",
+      "c_digit": "1",
+      "d_digit": "7",
+      "c_cycle": 1,
       "d_cycle": 2,
-      "min_cycle": 2,
+      "min_cycle": 1,
       "cycle_days": 2,
       "category": "Lót",
       "cat_label": "Lót ngày 2",
-      "weight": 0.8,
-      "combo_type": "bóng đuôi",
-      "score": 163.0,
+      "weight": 1.0,
+      "combo_type": "chính diện",
+      "score": 99.0,
       "bridge_hits": 24,
-      "strong_bridge_hits": 1,
-      "h_pos": "G1 vị trí 2",
-      "t_pos": "G2.2 vị trí 3",
+      "strong_bridge_hits": 0,
+      "h_pos": "G3.3 vị trí 4",
+      "t_pos": "G5.2 vị trí 2",
       "in_cap4": true,
       "in_cap4_str": "Có",
-      "consensus_score": 376.6,
-      "in_d9": false,
+      "consensus_score": 256.2,
+      "in_d9": true,
       "in_tam": false,
       "in_sum": true,
       "convergence_badges": [
         "N1 Động",
         "Hạ Số 20s",
-        "Tổng G7 (1)"
+        "Tổng G7 (8)",
+        "Dàn 9s AI",
+        "Khóa Nghiệm Tổng×Chạm"
       ],
       "top_rank": "🔥 Top 4 (Tứ thủ)"
     },
@@ -1119,14 +1121,13 @@
       "in_cap4": true,
       "in_cap4_str": "Có",
       "consensus_score": 407.0,
-      "in_d9": true,
+      "in_d9": false,
       "in_tam": false,
       "in_sum": true,
       "convergence_badges": [
         "N1 Động",
         "Hạ Số 20s",
-        "Tổng G7 (2)",
-        "Dàn 9s AI"
+        "Tổng G7 (2)"
       ],
       "top_rank": "🛡️ Lót hợp lệ"
     },
@@ -1219,6 +1220,36 @@
       "top_rank": "🛡️ Lót hợp lệ"
     },
     {
+      "num": "83",
+      "c_digit": "8",
+      "d_digit": "8",
+      "c_cycle": 2,
+      "d_cycle": 2,
+      "min_cycle": 2,
+      "cycle_days": 2,
+      "category": "Lót",
+      "cat_label": "Lót ngày 2",
+      "weight": 0.8,
+      "combo_type": "bóng đuôi",
+      "score": 163.0,
+      "bridge_hits": 24,
+      "strong_bridge_hits": 1,
+      "h_pos": "G1 vị trí 2",
+      "t_pos": "G2.2 vị trí 3",
+      "in_cap4": true,
+      "in_cap4_str": "Có",
+      "consensus_score": 376.6,
+      "in_d9": false,
+      "in_tam": false,
+      "in_sum": true,
+      "convergence_badges": [
+        "N1 Động",
+        "Hạ Số 20s",
+        "Tổng G7 (1)"
+      ],
+      "top_rank": "🛡️ Lót hợp lệ"
+    },
+    {
       "num": "88",
       "c_digit": "8",
       "d_digit": "8",
@@ -1269,14 +1300,15 @@
       "in_cap4": true,
       "in_cap4_str": "Có",
       "consensus_score": 342.4,
-      "in_d9": false,
+      "in_d9": true,
       "in_tam": true,
       "in_sum": true,
       "convergence_badges": [
         "N1 Động",
         "Hạ Số 20s",
         "Tâm G1 (5)",
-        "Tổng G7 (8)"
+        "Tổng G7 (8)",
+        "Dàn 9s AI"
       ],
       "top_rank": "🛡️ Lót hợp lệ"
     },
@@ -1389,15 +1421,14 @@
       "in_cap4": true,
       "in_cap4_str": "Có",
       "consensus_score": 309.7,
-      "in_d9": true,
+      "in_d9": false,
       "in_tam": true,
       "in_sum": true,
       "convergence_badges": [
         "N1 Động",
         "Hạ Số 20s",
         "Tâm G1 (5)",
-        "Tổng G7 (8)",
-        "Dàn 9s AI"
+        "Tổng G7 (8)"
       ],
       "top_rank": "🛡️ Lót hợp lệ"
     },
@@ -1459,37 +1490,6 @@
       "convergence_badges": [
         "N1 Động",
         "Tổng G7 (1)"
-      ],
-      "top_rank": "🛡️ Lót hợp lệ"
-    },
-    {
-      "num": "51",
-      "c_digit": "5",
-      "d_digit": "1",
-      "c_cycle": 2,
-      "d_cycle": 2,
-      "min_cycle": 2,
-      "cycle_days": 2,
-      "category": "Lót",
-      "cat_label": "Lót ngày 2",
-      "weight": 1.0,
-      "combo_type": "chính diện",
-      "score": 168.0,
-      "bridge_hits": 10,
-      "strong_bridge_hits": 2,
-      "h_pos": "G3.2 vị trí 3",
-      "t_pos": "G4.3 vị trí 3",
-      "in_cap4": true,
-      "in_cap4_str": "Có",
-      "consensus_score": 288.3,
-      "in_d9": false,
-      "in_tam": true,
-      "in_sum": true,
-      "convergence_badges": [
-        "N1 Động",
-        "Hạ Số 20s",
-        "Tâm G1 (5)",
-        "Tổng G7 (6)"
       ],
       "top_rank": "🛡️ Lót hợp lệ"
     },
@@ -1820,7 +1820,7 @@
         "Tâm G1 (5)",
         "Tổng G7 (6)"
       ],
-      "top_rank": "🛡️ Lót hợp lệ"
+      "top_rank": "🛡️ Lót Lộn (Song thủ)"
     },
     {
       "num": "42",
@@ -2299,7 +2299,7 @@
         "N1 Động",
         "Tổng G7 (8)"
       ],
-      "top_rank": "🛡️ Lót Lộn (Song thủ)"
+      "top_rank": "🛡️ Lót hợp lệ"
     },
     {
       "num": "12",
@@ -3846,17 +3846,17 @@
   "dan_tinh_4cap": {
     "target_date": "Thứ bảy ngày 14-11-2026",
     "status_text": "ĐANG HIỆU LỰC CHO KỲ TỚI (VÀO TIỀN TRƯỚC 18H15 NGÀY 14/11)",
-    "bach_thu": "17",
-    "lot_lon": "71",
+    "bach_thu": "51",
+    "lot_lon": "15",
     "song_thu": [
-      "17",
-      "71"
+      "51",
+      "15"
     ],
     "tu_thu": [
+      "51",
       "17",
       "39",
-      "48",
-      "83"
+      "48"
     ],
     "cang_3d": [
       "9",
@@ -3866,13 +3866,13 @@
     "dan_9_so": [
       "08",
       "17",
+      "35",
       "38",
       "39",
       "47",
+      "48",
       "49",
-      "53",
-      "84",
-      "89"
+      "51"
     ],
     "dan_cap2_38so": [
       "02",
@@ -4137,36 +4137,36 @@
       "date": "Thứ sáu ngày 13-11-2026",
       "de": "51",
       "actual_3d": "451",
-      "top_1": "17",
-      "lot_lon": "71",
+      "top_1": "51",
+      "lot_lon": "15",
       "song_thu": [
-        "17",
-        "71"
+        "51",
+        "15"
       ],
-      "hit_top_1": false,
+      "hit_top_1": true,
       "hit_lot_lon": false,
-      "hit_song_thu": false,
+      "hit_song_thu": true,
       "top_4": [
+        "51",
         "17",
         "39",
-        "48",
-        "83"
+        "48"
       ],
-      "hit_top_4": false,
+      "hit_top_4": true,
       "dan_9_so": [
         "08",
         "17",
+        "35",
         "38",
         "39",
         "47",
+        "48",
         "49",
-        "53",
-        "84",
-        "89"
+        "51"
       ],
       "pred_heads": "3, 4, 8",
       "pred_tails": "8, 9, 7",
-      "hit_dan_9": false,
+      "hit_dan_9": true,
       "dan_lot": [
         "01",
         "02",
@@ -4195,7 +4195,6 @@
         "44",
         "47",
         "49",
-        "51",
         "52",
         "53",
         "56",
@@ -4214,6 +4213,7 @@
         "76",
         "79",
         "80",
+        "83",
         "84",
         "85",
         "88",
@@ -4225,7 +4225,7 @@
         "98",
         "99"
       ],
-      "hit_dan_lot": true,
+      "hit_dan_lot": false,
       "hit_n1": true,
       "top3_cang": [
         "9",
@@ -4240,31 +4240,31 @@
       "date": "Thứ năm ngày 12-11-2026",
       "de": "54",
       "actual_3d": "454",
-      "top_1": "59",
-      "lot_lon": "95",
+      "top_1": "54",
+      "lot_lon": "45",
       "song_thu": [
-        "59",
-        "95"
+        "54",
+        "45"
       ],
-      "hit_top_1": false,
+      "hit_top_1": true,
       "hit_lot_lon": false,
-      "hit_song_thu": false,
+      "hit_song_thu": true,
       "top_4": [
-        "59",
+        "54",
         "25",
-        "93",
-        "54"
+        "59",
+        "93"
       ],
       "hit_top_4": true,
       "dan_9_so": [
         "24",
+        "25",
         "29",
         "32",
-        "52",
+        "39",
         "53",
         "54",
         "59",
-        "93",
         "94"
       ],
       "pred_heads": "5, 9, 2",
@@ -4343,36 +4343,36 @@
       "date": "Thứ tư ngày 11-11-2026",
       "de": "29",
       "actual_3d": "129",
-      "top_1": "41",
-      "lot_lon": "14",
+      "top_1": "29",
+      "lot_lon": "92",
       "song_thu": [
-        "41",
-        "14"
+        "29",
+        "92"
       ],
-      "hit_top_1": false,
+      "hit_top_1": true,
       "hit_lot_lon": false,
-      "hit_song_thu": false,
+      "hit_song_thu": true,
       "top_4": [
+        "29",
         "41",
         "05",
-        "10",
-        "51"
+        "10"
       ],
-      "hit_top_4": false,
+      "hit_top_4": true,
       "dan_9_so": [
         "01",
+        "05",
         "14",
+        "29",
+        "46",
         "48",
-        "50",
         "51",
-        "64",
-        "65",
-        "87",
-        "91"
+        "56",
+        "87"
       ],
       "pred_heads": "0, 5, 4",
       "pred_tails": "1, 8, 5",
-      "hit_dan_9": false,
+      "hit_dan_9": true,
       "dan_lot": [
         "00",
         "01",
@@ -4387,7 +4387,6 @@
         "24",
         "26",
         "28",
-        "29",
         "32",
         "33",
         "34",
@@ -4400,6 +4399,7 @@
         "47",
         "48",
         "50",
+        "51",
         "55",
         "56",
         "57",
@@ -4431,7 +4431,7 @@
         "97",
         "98"
       ],
-      "hit_dan_lot": true,
+      "hit_dan_lot": false,
       "hit_n1": true,
       "top3_cang": [
         "8",
@@ -4446,36 +4446,36 @@
       "date": "Thứ ba ngày 10-11-2026",
       "de": "83",
       "actual_3d": "683",
-      "top_1": "34",
-      "lot_lon": "43",
+      "top_1": "83",
+      "lot_lon": "38",
       "song_thu": [
-        "34",
-        "43"
+        "83",
+        "38"
       ],
-      "hit_top_1": false,
+      "hit_top_1": true,
       "hit_lot_lon": false,
-      "hit_song_thu": false,
+      "hit_song_thu": true,
       "top_4": [
+        "83",
         "34",
         "09",
-        "95",
-        "52"
+        "95"
       ],
-      "hit_top_4": false,
+      "hit_top_4": true,
       "dan_9_so": [
         "02",
+        "07",
         "09",
+        "25",
         "34",
-        "52",
+        "39",
+        "57",
         "59",
-        "70",
-        "75",
-        "93",
-        "98"
+        "83"
       ],
       "pred_heads": "5, 9, 0",
       "pred_tails": "9, 3, 8",
-      "hit_dan_9": false,
+      "hit_dan_9": true,
       "dan_lot": [
         "01",
         "02",
@@ -4506,6 +4506,7 @@
         "47",
         "48",
         "51",
+        "52",
         "54",
         "56",
         "57",
@@ -4523,7 +4524,6 @@
         "77",
         "79",
         "81",
-        "83",
         "84",
         "86",
         "88",
@@ -4534,7 +4534,7 @@
         "97",
         "98"
       ],
-      "hit_dan_lot": true,
+      "hit_dan_lot": false,
       "hit_n1": true,
       "top3_cang": [
         "9",
@@ -4549,20 +4549,20 @@
       "date": "Thứ hai ngày 09-11-2026",
       "de": "72",
       "actual_3d": "372",
-      "top_1": "38",
-      "lot_lon": "83",
+      "top_1": "87",
+      "lot_lon": "78",
       "song_thu": [
-        "38",
-        "83"
+        "87",
+        "78"
       ],
       "hit_top_1": false,
       "hit_lot_lon": false,
       "hit_song_thu": false,
       "top_4": [
+        "87",
         "38",
         "61",
-        "18",
-        "32"
+        "18"
       ],
       "hit_top_4": false,
       "dan_9_so": [
@@ -4574,7 +4574,7 @@
         "39",
         "46",
         "61",
-        "96"
+        "87"
       ],
       "pred_heads": "3, 6, 1",
       "pred_tails": "1, 2, 8",
@@ -4600,6 +4600,7 @@
         "25",
         "28",
         "29",
+        "32",
         "34",
         "37",
         "39",
@@ -4629,7 +4630,6 @@
         "82",
         "83",
         "84",
-        "87",
         "89",
         "90",
         "91",
@@ -4773,13 +4773,13 @@
       "hit_top_4": true,
       "dan_9_so": [
         "14",
+        "23",
         "28",
-        "32",
         "38",
         "39",
         "46",
         "63",
-        "96",
+        "69",
         "98"
       ],
       "pred_heads": "3, 9, 2",
@@ -4877,12 +4877,12 @@
       "dan_9_so": [
         "02",
         "03",
+        "09",
         "12",
         "13",
         "52",
         "53",
         "59",
-        "90",
         "91"
       ],
       "pred_heads": "5, 0, 1",
@@ -4980,13 +4980,13 @@
       "dan_9_so": [
         "01",
         "08",
+        "09",
+        "18",
         "51",
         "54",
+        "56",
         "58",
-        "59",
-        "65",
-        "81",
-        "90"
+        "59"
       ],
       "pred_heads": "0, 5, 8",
       "pred_tails": "1, 9, 8",
@@ -5394,11 +5394,11 @@
         "13",
         "17",
         "18",
+        "23",
         "27",
         "28",
-        "32",
         "37",
-        "87"
+        "78"
       ],
       "pred_heads": "2, 1, 7",
       "pred_tails": "7, 8, 3",
@@ -5579,32 +5579,32 @@
       "date": "Thứ sáu ngày 30-10-2026",
       "de": "59",
       "actual_3d": "259",
-      "top_1": "81",
-      "lot_lon": "18",
+      "top_1": "09",
+      "lot_lon": "90",
       "song_thu": [
-        "81",
-        "18"
+        "09",
+        "90"
       ],
       "hit_top_1": false,
       "hit_lot_lon": false,
       "hit_song_thu": false,
       "top_4": [
-        "81",
+        "09",
         "14",
         "40",
-        "09"
+        "81"
       ],
       "hit_top_4": false,
       "dan_9_so": [
         "03",
         "04",
         "08",
+        "09",
         "13",
         "14",
-        "32",
-        "54",
-        "81",
-        "90"
+        "18",
+        "23",
+        "45"
       ],
       "pred_heads": "1, 0, 4",
       "pred_tails": "4, 8, 3",
@@ -5802,15 +5802,15 @@
       ],
       "hit_top_4": false,
       "dan_9_so": [
+        "02",
         "06",
         "09",
         "14",
-        "20",
-        "61",
+        "16",
         "64",
+        "69",
         "70",
-        "91",
-        "96"
+        "91"
       ],
       "pred_heads": "1, 6, 0",
       "pred_tails": "4, 6, 9",
@@ -6008,12 +6008,12 @@
       ],
       "hit_top_4": false,
       "dan_9_so": [
+        "25",
         "32",
         "34",
         "37",
         "39",
         "42",
-        "52",
         "61",
         "62",
         "67"
@@ -6094,32 +6094,32 @@
       "date": "Chủ nhật ngày 25-10-2026",
       "de": "28",
       "actual_3d": "328",
-      "top_1": "81",
-      "lot_lon": "18",
+      "top_1": "68",
+      "lot_lon": "86",
       "song_thu": [
-        "81",
-        "18"
+        "68",
+        "86"
       ],
       "hit_top_1": false,
       "hit_lot_lon": false,
       "hit_song_thu": false,
       "top_4": [
-        "81",
         "68",
         "13",
+        "81",
         "54"
       ],
       "hit_top_4": false,
       "dan_9_so": [
         "04",
         "13",
+        "18",
         "34",
         "39",
-        "54",
+        "45",
         "61",
         "63",
-        "68",
-        "81"
+        "68"
       ],
       "pred_heads": "6, 1, 3",
       "pred_tails": "3, 4, 8",
@@ -6218,10 +6218,10 @@
         "03",
         "08",
         "12",
-        "32",
+        "16",
+        "23",
+        "35",
         "52",
-        "53",
-        "61",
         "63"
       ],
       "pred_heads": "3, 1, 0",
@@ -6422,12 +6422,12 @@
       "dan_9_so": [
         "08",
         "12",
+        "16",
         "17",
         "34",
+        "35",
         "38",
         "39",
-        "53",
-        "61",
         "67"
       ],
       "pred_heads": "1, 3, 6",
@@ -6712,19 +6712,19 @@
       "date": "Thứ hai ngày 19-10-2026",
       "de": "90",
       "actual_3d": "390",
-      "top_1": "10",
-      "lot_lon": "01",
+      "top_1": "45",
+      "lot_lon": "54",
       "song_thu": [
-        "10",
-        "01"
+        "45",
+        "54"
       ],
       "hit_top_1": false,
       "hit_lot_lon": false,
       "hit_song_thu": false,
       "top_4": [
+        "45",
         "10",
         "04",
-        "45",
         "17"
       ],
       "hit_top_4": false,
@@ -6733,10 +6733,10 @@
         "08",
         "10",
         "17",
-        "53",
-        "54",
+        "18",
+        "35",
+        "45",
         "72",
-        "81",
         "90"
       ],
       "pred_heads": "1, 0, 5",
@@ -6837,8 +6837,8 @@
         "08",
         "12",
         "15",
+        "35",
         "42",
-        "53",
         "54",
         "59"
       ],
@@ -6941,9 +6941,9 @@
         "18",
         "38",
         "42",
-        "54",
-        "63",
-        "65"
+        "45",
+        "56",
+        "63"
       ],
       "pred_heads": "1, 4, 6",
       "pred_tails": "4, 5, 8",
@@ -7038,15 +7038,15 @@
       ],
       "hit_top_4": false,
       "dan_9_so": [
+        "05",
         "21",
+        "23",
         "27",
+        "28",
         "31",
-        "32",
         "35",
         "37",
-        "50",
-        "82",
-        "87"
+        "78"
       ],
       "pred_heads": "2, 0, 3",
       "pred_tails": "7, 1, 5",
@@ -7124,32 +7124,32 @@
       "date": "Thứ năm ngày 15-10-2026",
       "de": "66",
       "actual_3d": "066",
-      "top_1": "13",
-      "lot_lon": "31",
+      "top_1": "87",
+      "lot_lon": "78",
       "song_thu": [
-        "13",
-        "31"
+        "87",
+        "78"
       ],
       "hit_top_1": false,
       "hit_lot_lon": false,
       "hit_song_thu": false,
       "top_4": [
+        "87",
+        "18",
         "13",
-        "68",
-        "36",
-        "18"
+        "68"
       ],
       "hit_top_4": false,
       "dan_9_so": [
         "08",
         "13",
+        "18",
         "28",
         "37",
         "38",
         "61",
         "63",
-        "68",
-        "81"
+        "87"
       ],
       "pred_heads": "6, 0, 3",
       "pred_tails": "3, 8, 1",
@@ -7172,6 +7172,7 @@
         "31",
         "32",
         "35",
+        "36",
         "37",
         "38",
         "39",
@@ -7205,7 +7206,6 @@
         "82",
         "83",
         "86",
-        "87",
         "88",
         "90",
         "91",
@@ -7225,16 +7225,16 @@
   ],
   "history_summary": {
     "total_evals": 30,
-    "top1_hits": 6,
-    "top1_rate": 20.0,
-    "song_thu_hits": 6,
-    "song_thu_rate": 20.0,
-    "top4_hits": 8,
-    "top4_rate": 26.67,
-    "dan9_hits": 13,
-    "dan9_rate": 43.33,
-    "lot_hits": 13,
-    "lot_rate": 43.33,
+    "top1_hits": 10,
+    "top1_rate": 33.33,
+    "song_thu_hits": 10,
+    "song_thu_rate": 33.33,
+    "top4_hits": 11,
+    "top4_rate": 36.67,
+    "dan9_hits": 16,
+    "dan9_rate": 53.33,
+    "lot_hits": 10,
+    "lot_rate": 33.33,
     "n1_hits": 21,
     "n1_rate": 70.0,
     "cang_tt_hits": 7,
@@ -7242,5 +7242,5 @@
     "cang_bt_hits": 3,
     "cang_bt_rate": 10.0
   },
-  "last_updated": "23:10:58 13/11/2026"
+  "last_updated": "00:01:12 14/11/2026"
 }

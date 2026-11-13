@@ -664,10 +664,23 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                 cur_char = target_pos[pos_key][0]
                 cur_bong = str(BONG_DUONG[int(cur_char)])
                 eff_cycle = max(streak, 2 if hits_5d >= 3 else 1)
-                cat = "Chỉ đạo" if eff_cycle >= 3 else ("Lót" if eff_cycle == 2 else "Theo dõi")
-                color = "cycle_main" if eff_cycle >= 3 else ("cycle_lot" if eff_cycle == 2 else "cycle_watch")
-                suffix = f"{eff_cycle}d"
-                label = f"✅ CHỈ ĐẠO ({eff_cycle} ngày)" if eff_cycle >= 3 else (f"Lót ngày {eff_cycle}" if eff_cycle == 2 else "Theo dõi ngày 1 (Mới chạm)")
+                if streak == 2:
+                    cat = "Chỉ đạo"
+                    color = "cycle_main"
+                    label = "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
+                elif streak == 1:
+                    cat = "Lót"
+                    color = "cycle_lot"
+                    label = "⚡ LÓT 1d (Săn Nổ Ngày 2)"
+                elif streak == 3:
+                    cat = "Theo dõi"
+                    color = "cycle_watch"
+                    label = "⚠️ THEO DÕI 3d (Cầu Kéo Dài)"
+                else:
+                    cat = "Cảnh báo"
+                    color = "cycle_watch"
+                    label = f"🚨 CẢNH BÁO {streak}d (Bão Hòa - Dễ Gãy)"
+                suffix = f"{streak}d"
 
                 info = {
                     'pos_raw': raw_name,
@@ -696,10 +709,23 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                 cur_char = target_pos[pos_key][0]
                 cur_bong = str(BONG_DUONG[int(cur_char)])
                 eff_cycle = max(streak, 2 if hits_5d >= 3 else 1)
-                cat = "Chỉ đạo" if eff_cycle >= 3 else ("Lót" if eff_cycle == 2 else "Theo dõi")
-                color = "cycle_main" if eff_cycle >= 3 else ("cycle_lot" if eff_cycle == 2 else "cycle_watch")
-                suffix = f"{eff_cycle}d"
-                label = f"✅ CHỈ ĐẠO ({eff_cycle} ngày)" if eff_cycle >= 3 else (f"Lót ngày {eff_cycle}" if eff_cycle == 2 else "Theo dõi ngày 1 (Mới chạm)")
+                if streak == 2:
+                    cat = "Chỉ đạo"
+                    color = "cycle_main"
+                    label = "🔥 ƯU TIÊN 2d (Săn Nổ Ngày 3)"
+                elif streak == 1:
+                    cat = "Lót"
+                    color = "cycle_lot"
+                    label = "⚡ LÓT 1d (Săn Nổ Ngày 2)"
+                elif streak == 3:
+                    cat = "Theo dõi"
+                    color = "cycle_watch"
+                    label = "⚠️ THEO DÕI 3d (Cầu Kéo Dài)"
+                else:
+                    cat = "Cảnh báo"
+                    color = "cycle_watch"
+                    label = f"🚨 CẢNH BÁO {streak}d (Bão Hòa - Dễ Gãy)"
+                suffix = f"{streak}d"
 
                 info = {
                     'pos_raw': raw_name,
@@ -1236,7 +1262,7 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                 cand_pool.add(x_hs)
 
         scored_d9 = []
-        for ns in cand_pool:
+        for ns in sorted(cand_pool):
             rev = ns[1] + ns[0]
             s_v = (int(ns[0]) + int(ns[1])) % 10
             in_old = (ns in old_d9 or rev in old_d9)
@@ -1351,6 +1377,128 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                 bt = peak_cands[0]
                 t4.remove(bt)
                 t4.insert(0, bt)
+
+        # 7. KHOANH VÙNG TỔNG CÒN LẠI & TRÙNG CHÍNH CHỮ G7 + ƯU TIÊN CẦU 2d NỔ NGÀY 3 + LÓT 1d NỔ NGÀY 2 - CẢNH BÁO 4d:
+        h_2d, h_1d, h_4d = Counter(), Counter(), Counter()
+        t_2d, t_1d, t_4d = Counter(), Counter(), Counter()
+        for _, info_hp in highlight_positions.items():
+            rst = info_hp.get('raw_streak', 1)
+            dig_hp = info_hp['digit']
+            w_hp = 1.3 if info_hp.get('is_direct') else 1.0
+            if info_hp['role'] == 'head':
+                if rst == 2:
+                    h_2d[dig_hp] += w_hp
+                elif rst == 1:
+                    h_1d[dig_hp] += w_hp
+                elif rst >= 4:
+                    h_4d[dig_hp] += w_hp
+            else:
+                if rst == 2:
+                    t_2d[dig_hp] += w_hp
+                elif rst == 1:
+                    t_1d[dig_hp] += w_hp
+                elif rst >= 4:
+                    t_4d[dig_hp] += w_hp
+
+        def _get_tong_2d(s_val):
+            return (int(s_val[0]) + int(s_val[1])) % 10 if (s_val and len(s_val) == 2 and s_val.isdigit()) else None
+
+        def _get_pair_2d(t_val):
+            return tuple(sorted((t_val, (t_val + 5) % 10)))
+
+        g7_vals_prev = [prev_draw['prizes'].get(k, '') for k in ('G7.1', 'G7.2', 'G7.3', 'G7.4')]
+        g7_tongs_prev = [_get_tong_2d(v) for v in g7_vals_prev if _get_tong_2d(v) is not None]
+        direct_cnt_g7 = Counter(g7_tongs_prev)
+        prev_de_sum_val = _get_tong_2d(prev_de)
+        prev_de_pair_val = _get_pair_2d(prev_de_sum_val) if prev_de_sum_val is not None else (-1, -1)
+
+        prev1_direct_sums = set()
+        if len(sub_draws) >= 3:
+            for kg in ('G7.1', 'G7.2', 'G7.3', 'G7.4'):
+                t_p1 = _get_tong_2d(sub_draws[2]['prizes'].get(kg, ''))
+                if t_p1 is not None and _get_pair_2d(t_p1) != prev_de_pair_val:
+                    prev1_direct_sums.add(t_p1)
+        persistent_rem_sums = set(direct_cnt_g7.keys()) & prev1_direct_sums
+
+        g7_direct_digits = {ch for v in g7_vals_prev if v and v.isdigit() for ch in v}
+        g7_3d_exact = set()
+        for b_i in range(1, min(4, len(sub_draws))):
+            for kg in ('G7.1', 'G7.2', 'G7.3', 'G7.4'):
+                vg = sub_draws[b_i]['prizes'].get(kg, '')
+                if len(vg) == 2 and vg.isdigit():
+                    g7_3d_exact.add(vg)
+                    g7_3d_exact.add(vg[1] + vg[0])
+
+        pool_hs_d60 = [x for x in dow_ha_so_list if x in d60 and x != prev_de]
+        cur_bt_sum = _get_tong_2d(bt)
+        bt_is_double_2d = (h_2d[bt[0]] > 0 and t_2d[bt[1]] > 0) if len(bt) == 2 else False
+
+        # Case A: 2 vị trí G7 trùng nhau CHÍNH CHỮ Tổng S (direct_cnt_g7[S] >= 2) + Đầu có cầu 2d nổ ngày 3 + không vướng cảnh báo 4d + Lô G7 khung 3 ngày (hoặc cầu đôi 2d x 2d)
+        overlap_direct_sums = {s for s, cnt in direct_cnt_g7.items() if cnt >= 2}
+        if overlap_direct_sums and cur_bt_sum not in overlap_direct_sums and not bt_is_double_2d:
+            cands_a = [
+                ns for ns in pool_hs_d60
+                if _get_tong_2d(ns) in overlap_direct_sums
+                and ns[0] != prev_de[0]
+                and h_2d[ns[0]] > 0
+                and (h_4d[ns[0]] == 0 and t_4d[ns[1]] == 0)
+                and (ns in g7_3d_exact or t_2d[ns[1]] > 0)
+            ]
+            if cands_a:
+                cands_a.sort(
+                    key=lambda ns: (
+                        (h_2d[ns[0]] > 0 and t_2d[ns[1]] > 0),
+                        ns in g7_3d_exact,
+                        h_2d[ns[0]] + t_2d[ns[1]],
+                        h_1d[ns[0]] + t_1d[ns[1]]
+                    ),
+                    reverse=True
+                )
+                best_a = cands_a[0]
+                bt = best_a
+                bt_is_double_2d = True
+                if best_a in t4:
+                    t4.remove(best_a)
+                t4 = [best_a] + t4[:3]
+
+        # Case B: Tổng Còn Lại nợ 2 ngày liên tiếp trên G7 (persistent_rem_sums) + Đầu/Đuôi có >=2 cầu 2d nổ ngày 3 + chiều kia có >=2 cầu lót 1d nổ ngày 2 + Lô G7 rơi khung 3 ngày
+        if persistent_rem_sums and _get_tong_2d(bt) not in persistent_rem_sums and not bt_is_double_2d:
+            cands_b = [
+                ns for ns in pool_hs_d60
+                if _get_tong_2d(ns) in persistent_rem_sums
+                and ns in g7_3d_exact
+                and (
+                    (h_2d[ns[0]] >= 2.0 and t_1d[ns[1]] >= 2.0)
+                    or (t_2d[ns[1]] >= 2.0 and h_1d[ns[0]] >= 2.0)
+                )
+                and (h_4d[ns[0]] == 0 and t_4d[ns[1]] == 0)
+            ]
+            if cands_b:
+                cands_b.sort(key=lambda ns: h_2d[ns[0]] + t_2d[ns[1]] + h_1d[ns[0]] + t_1d[ns[1]], reverse=True)
+                best_b = cands_b[0]
+                bt = best_b
+                bt_is_double_2d = True
+                if best_b in t4:
+                    t4.remove(best_b)
+                t4 = [best_b] + t4[:3]
+
+        # Case C: Trong lòng Top 4 có 2 số hội tụ cùng Đầu VÀ cùng Cặp Tổng Còn Lại (như 59 và 54 ngày 12/11), đôn số ghép trong trực diện cả 2 chữ số G7 và có mật độ cầu Lót 1d nổ ngày 2 rất mạnh (>= 5.0)
+        t4_head_pairs = Counter((x[0], _get_pair_2d(_get_tong_2d(x))) for x in t4 if x in pool_hs_d60)
+        for cand_c in list(t4):
+            if cand_c in pool_hs_d60:
+                c_pair = _get_pair_2d(_get_tong_2d(cand_c))
+                c_both_g7 = (cand_c[0] in g7_direct_digits and cand_c[1] in g7_direct_digits)
+                c_1d_power = h_1d[cand_c[0]] + t_1d[cand_c[1]]
+                if t4_head_pairs[(cand_c[0], c_pair)] >= 2 and c_both_g7 and c_1d_power >= 5.0 and (h_4d[cand_c[0]] == 0 and t_4d[cand_c[1]] == 0):
+                    if bt != cand_c:
+                        bt = cand_c
+                        t4.remove(cand_c)
+                        t4.insert(0, cand_c)
+                    break
+
+        if bt not in new_d9 and (bt[1] + bt[0]) not in new_d9:
+            new_d9[-1] = bt
+            new_d9 = sorted(new_d9)
 
         dan_9_so = new_d9
         top_1 = bt
