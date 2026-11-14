@@ -1,120 +1,120 @@
 {
   "latest": {
-    "ngay": "Thứ bảy ngày 14-11-2026",
+    "ngay": "Chủ nhật ngày 15-11-2026",
     "de": "--",
     "de_ve": "--",
     "dan_cau_dong": [
       "00",
       "01",
-      "03",
+      "02",
       "04",
       "05",
+      "06",
       "07",
-      "08",
       "09",
       "10",
       "11",
-      "13",
+      "12",
       "14",
       "15",
+      "16",
       "17",
-      "18",
       "19",
-      "30",
-      "31",
-      "33",
-      "34",
-      "35",
-      "37",
-      "38",
-      "39",
+      "20",
+      "21",
+      "22",
+      "24",
+      "25",
+      "26",
+      "27",
+      "29",
       "40",
       "41",
-      "43",
+      "42",
       "44",
       "45",
+      "46",
       "47",
-      "48",
       "49",
       "50",
       "51",
-      "53",
+      "52",
       "54",
       "55",
+      "56",
       "57",
-      "58",
       "59",
+      "60",
+      "61",
+      "62",
+      "64",
+      "65",
+      "66",
+      "67",
+      "69",
       "70",
       "71",
-      "73",
+      "72",
       "74",
       "75",
+      "76",
       "77",
-      "78",
       "79",
-      "80",
-      "81",
-      "83",
-      "84",
-      "85",
-      "87",
-      "88",
-      "89",
       "90",
       "91",
-      "93",
+      "92",
       "94",
       "95",
+      "96",
       "97",
-      "98",
       "99"
     ],
     "dan_60s": [
       "00",
       "01",
       "02",
+      "04",
       "05",
       "07",
-      "08",
+      "09",
       "11",
-      "12",
+      "13",
       "14",
       "16",
-      "17",
       "18",
       "19",
       "20",
-      "21",
+      "22",
       "23",
       "25",
-      "26",
       "28",
       "29",
+      "31",
       "32",
+      "33",
       "34",
-      "35",
+      "36",
       "37",
+      "38",
       "39",
       "41",
+      "42",
       "43",
       "46",
       "48",
       "50",
+      "51",
       "52",
-      "53",
       "54",
       "55",
       "57",
-      "58",
       "59",
       "61",
       "63",
       "64",
       "66",
-      "67",
       "69",
       "70",
-      "71",
       "72",
       "73",
       "75",
@@ -123,9 +123,9 @@
       "82",
       "83",
       "84",
-      "85",
       "87",
       "89",
+      "90",
       "91",
       "93",
       "96",
@@ -134,128 +134,118 @@
     "giao_thoa": [
       "00",
       "01",
+      "02",
+      "04",
       "05",
       "07",
-      "08",
+      "09",
       "11",
       "14",
-      "17",
-      "18",
+      "16",
       "19",
-      "34",
-      "35",
-      "37",
-      "39",
+      "20",
+      "22",
+      "25",
+      "29",
       "41",
-      "43",
-      "48",
+      "42",
+      "46",
       "50",
-      "53",
+      "51",
+      "52",
       "54",
       "55",
       "57",
-      "58",
       "59",
+      "61",
+      "64",
+      "66",
+      "69",
       "70",
-      "71",
-      "73",
+      "72",
       "75",
       "77",
-      "78",
-      "83",
-      "84",
-      "85",
-      "87",
-      "89",
+      "90",
       "91",
-      "93",
-      "98"
+      "96"
     ],
     "ngoai": [
-      "03",
-      "04",
-      "09",
+      "06",
       "10",
-      "13",
+      "12",
       "15",
-      "30",
-      "31",
-      "33",
-      "38",
+      "17",
+      "21",
+      "24",
+      "26",
+      "27",
       "40",
       "44",
       "45",
       "47",
       "49",
-      "51",
+      "56",
+      "60",
+      "62",
+      "65",
+      "67",
+      "71",
       "74",
+      "76",
       "79",
-      "80",
-      "81",
-      "88",
-      "90",
+      "92",
       "94",
       "95",
       "97",
       "99"
     ],
-    "bach_thu": "02",
+    "bach_thu": "16",
     "tu_thu": [
-      "02",
-      "17",
-      "21",
-      "07"
+      "16",
+      "32",
+      "28",
+      "14"
     ],
     "dan_9": [
       "16",
-      "12",
-      "17",
       "72",
-      "77",
-      "02",
-      "07",
-      "21",
-      "61"
+      "22",
+      "61",
+      "14",
+      "32",
+      "46",
+      "28",
+      "39"
     ],
     "dan_dao": [
-      "71",
       "27",
-      "20",
-      "70"
+      "41",
+      "23",
+      "64",
+      "82",
+      "93"
     ],
     "canh_bao": {
       "canh_bao": true,
       "ly_do": "Cầu vị trí đỉnh đã thông 5 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-      "bach_thu": "02",
+      "bach_thu": "16",
       "tu_thu": [
-        "02",
-        "17",
-        "21",
-        "07"
+        "16",
+        "32",
+        "28",
+        "14"
       ],
-      "so_dao_lot": "20",
+      "so_dao_lot": "61",
       "so_ngay_max": 5
     },
     "cau_chay": [
       {
-        "vi_tri": "g5.2.3",
-        "chu_so": "4",
-        "chu_so_goc": "4",
-        "chu_so_bong": "9",
-        "so_ngay": 4,
-        "diem": 117,
-        "role": "tail",
-        "hits_5d": 4,
-        "streak_head": 0,
-        "streak_tail": 4
-      },
-      {
-        "vi_tri": "g5.2.1",
-        "chu_so": "1",
-        "chu_so_goc": "1",
-        "chu_so_bong": "6",
+        "vi_tri": "g3.0.2",
+        "chu_so": "6",
+        "chu_so_goc": "6",
+        "chu_so_bong": "1",
         "so_ngay": 3,
-        "diem": 113,
+        "diem": 118,
         "role": "tail",
         "hits_5d": 4,
         "streak_head": 0,
@@ -263,82 +253,58 @@
       },
       {
         "vi_tri": "g3.3.3",
-        "chu_so": "9",
-        "chu_so_goc": "9",
-        "chu_so_bong": "4",
+        "chu_so": "7",
+        "chu_so_goc": "7",
+        "chu_so_bong": "2",
         "so_ngay": 5,
-        "diem": 101,
+        "diem": 113,
         "role": "head",
         "hits_5d": 5,
-        "streak_head": 2,
+        "streak_head": 3,
         "streak_tail": 0
       },
       {
-        "vi_tri": "g4.0.3",
+        "vi_tri": "g3.5.2",
         "chu_so": "9",
         "chu_so_goc": "9",
         "chu_so_bong": "4",
         "so_ngay": 3,
-        "diem": 94,
-        "role": "tail",
-        "hits_5d": 4,
-        "streak_head": 0,
-        "streak_tail": 1
-      },
-      {
-        "vi_tri": "g5.0.1",
-        "chu_so": "7",
-        "chu_so_goc": "7",
-        "chu_so_bong": "2",
-        "so_ngay": 2,
-        "diem": 94,
+        "diem": 101,
         "role": "head",
         "hits_5d": 4,
+        "streak_head": 2,
+        "streak_tail": 0
+      },
+      {
+        "vi_tri": "g5.2.3",
+        "chu_so": "5",
+        "chu_so_goc": "5",
+        "chu_so_bong": "0",
+        "so_ngay": 5,
+        "diem": 89,
+        "role": "head",
+        "hits_5d": 5,
         "streak_head": 1,
         "streak_tail": 0
       },
       {
-        "vi_tri": "g1.0.4",
-        "chu_so": "6",
-        "chu_so_goc": "1",
-        "chu_so_bong": "1",
+        "vi_tri": "g5.3.0",
+        "chu_so": "4",
+        "chu_so_goc": "4",
+        "chu_so_bong": "9",
         "so_ngay": 3,
-        "diem": 88,
+        "diem": 86,
         "role": "tail",
         "hits_5d": 3,
         "streak_head": 0,
-        "streak_tail": 2
+        "streak_tail": 1
       },
       {
-        "vi_tri": "g4.1.3",
-        "chu_so": "8",
-        "chu_so_goc": "8",
-        "chu_so_bong": "3",
-        "so_ngay": 2,
-        "diem": 88,
-        "role": "head",
-        "hits_5d": 3,
-        "streak_head": 2,
-        "streak_tail": 0
-      },
-      {
-        "vi_tri": "g3.0.2",
-        "chu_so": "3",
-        "chu_so_goc": "3",
-        "chu_so_bong": "8",
-        "so_ngay": 2,
-        "diem": 88,
-        "role": "tail",
-        "hits_5d": 3,
-        "streak_head": 0,
-        "streak_tail": 2
-      },
-      {
-        "vi_tri": "g5.2.2",
-        "chu_so": "5",
-        "chu_so_goc": "0",
-        "chu_so_bong": "0",
-        "so_ngay": 2,
+        "vi_tri": "g4.1.0",
+        "chu_so": "7",
+        "chu_so_goc": "2",
+        "chu_so_bong": "2",
+        "so_ngay": 3,
         "diem": 83,
         "role": "head",
         "hits_5d": 3,
@@ -346,46 +312,94 @@
         "streak_tail": 0
       },
       {
-        "vi_tri": "g5.3.0",
-        "chu_so": "3",
-        "chu_so_goc": "3",
-        "chu_so_bong": "8",
-        "so_ngay": 2,
-        "diem": 80,
+        "vi_tri": "g4.0.3",
+        "chu_so": "0",
+        "chu_so_goc": "0",
+        "chu_so_bong": "5",
+        "so_ngay": 4,
+        "diem": 81,
         "role": "head",
-        "hits_5d": 2,
-        "streak_head": 2,
-        "streak_tail": 0
-      },
-      {
-        "vi_tri": "g5.5.3",
-        "chu_so": "5",
-        "chu_so_goc": "5",
-        "chu_so_bong": "0",
-        "so_ngay": 2,
-        "diem": 76,
-        "role": "head",
-        "hits_5d": 3,
+        "hits_5d": 4,
         "streak_head": 1,
         "streak_tail": 0
       },
       {
-        "vi_tri": "g3.5.2",
-        "chu_so": "4",
+        "vi_tri": "g2.1.2",
+        "chu_so": "2",
+        "chu_so_goc": "7",
+        "chu_so_bong": "7",
+        "so_ngay": 2,
+        "diem": 79,
+        "role": "tail",
+        "hits_5d": 4,
+        "streak_head": 0,
+        "streak_tail": 1
+      },
+      {
+        "vi_tri": "g4.1.3",
+        "chu_so": "9",
         "chu_so_goc": "4",
-        "chu_so_bong": "9",
-        "so_ngay": 2,
+        "chu_so_bong": "4",
+        "so_ngay": 3,
         "diem": 76,
-        "role": "head",
+        "role": "tail",
         "hits_5d": 3,
-        "streak_head": 1,
-        "streak_tail": 0
+        "streak_head": 0,
+        "streak_tail": 1
       },
       {
         "vi_tri": "g3.4.2",
+        "chu_so": "7",
+        "chu_so_goc": "2",
+        "chu_so_bong": "2",
+        "so_ngay": 3,
+        "diem": 76,
+        "role": "head",
+        "hits_5d": 3,
+        "streak_head": 1,
+        "streak_tail": 0
+      },
+      {
+        "vi_tri": "g5.4.3",
+        "chu_so": "8",
+        "chu_so_goc": "8",
+        "chu_so_bong": "3",
+        "so_ngay": 2,
+        "diem": 76,
+        "role": "tail",
+        "hits_5d": 3,
+        "streak_head": 0,
+        "streak_tail": 1
+      },
+      {
+        "vi_tri": "g3.5.4",
+        "chu_so": "0",
+        "chu_so_goc": "0",
+        "chu_so_bong": "5",
+        "so_ngay": 2,
+        "diem": 76,
+        "role": "head",
+        "hits_5d": 3,
+        "streak_head": 1,
+        "streak_tail": 0
+      },
+      {
+        "vi_tri": "g1.0.1",
         "chu_so": "4",
         "chu_so_goc": "4",
         "chu_so_bong": "9",
+        "so_ngay": 2,
+        "diem": 76,
+        "role": "tail",
+        "hits_5d": 3,
+        "streak_head": 0,
+        "streak_tail": 1
+      },
+      {
+        "vi_tri": "g2.1.3",
+        "chu_so": "9",
+        "chu_so_goc": "9",
+        "chu_so_bong": "4",
         "so_ngay": 2,
         "diem": 75,
         "role": "tail",
@@ -394,46 +408,46 @@
         "streak_tail": 2
       },
       {
-        "vi_tri": "g5.0.2",
-        "chu_so": "0",
-        "chu_so_goc": "0",
-        "chu_so_bong": "5",
-        "so_ngay": 2,
-        "diem": 72,
-        "role": "head",
-        "hits_5d": 4,
+        "vi_tri": "g5.4.0",
+        "chu_so": "1",
+        "chu_so_goc": "6",
+        "chu_so_bong": "6",
+        "so_ngay": 3,
+        "diem": 71,
+        "role": "tail",
+        "hits_5d": 3,
         "streak_head": 0,
-        "streak_tail": 0
+        "streak_tail": 1
       },
       {
-        "vi_tri": "g2.1.2",
-        "chu_so": "8",
+        "vi_tri": "g5.5.2",
+        "chu_so": "6",
+        "chu_so_goc": "1",
+        "chu_so_bong": "1",
+        "so_ngay": 2,
+        "diem": 71,
+        "role": "tail",
+        "hits_5d": 3,
+        "streak_head": 0,
+        "streak_tail": 1
+      },
+      {
+        "vi_tri": "g5.5.1",
+        "chu_so": "4",
+        "chu_so_goc": "9",
+        "chu_so_bong": "9",
+        "so_ngay": 2,
+        "diem": 71,
+        "role": "tail",
+        "hits_5d": 3,
+        "streak_head": 0,
+        "streak_tail": 1
+      },
+      {
+        "vi_tri": "g4.0.1",
+        "chu_so": "3",
         "chu_so_goc": "8",
-        "chu_so_bong": "3",
-        "so_ngay": 2,
-        "diem": 72,
-        "role": "head",
-        "hits_5d": 4,
-        "streak_head": 0,
-        "streak_tail": 0
-      },
-      {
-        "vi_tri": "g3.4.1",
-        "chu_so": "0",
-        "chu_so_goc": "5",
-        "chu_so_bong": "5",
-        "so_ngay": 2,
-        "diem": 70,
-        "role": "head",
-        "hits_5d": 2,
-        "streak_head": 2,
-        "streak_tail": 0
-      },
-      {
-        "vi_tri": "g3.1.3",
-        "chu_so": "7",
-        "chu_so_goc": "2",
-        "chu_so_bong": "2",
+        "chu_so_bong": "8",
         "so_ngay": 2,
         "diem": 70,
         "role": "tail",
@@ -442,22 +456,34 @@
         "streak_tail": 2
       },
       {
-        "vi_tri": "g3.2.3",
-        "chu_so": "1",
-        "chu_so_goc": "1",
-        "chu_so_bong": "6",
+        "vi_tri": "g5.0.1",
+        "chu_so": "5",
+        "chu_so_goc": "5",
+        "chu_so_bong": "0",
         "so_ngay": 2,
-        "diem": 68,
+        "diem": 69,
         "role": "head",
-        "hits_5d": 2,
-        "streak_head": 1,
+        "hits_5d": 3,
+        "streak_head": 0,
+        "streak_tail": 0
+      },
+      {
+        "vi_tri": "g5.5.3",
+        "chu_so": "6",
+        "chu_so_goc": "6",
+        "chu_so_bong": "1",
+        "so_ngay": 2,
+        "diem": 64,
+        "role": "head",
+        "hits_5d": 3,
+        "streak_head": 0,
         "streak_tail": 0
       },
       {
         "vi_tri": "g3.1.1",
-        "chu_so": "5",
-        "chu_so_goc": "5",
-        "chu_so_bong": "0",
+        "chu_so": "2",
+        "chu_so_goc": "2",
+        "chu_so_bong": "7",
         "so_ngay": 2,
         "diem": 64,
         "role": "head",
@@ -467,9 +493,9 @@
       },
       {
         "vi_tri": "g1.0.0",
-        "chu_so": "7",
-        "chu_so_goc": "7",
-        "chu_so_bong": "2",
+        "chu_so": "1",
+        "chu_so_goc": "1",
+        "chu_so_bong": "6",
         "so_ngay": 2,
         "diem": 64,
         "role": "head",
@@ -478,65 +504,648 @@
         "streak_tail": 0
       },
       {
-        "vi_tri": "g5.4.0",
-        "chu_so": "3",
+        "vi_tri": "g3.5.1",
+        "chu_so": "8",
         "chu_so_goc": "8",
-        "chu_so_bong": "8",
+        "chu_so_bong": "3",
         "so_ngay": 2,
-        "diem": 58,
-        "role": "head",
+        "diem": 63,
+        "role": "tail",
         "hits_5d": 2,
-        "streak_head": 1,
+        "streak_head": 0,
+        "streak_tail": 1
+      },
+      {
+        "vi_tri": "g5.2.2",
+        "chu_so": "6",
+        "chu_so_goc": "1",
+        "chu_so_bong": "1",
+        "so_ngay": 2,
+        "diem": 59,
+        "role": "head",
+        "hits_5d": 3,
+        "streak_head": 0,
         "streak_tail": 0
       },
       {
-        "vi_tri": "g4.1.0",
-        "chu_so": "9",
-        "chu_so_goc": "4",
-        "chu_so_bong": "4",
+        "vi_tri": "g5.2.1",
+        "chu_so": "5",
+        "chu_so_goc": "0",
+        "chu_so_bong": "0",
         "so_ngay": 2,
-        "diem": 58,
-        "role": "head",
-        "hits_5d": 2,
-        "streak_head": 1,
+        "diem": 59,
+        "role": "tail",
+        "hits_5d": 3,
+        "streak_head": 0,
         "streak_tail": 0
       }
     ],
     "so_sanh": {
       "dan_dong_size": 64,
       "dan_tinh_size": 60,
-      "trung_size": 38,
-      "ty_le_trung": 59.38,
-      "bach_thu": "02",
+      "trung_size": 36,
+      "ty_le_trung": 56.25,
+      "bach_thu": "16",
       "tu_thu": [
-        "02",
-        "17",
-        "21",
-        "07"
+        "16",
+        "32",
+        "28",
+        "14"
       ],
       "dan_9": [
         "16",
-        "12",
-        "17",
         "72",
-        "77",
-        "02",
-        "07",
-        "21",
-        "61"
+        "22",
+        "61",
+        "14",
+        "32",
+        "46",
+        "28",
+        "39"
       ]
     },
     "hit_top_1": false,
     "hit_top_4": false,
     "hit_dan_9": false,
     "hit_giao_thoa": false,
-    "thoi_gian": "2026-11-13T18:36:09.927378"
+    "thoi_gian": "2026-11-14T18:36:10.229882"
   },
   "lich_su": [
     {
-      "ngay": "Thứ bảy ngày 14-11-2026",
+      "ngay": "Chủ nhật ngày 15-11-2026",
       "de": "--",
       "de_ve": "--",
+      "dan_cau_dong": [
+        "00",
+        "01",
+        "02",
+        "04",
+        "05",
+        "06",
+        "07",
+        "09",
+        "10",
+        "11",
+        "12",
+        "14",
+        "15",
+        "16",
+        "17",
+        "19",
+        "20",
+        "21",
+        "22",
+        "24",
+        "25",
+        "26",
+        "27",
+        "29",
+        "40",
+        "41",
+        "42",
+        "44",
+        "45",
+        "46",
+        "47",
+        "49",
+        "50",
+        "51",
+        "52",
+        "54",
+        "55",
+        "56",
+        "57",
+        "59",
+        "60",
+        "61",
+        "62",
+        "64",
+        "65",
+        "66",
+        "67",
+        "69",
+        "70",
+        "71",
+        "72",
+        "74",
+        "75",
+        "76",
+        "77",
+        "79",
+        "90",
+        "91",
+        "92",
+        "94",
+        "95",
+        "96",
+        "97",
+        "99"
+      ],
+      "dan_60s": [
+        "00",
+        "01",
+        "02",
+        "04",
+        "05",
+        "07",
+        "09",
+        "11",
+        "13",
+        "14",
+        "16",
+        "18",
+        "19",
+        "20",
+        "22",
+        "23",
+        "25",
+        "28",
+        "29",
+        "31",
+        "32",
+        "33",
+        "34",
+        "36",
+        "37",
+        "38",
+        "39",
+        "41",
+        "42",
+        "43",
+        "46",
+        "48",
+        "50",
+        "51",
+        "52",
+        "54",
+        "55",
+        "57",
+        "59",
+        "61",
+        "63",
+        "64",
+        "66",
+        "69",
+        "70",
+        "72",
+        "73",
+        "75",
+        "77",
+        "78",
+        "82",
+        "83",
+        "84",
+        "87",
+        "89",
+        "90",
+        "91",
+        "93",
+        "96",
+        "98"
+      ],
+      "giao_thoa": [
+        "00",
+        "01",
+        "02",
+        "04",
+        "05",
+        "07",
+        "09",
+        "11",
+        "14",
+        "16",
+        "19",
+        "20",
+        "22",
+        "25",
+        "29",
+        "41",
+        "42",
+        "46",
+        "50",
+        "51",
+        "52",
+        "54",
+        "55",
+        "57",
+        "59",
+        "61",
+        "64",
+        "66",
+        "69",
+        "70",
+        "72",
+        "75",
+        "77",
+        "90",
+        "91",
+        "96"
+      ],
+      "ngoai": [
+        "06",
+        "10",
+        "12",
+        "15",
+        "17",
+        "21",
+        "24",
+        "26",
+        "27",
+        "40",
+        "44",
+        "45",
+        "47",
+        "49",
+        "56",
+        "60",
+        "62",
+        "65",
+        "67",
+        "71",
+        "74",
+        "76",
+        "79",
+        "92",
+        "94",
+        "95",
+        "97",
+        "99"
+      ],
+      "bach_thu": "16",
+      "tu_thu": [
+        "16",
+        "32",
+        "28",
+        "14"
+      ],
+      "dan_9": [
+        "16",
+        "72",
+        "22",
+        "61",
+        "14",
+        "32",
+        "46",
+        "28",
+        "39"
+      ],
+      "dan_dao": [
+        "27",
+        "41",
+        "23",
+        "64",
+        "82",
+        "93"
+      ],
+      "canh_bao": {
+        "canh_bao": true,
+        "ly_do": "Cầu vị trí đỉnh đã thông 5 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
+        "bach_thu": "16",
+        "tu_thu": [
+          "16",
+          "32",
+          "28",
+          "14"
+        ],
+        "so_dao_lot": "61",
+        "so_ngay_max": 5
+      },
+      "cau_chay": [
+        {
+          "vi_tri": "g3.0.2",
+          "chu_so": "6",
+          "chu_so_goc": "6",
+          "chu_so_bong": "1",
+          "so_ngay": 3,
+          "diem": 118,
+          "role": "tail",
+          "hits_5d": 4,
+          "streak_head": 0,
+          "streak_tail": 3
+        },
+        {
+          "vi_tri": "g3.3.3",
+          "chu_so": "7",
+          "chu_so_goc": "7",
+          "chu_so_bong": "2",
+          "so_ngay": 5,
+          "diem": 113,
+          "role": "head",
+          "hits_5d": 5,
+          "streak_head": 3,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g3.5.2",
+          "chu_so": "9",
+          "chu_so_goc": "9",
+          "chu_so_bong": "4",
+          "so_ngay": 3,
+          "diem": 101,
+          "role": "head",
+          "hits_5d": 4,
+          "streak_head": 2,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g5.2.3",
+          "chu_so": "5",
+          "chu_so_goc": "5",
+          "chu_so_bong": "0",
+          "so_ngay": 5,
+          "diem": 89,
+          "role": "head",
+          "hits_5d": 5,
+          "streak_head": 1,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g5.3.0",
+          "chu_so": "4",
+          "chu_so_goc": "4",
+          "chu_so_bong": "9",
+          "so_ngay": 3,
+          "diem": 86,
+          "role": "tail",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g4.1.0",
+          "chu_so": "7",
+          "chu_so_goc": "2",
+          "chu_so_bong": "2",
+          "so_ngay": 3,
+          "diem": 83,
+          "role": "head",
+          "hits_5d": 3,
+          "streak_head": 2,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g4.0.3",
+          "chu_so": "0",
+          "chu_so_goc": "0",
+          "chu_so_bong": "5",
+          "so_ngay": 4,
+          "diem": 81,
+          "role": "head",
+          "hits_5d": 4,
+          "streak_head": 1,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g2.1.2",
+          "chu_so": "2",
+          "chu_so_goc": "7",
+          "chu_so_bong": "7",
+          "so_ngay": 2,
+          "diem": 79,
+          "role": "tail",
+          "hits_5d": 4,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g4.1.3",
+          "chu_so": "9",
+          "chu_so_goc": "4",
+          "chu_so_bong": "4",
+          "so_ngay": 3,
+          "diem": 76,
+          "role": "tail",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g3.4.2",
+          "chu_so": "7",
+          "chu_so_goc": "2",
+          "chu_so_bong": "2",
+          "so_ngay": 3,
+          "diem": 76,
+          "role": "head",
+          "hits_5d": 3,
+          "streak_head": 1,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g5.4.3",
+          "chu_so": "8",
+          "chu_so_goc": "8",
+          "chu_so_bong": "3",
+          "so_ngay": 2,
+          "diem": 76,
+          "role": "tail",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g3.5.4",
+          "chu_so": "0",
+          "chu_so_goc": "0",
+          "chu_so_bong": "5",
+          "so_ngay": 2,
+          "diem": 76,
+          "role": "head",
+          "hits_5d": 3,
+          "streak_head": 1,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g1.0.1",
+          "chu_so": "4",
+          "chu_so_goc": "4",
+          "chu_so_bong": "9",
+          "so_ngay": 2,
+          "diem": 76,
+          "role": "tail",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g2.1.3",
+          "chu_so": "9",
+          "chu_so_goc": "9",
+          "chu_so_bong": "4",
+          "so_ngay": 2,
+          "diem": 75,
+          "role": "tail",
+          "hits_5d": 2,
+          "streak_head": 0,
+          "streak_tail": 2
+        },
+        {
+          "vi_tri": "g5.4.0",
+          "chu_so": "1",
+          "chu_so_goc": "6",
+          "chu_so_bong": "6",
+          "so_ngay": 3,
+          "diem": 71,
+          "role": "tail",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g5.5.2",
+          "chu_so": "6",
+          "chu_so_goc": "1",
+          "chu_so_bong": "1",
+          "so_ngay": 2,
+          "diem": 71,
+          "role": "tail",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g5.5.1",
+          "chu_so": "4",
+          "chu_so_goc": "9",
+          "chu_so_bong": "9",
+          "so_ngay": 2,
+          "diem": 71,
+          "role": "tail",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g4.0.1",
+          "chu_so": "3",
+          "chu_so_goc": "8",
+          "chu_so_bong": "8",
+          "so_ngay": 2,
+          "diem": 70,
+          "role": "tail",
+          "hits_5d": 2,
+          "streak_head": 0,
+          "streak_tail": 2
+        },
+        {
+          "vi_tri": "g5.0.1",
+          "chu_so": "5",
+          "chu_so_goc": "5",
+          "chu_so_bong": "0",
+          "so_ngay": 2,
+          "diem": 69,
+          "role": "head",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g5.5.3",
+          "chu_so": "6",
+          "chu_so_goc": "6",
+          "chu_so_bong": "1",
+          "so_ngay": 2,
+          "diem": 64,
+          "role": "head",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g3.1.1",
+          "chu_so": "2",
+          "chu_so_goc": "2",
+          "chu_so_bong": "7",
+          "so_ngay": 2,
+          "diem": 64,
+          "role": "head",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g1.0.0",
+          "chu_so": "1",
+          "chu_so_goc": "1",
+          "chu_so_bong": "6",
+          "so_ngay": 2,
+          "diem": 64,
+          "role": "head",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g3.5.1",
+          "chu_so": "8",
+          "chu_so_goc": "8",
+          "chu_so_bong": "3",
+          "so_ngay": 2,
+          "diem": 63,
+          "role": "tail",
+          "hits_5d": 2,
+          "streak_head": 0,
+          "streak_tail": 1
+        },
+        {
+          "vi_tri": "g5.2.2",
+          "chu_so": "6",
+          "chu_so_goc": "1",
+          "chu_so_bong": "1",
+          "so_ngay": 2,
+          "diem": 59,
+          "role": "head",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 0
+        },
+        {
+          "vi_tri": "g5.2.1",
+          "chu_so": "5",
+          "chu_so_goc": "0",
+          "chu_so_bong": "0",
+          "so_ngay": 2,
+          "diem": 59,
+          "role": "tail",
+          "hits_5d": 3,
+          "streak_head": 0,
+          "streak_tail": 0
+        }
+      ],
+      "so_sanh": {
+        "dan_dong_size": 64,
+        "dan_tinh_size": 60,
+        "trung_size": 36,
+        "ty_le_trung": 56.25,
+        "bach_thu": "16",
+        "tu_thu": [
+          "16",
+          "32",
+          "28",
+          "14"
+        ],
+        "dan_9": [
+          "16",
+          "72",
+          "22",
+          "61",
+          "14",
+          "32",
+          "46",
+          "28",
+          "39"
+        ]
+      },
+      "hit_top_1": false,
+      "hit_top_4": false,
+      "hit_dan_9": false,
+      "hit_giao_thoa": false,
+      "thoi_gian": "2026-11-14T18:36:10.229882"
+    },
+    {
+      "ngay": "Thứ bảy ngày 14-11-2026",
+      "de": "93",
+      "de_ve": "93",
       "dan_cau_dong": [
         "00",
         "01",
@@ -668,6 +1277,7 @@
       "giao_thoa": [
         "00",
         "01",
+        "02",
         "05",
         "07",
         "08",
@@ -676,6 +1286,9 @@
         "17",
         "18",
         "19",
+        "25",
+        "28",
+        "32",
         "34",
         "35",
         "37",
@@ -733,41 +1346,43 @@
         "97",
         "99"
       ],
-      "bach_thu": "02",
+      "bach_thu": "07",
       "tu_thu": [
-        "02",
-        "17",
-        "21",
-        "07"
+        "07",
+        "32",
+        "28",
+        "73"
       ],
       "dan_9": [
-        "16",
-        "12",
-        "17",
-        "72",
-        "77",
         "02",
         "07",
-        "21",
-        "61"
+        "08",
+        "25",
+        "28",
+        "32",
+        "34",
+        "37",
+        "39"
       ],
       "dan_dao": [
-        "71",
-        "27",
         "20",
-        "70"
+        "70",
+        "80",
+        "52",
+        "82",
+        "23"
       ],
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 5 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "02",
+        "bach_thu": "07",
         "tu_thu": [
-          "02",
-          "17",
-          "21",
-          "07"
+          "07",
+          "32",
+          "28",
+          "73"
         ],
-        "so_dao_lot": "20",
+        "so_dao_lot": "70",
         "so_ngay_max": 5
       },
       "cau_chay": [
@@ -1041,30 +1656,30 @@
         "dan_tinh_size": 60,
         "trung_size": 38,
         "ty_le_trung": 59.38,
-        "bach_thu": "02",
+        "bach_thu": "07",
         "tu_thu": [
-          "02",
-          "17",
-          "21",
-          "07"
+          "07",
+          "32",
+          "28",
+          "73"
         ],
         "dan_9": [
-          "16",
-          "12",
-          "17",
-          "72",
-          "77",
           "02",
           "07",
-          "21",
-          "61"
+          "08",
+          "25",
+          "28",
+          "32",
+          "34",
+          "37",
+          "39"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
-      "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:09.927378"
+      "hit_giao_thoa": true,
+      "thoi_gian": "2026-11-14T18:36:10.295778"
     },
     {
       "ngay": "Thứ sáu ngày 13-11-2026",
@@ -1199,7 +1814,6 @@
         "99"
       ],
       "giao_thoa": [
-        "02",
         "08",
         "11",
         "12",
@@ -1220,6 +1834,9 @@
         "47",
         "48",
         "49",
+        "51",
+        "57",
+        "58",
         "61",
         "62",
         "66",
@@ -1230,6 +1847,7 @@
         "79",
         "83",
         "84",
+        "85",
         "88",
         "89",
         "92",
@@ -1269,43 +1887,43 @@
         "91",
         "96"
       ],
-      "bach_thu": "26",
+      "bach_thu": "51",
       "tu_thu": [
-        "26",
-        "39",
-        "83",
-        "92"
+        "51",
+        "85",
+        "38",
+        "57"
       ],
       "dan_9": [
-        "02",
         "08",
-        "12",
         "17",
-        "26",
-        "29",
         "35",
         "38",
-        "39"
+        "39",
+        "48",
+        "51",
+        "57",
+        "58"
       ],
       "dan_dao": [
-        "20",
         "80",
-        "21",
         "71",
-        "62",
-        "92"
+        "53",
+        "83",
+        "93",
+        "84"
       ],
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 5 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "26",
+        "bach_thu": "51",
         "tu_thu": [
-          "26",
-          "39",
-          "83",
-          "92"
+          "51",
+          "85",
+          "38",
+          "57"
         ],
-        "so_dao_lot": "62",
+        "so_dao_lot": "15",
         "so_ngay_max": 5
       },
       "cau_chay": [
@@ -1591,30 +2209,30 @@
         "dan_tinh_size": 60,
         "trung_size": 36,
         "ty_le_trung": 56.25,
-        "bach_thu": "26",
+        "bach_thu": "51",
         "tu_thu": [
-          "26",
-          "39",
-          "83",
-          "92"
+          "51",
+          "85",
+          "38",
+          "57"
         ],
         "dan_9": [
-          "02",
           "08",
-          "12",
           "17",
-          "26",
-          "29",
           "35",
           "38",
-          "39"
+          "39",
+          "48",
+          "51",
+          "57",
+          "58"
         ]
       },
-      "hit_top_1": false,
-      "hit_top_4": false,
-      "hit_dan_9": false,
-      "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:10.001057"
+      "hit_top_1": true,
+      "hit_top_4": true,
+      "hit_dan_9": true,
+      "hit_giao_thoa": true,
+      "thoi_gian": "2026-11-14T18:36:10.358368"
     },
     {
       "ngay": "Thứ năm ngày 12-11-2026",
@@ -1749,11 +2367,9 @@
         "99"
       ],
       "giao_thoa": [
-        "01",
         "02",
         "09",
         "20",
-        "21",
         "22",
         "23",
         "24",
@@ -1770,11 +2386,9 @@
         "44",
         "47",
         "49",
-        "51",
         "52",
         "53",
         "54",
-        "56",
         "57",
         "59",
         "72",
@@ -1820,43 +2434,43 @@
         "85",
         "87"
       ],
-      "bach_thu": "29",
+      "bach_thu": "54",
       "tu_thu": [
-        "29",
+        "54",
         "52",
-        "95",
-        "39"
+        "75",
+        "27"
       ],
       "dan_9": [
-        "01",
-        "21",
-        "29",
-        "32",
-        "39",
-        "51",
-        "52",
-        "56",
-        "59"
+        "02",
+        "24",
+        "25",
+        "27",
+        "54",
+        "57",
+        "92",
+        "94",
+        "97"
       ],
       "dan_dao": [
-        "10",
-        "12",
-        "92",
-        "23",
-        "93",
-        "15"
+        "20",
+        "42",
+        "52",
+        "72",
+        "45",
+        "75"
       ],
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 4 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "29",
+        "bach_thu": "54",
         "tu_thu": [
-          "29",
+          "54",
           "52",
-          "95",
-          "39"
+          "75",
+          "27"
         ],
-        "so_dao_lot": "92",
+        "so_dao_lot": "45",
         "so_ngay_max": 4
       },
       "cau_chay": [
@@ -2082,30 +2696,30 @@
         "dan_tinh_size": 60,
         "trung_size": 40,
         "ty_le_trung": 62.5,
-        "bach_thu": "29",
+        "bach_thu": "54",
         "tu_thu": [
-          "29",
+          "54",
           "52",
-          "95",
-          "39"
+          "75",
+          "27"
         ],
         "dan_9": [
-          "01",
-          "21",
-          "29",
-          "32",
-          "39",
-          "51",
-          "52",
-          "56",
-          "59"
+          "02",
+          "24",
+          "25",
+          "27",
+          "54",
+          "57",
+          "92",
+          "94",
+          "97"
         ]
       },
-      "hit_top_1": false,
-      "hit_top_4": false,
-      "hit_dan_9": false,
+      "hit_top_1": true,
+      "hit_top_4": true,
+      "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:10.067398"
+      "thoi_gian": "2026-11-14T18:36:10.421599"
     },
     {
       "ngay": "Thứ tư ngày 11-11-2026",
@@ -2244,7 +2858,6 @@
         "01",
         "02",
         "05",
-        "13",
         "14",
         "23",
         "24",
@@ -2258,7 +2871,6 @@
         "39",
         "42",
         "43",
-        "46",
         "47",
         "48",
         "50",
@@ -2267,7 +2879,6 @@
         "56",
         "57",
         "59",
-        "63",
         "73",
         "74",
         "75",
@@ -2314,40 +2925,40 @@
         "95",
         "99"
       ],
-      "bach_thu": "38",
+      "bach_thu": "29",
       "tu_thu": [
-        "38",
-        "46",
+        "29",
+        "05",
         "51",
-        "14"
+        "48"
       ],
       "dan_9": [
         "01",
-        "13",
+        "05",
         "14",
+        "28",
+        "29",
         "38",
-        "46",
         "48",
         "51",
-        "56",
-        "63"
+        "56"
       ],
       "dan_dao": [
         "10",
-        "31",
+        "50",
         "41",
-        "83",
-        "64",
-        "84"
+        "82",
+        "92",
+        "83"
       ],
       "canh_bao": {
         "canh_bao": false,
-        "bach_thu": "38",
+        "bach_thu": "29",
         "tu_thu": [
-          "38",
-          "46",
+          "29",
+          "05",
           "51",
-          "14"
+          "48"
         ],
         "so_ngay_max": 3
       },
@@ -2454,30 +3065,30 @@
         "dan_tinh_size": 60,
         "trung_size": 36,
         "ty_le_trung": 56.25,
-        "bach_thu": "38",
+        "bach_thu": "29",
         "tu_thu": [
-          "38",
-          "46",
+          "29",
+          "05",
           "51",
-          "14"
+          "48"
         ],
         "dan_9": [
           "01",
-          "13",
+          "05",
           "14",
+          "28",
+          "29",
           "38",
-          "46",
           "48",
           "51",
-          "56",
-          "63"
+          "56"
         ]
       },
-      "hit_top_1": false,
-      "hit_top_4": false,
-      "hit_dan_9": false,
+      "hit_top_1": true,
+      "hit_top_4": true,
+      "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:10.151076"
+      "thoi_gian": "2026-11-14T18:36:10.480155"
     },
     {
       "ngay": "Thứ ba ngày 10-11-2026",
@@ -2612,26 +3223,24 @@
         "98"
       ],
       "giao_thoa": [
-        "02",
-        "09",
         "11",
         "13",
         "15",
         "16",
         "18",
+        "25",
+        "29",
         "31",
         "33",
         "34",
         "36",
         "38",
         "39",
-        "42",
         "43",
         "45",
         "47",
         "48",
         "51",
-        "52",
         "54",
         "56",
         "57",
@@ -2683,39 +3292,39 @@
         "96",
         "99"
       ],
-      "bach_thu": "09",
+      "bach_thu": "83",
       "tu_thu": [
-        "09",
+        "83",
+        "39",
         "43",
-        "95",
         "54"
       ],
       "dan_9": [
-        "02",
-        "09",
+        "25",
+        "29",
+        "34",
+        "38",
         "39",
-        "42",
-        "43",
-        "52",
         "54",
+        "57",
         "59",
-        "63"
+        "89"
       ],
       "dan_dao": [
-        "20",
-        "90",
+        "52",
+        "92",
+        "43",
+        "83",
         "93",
-        "24",
-        "34",
-        "25"
+        "45"
       ],
       "canh_bao": {
         "canh_bao": false,
-        "bach_thu": "09",
+        "bach_thu": "83",
         "tu_thu": [
-          "09",
+          "83",
+          "39",
           "43",
-          "95",
           "54"
         ],
         "so_ngay_max": 3
@@ -2859,30 +3468,30 @@
         "dan_tinh_size": 60,
         "trung_size": 39,
         "ty_le_trung": 60.94,
-        "bach_thu": "09",
+        "bach_thu": "83",
         "tu_thu": [
-          "09",
+          "83",
+          "39",
           "43",
-          "95",
           "54"
         ],
         "dan_9": [
-          "02",
-          "09",
+          "25",
+          "29",
+          "34",
+          "38",
           "39",
-          "42",
-          "43",
-          "52",
           "54",
+          "57",
           "59",
-          "63"
+          "89"
         ]
       },
-      "hit_top_1": false,
-      "hit_top_4": false,
-      "hit_dan_9": false,
+      "hit_top_1": true,
+      "hit_top_4": true,
+      "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:10.343107"
+      "thoi_gian": "2026-11-14T18:36:10.630172"
     },
     {
       "ngay": "Thứ hai ngày 09-11-2026",
@@ -3024,9 +3633,9 @@
         "08",
         "09",
         "11",
-        "12",
         "14",
         "15",
+        "16",
         "17",
         "18",
         "19",
@@ -3042,11 +3651,13 @@
         "48",
         "50",
         "51",
+        "52",
         "54",
         "55",
         "57",
         "59",
         "61",
+        "63",
         "70",
         "73",
         "75",
@@ -3059,7 +3670,6 @@
         "90",
         "91",
         "93",
-        "96",
         "98"
       ],
       "ngoai": [
@@ -3089,40 +3699,40 @@
         "97",
         "99"
       ],
-      "bach_thu": "38",
+      "bach_thu": "87",
       "tu_thu": [
-        "38",
-        "61",
-        "12",
-        "32"
+        "87",
+        "51",
+        "16",
+        "63"
       ],
       "dan_9": [
-        "12",
         "14",
-        "18",
         "32",
-        "38",
-        "39",
         "46",
+        "51",
+        "52",
+        "56",
         "61",
-        "96"
+        "63",
+        "87"
       ],
       "dan_dao": [
-        "21",
         "41",
-        "81",
         "23",
-        "83",
-        "93"
+        "64",
+        "15",
+        "25",
+        "65"
       ],
       "canh_bao": {
         "canh_bao": false,
-        "bach_thu": "38",
+        "bach_thu": "87",
         "tu_thu": [
-          "38",
-          "61",
-          "12",
-          "32"
+          "87",
+          "51",
+          "16",
+          "63"
         ],
         "so_ngay_max": 2
       },
@@ -3349,30 +3959,30 @@
         "dan_tinh_size": 60,
         "trung_size": 39,
         "ty_le_trung": 60.94,
-        "bach_thu": "38",
+        "bach_thu": "87",
         "tu_thu": [
-          "38",
-          "61",
-          "12",
-          "32"
+          "87",
+          "51",
+          "16",
+          "63"
         ],
         "dan_9": [
-          "12",
           "14",
-          "18",
           "32",
-          "38",
-          "39",
           "46",
+          "51",
+          "52",
+          "56",
           "61",
-          "96"
+          "63",
+          "87"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:10.412840"
+      "thoi_gian": "2026-11-14T18:36:10.698313"
     },
     {
       "ngay": "Chủ nhật ngày 08-11-2026",
@@ -3513,7 +4123,7 @@
         "06",
         "07",
         "08",
-        "10",
+        "26",
         "29",
         "30",
         "33",
@@ -3582,28 +4192,28 @@
         "96",
         "97"
       ],
-      "bach_thu": "51",
+      "bach_thu": "26",
       "tu_thu": [
-        "51",
-        "06",
-        "10",
-        "61"
+        "26",
+        "29",
+        "61",
+        "02"
       ],
       "dan_9": [
         "01",
         "02",
-        "06",
+        "09",
         "29",
         "51",
         "52",
-        "56",
+        "59",
         "61",
         "62"
       ],
       "dan_dao": [
         "10",
         "20",
-        "60",
+        "90",
         "92",
         "15",
         "25"
@@ -3611,14 +4221,14 @@
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 4 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "51",
+        "bach_thu": "26",
         "tu_thu": [
-          "51",
-          "06",
-          "10",
-          "61"
+          "26",
+          "29",
+          "61",
+          "02"
         ],
-        "so_dao_lot": "15",
+        "so_dao_lot": "62",
         "so_ngay_max": 4
       },
       "cau_chay": [
@@ -3904,30 +4514,30 @@
         "dan_tinh_size": 60,
         "trung_size": 39,
         "ty_le_trung": 60.94,
-        "bach_thu": "51",
+        "bach_thu": "26",
         "tu_thu": [
-          "51",
-          "06",
-          "10",
-          "61"
+          "26",
+          "29",
+          "61",
+          "02"
         ],
         "dan_9": [
           "01",
           "02",
-          "06",
+          "09",
           "29",
           "51",
           "52",
-          "56",
+          "59",
           "61",
           "62"
         ]
       },
-      "hit_top_1": false,
-      "hit_top_4": false,
+      "hit_top_1": true,
+      "hit_top_4": true,
       "hit_dan_9": false,
-      "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:10.477165"
+      "hit_giao_thoa": true,
+      "thoi_gian": "2026-11-14T18:36:10.758535"
     },
     {
       "ngay": "Thứ bảy ngày 07-11-2026",
@@ -4070,9 +4680,6 @@
         "08",
         "09",
         "14",
-        "23",
-        "28",
-        "32",
         "34",
         "35",
         "37",
@@ -4136,37 +4743,37 @@
       "bach_thu": "14",
       "tu_thu": [
         "14",
+        "43",
         "39",
-        "96",
-        "23"
+        "96"
       ],
       "dan_9": [
         "14",
-        "28",
-        "32",
         "38",
         "39",
+        "43",
         "46",
         "63",
-        "96",
+        "69",
+        "84",
         "98"
       ],
       "dan_dao": [
         "41",
-        "82",
-        "23",
         "83",
         "93",
-        "64"
+        "34",
+        "64",
+        "36"
       ],
       "canh_bao": {
         "canh_bao": false,
         "bach_thu": "14",
         "tu_thu": [
           "14",
+          "43",
           "39",
-          "96",
-          "23"
+          "96"
         ],
         "so_ngay_max": 3
       },
@@ -4432,19 +5039,19 @@
         "bach_thu": "14",
         "tu_thu": [
           "14",
+          "43",
           "39",
-          "96",
-          "23"
+          "96"
         ],
         "dan_9": [
           "14",
-          "28",
-          "32",
           "38",
           "39",
+          "43",
           "46",
           "63",
-          "96",
+          "69",
+          "84",
           "98"
         ]
       },
@@ -4452,7 +5059,7 @@
       "hit_top_4": true,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:10.677138"
+      "thoi_gian": "2026-11-14T18:36:10.929875"
     },
     {
       "ngay": "Thứ sáu ngày 06-11-2026",
@@ -4595,6 +5202,7 @@
         "09",
         "12",
         "20",
+        "21",
         "25",
         "29",
         "30",
@@ -4621,6 +5229,7 @@
         "85",
         "89",
         "90",
+        "91",
         "93",
         "94",
         "98",
@@ -4658,36 +5267,36 @@
       "bach_thu": "52",
       "tu_thu": [
         "52",
-        "09",
-        "20",
+        "21",
+        "43",
         "59"
       ],
       "dan_9": [
-        "02",
-        "03",
-        "09",
         "12",
         "13",
+        "43",
+        "49",
         "52",
         "53",
+        "57",
         "59",
-        "75"
+        "91"
       ],
       "dan_dao": [
-        "20",
-        "30",
-        "90",
         "21",
         "31",
-        "25"
+        "34",
+        "94",
+        "25",
+        "35"
       ],
       "canh_bao": {
         "canh_bao": false,
         "bach_thu": "52",
         "tu_thu": [
           "52",
-          "09",
-          "20",
+          "21",
+          "43",
           "59"
         ],
         "so_ngay_max": 3
@@ -5002,27 +5611,27 @@
         "bach_thu": "52",
         "tu_thu": [
           "52",
-          "09",
-          "20",
+          "21",
+          "43",
           "59"
         ],
         "dan_9": [
-          "02",
-          "03",
-          "09",
           "12",
           "13",
+          "43",
+          "49",
           "52",
           "53",
+          "57",
           "59",
-          "75"
+          "91"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:10.916784"
+      "thoi_gian": "2026-11-14T18:36:11.111673"
     },
     {
       "ngay": "Thứ năm ngày 05-11-2026",
@@ -5157,7 +5766,7 @@
         "99"
       ],
       "giao_thoa": [
-        "01",
+        "03",
         "08",
         "09",
         "12",
@@ -5178,9 +5787,8 @@
         "44",
         "47",
         "49",
-        "51",
+        "53",
         "54",
-        "56",
         "58",
         "59",
         "62",
@@ -5232,43 +5840,43 @@
         "96",
         "98"
       ],
-      "bach_thu": "51",
+      "bach_thu": "83",
       "tu_thu": [
-        "51",
+        "83",
+        "58",
         "09",
-        "18",
-        "59"
+        "54"
       ],
       "dan_9": [
-        "01",
+        "03",
         "08",
         "09",
-        "51",
+        "18",
+        "38",
+        "53",
         "54",
-        "56",
         "58",
-        "59",
-        "81"
+        "59"
       ],
       "dan_dao": [
-        "10",
+        "30",
         "80",
         "90",
-        "15",
-        "45",
-        "65"
+        "81",
+        "83",
+        "35"
       ],
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 4 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "51",
+        "bach_thu": "83",
         "tu_thu": [
-          "51",
+          "83",
+          "58",
           "09",
-          "18",
-          "59"
+          "54"
         ],
-        "so_dao_lot": "15",
+        "so_dao_lot": "38",
         "so_ngay_max": 4
       },
       "cau_chay": [
@@ -5578,30 +6186,30 @@
         "dan_tinh_size": 60,
         "trung_size": 36,
         "ty_le_trung": 56.25,
-        "bach_thu": "51",
+        "bach_thu": "83",
         "tu_thu": [
-          "51",
+          "83",
+          "58",
           "09",
-          "18",
-          "59"
+          "54"
         ],
         "dan_9": [
-          "01",
+          "03",
           "08",
           "09",
-          "51",
+          "18",
+          "38",
+          "53",
           "54",
-          "56",
           "58",
-          "59",
-          "81"
+          "59"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:11.116969"
+      "thoi_gian": "2026-11-14T18:36:11.281266"
     },
     {
       "ngay": "Thứ tư ngày 04-11-2026",
@@ -5757,6 +6365,7 @@
         "39",
         "40",
         "42",
+        "43",
         "44",
         "45",
         "51",
@@ -5765,9 +6374,9 @@
         "57",
         "59",
         "61",
+        "63",
         "66",
         "67",
-        "68",
         "70",
         "72",
         "75",
@@ -5775,7 +6384,8 @@
         "90",
         "91",
         "95",
-        "96"
+        "96",
+        "98"
       ],
       "ngoai": [
         "00",
@@ -5808,40 +6418,40 @@
         "97",
         "99"
       ],
-      "bach_thu": "18",
+      "bach_thu": "39",
       "tu_thu": [
-        "18",
-        "14",
-        "96",
-        "39"
+        "39",
+        "98",
+        "43",
+        "04"
       ],
       "dan_9": [
-        "14",
+        "04",
+        "09",
         "18",
         "34",
         "38",
         "39",
-        "46",
-        "68",
-        "91",
-        "96"
+        "54",
+        "63",
+        "98"
       ],
       "dan_dao": [
-        "41",
+        "40",
+        "90",
         "81",
         "43",
         "83",
-        "93",
-        "64"
+        "93"
       ],
       "canh_bao": {
         "canh_bao": false,
-        "bach_thu": "18",
+        "bach_thu": "39",
         "tu_thu": [
-          "18",
-          "14",
-          "96",
-          "39"
+          "39",
+          "98",
+          "43",
+          "04"
         ],
         "so_ngay_max": 3
       },
@@ -6152,30 +6762,30 @@
         "dan_tinh_size": 60,
         "trung_size": 35,
         "ty_le_trung": 54.69,
-        "bach_thu": "18",
+        "bach_thu": "39",
         "tu_thu": [
-          "18",
-          "14",
-          "96",
-          "39"
+          "39",
+          "98",
+          "43",
+          "04"
         ],
         "dan_9": [
-          "14",
+          "04",
+          "09",
           "18",
           "34",
           "38",
           "39",
-          "46",
-          "68",
-          "91",
-          "96"
+          "54",
+          "63",
+          "98"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
-      "hit_dan_9": true,
+      "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:11.192525"
+      "thoi_gian": "2026-11-14T18:36:11.349349"
     },
     {
       "ngay": "Thứ ba ngày 03-11-2026",
@@ -6753,7 +7363,7 @@
       "hit_top_4": true,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:11.404728"
+      "thoi_gian": "2026-11-14T18:36:11.501574"
     },
     {
       "ngay": "Thứ hai ngày 02-11-2026",
@@ -6904,6 +7514,7 @@
         "25",
         "26",
         "34",
+        "35",
         "41",
         "43",
         "44",
@@ -6970,21 +7581,21 @@
       "dan_9": [
         "17",
         "21",
+        "35",
         "38",
         "41",
         "43",
         "48",
         "51",
-        "53",
         "58"
       ],
       "dan_dao": [
         "71",
         "12",
+        "53",
         "83",
         "14",
-        "34",
-        "84"
+        "34"
       ],
       "canh_bao": {
         "canh_bao": true,
@@ -7316,12 +7927,12 @@
         "dan_9": [
           "17",
           "21",
+          "35",
           "38",
           "41",
           "43",
           "48",
           "51",
-          "53",
           "58"
         ]
       },
@@ -7329,7 +7940,7 @@
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:11.477530"
+      "thoi_gian": "2026-11-14T18:36:11.556225"
     },
     {
       "ngay": "Chủ nhật ngày 01-11-2026",
@@ -7470,6 +8081,7 @@
         "05",
         "08",
         "09",
+        "12",
         "13",
         "17",
         "18",
@@ -7539,26 +8151,26 @@
         "17",
         "28",
         "32",
-        "73"
+        "37"
       ],
       "dan_9": [
+        "12",
         "13",
         "17",
         "18",
+        "23",
         "27",
         "28",
-        "32",
         "37",
-        "78",
-        "80"
+        "78"
       ],
       "dan_dao": [
+        "21",
         "31",
         "71",
         "81",
-        "72",
-        "82",
-        "23"
+        "32",
+        "72"
       ],
       "canh_bao": {
         "canh_bao": true,
@@ -7568,7 +8180,7 @@
           "17",
           "28",
           "32",
-          "73"
+          "37"
         ],
         "so_dao_lot": "71",
         "so_ngay_max": 4
@@ -7885,25 +8497,25 @@
           "17",
           "28",
           "32",
-          "73"
+          "37"
         ],
         "dan_9": [
+          "12",
           "13",
           "17",
           "18",
+          "23",
           "27",
           "28",
-          "32",
           "37",
-          "78",
-          "80"
+          "78"
         ]
       },
       "hit_top_1": true,
       "hit_top_4": true,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:11.551175"
+      "thoi_gian": "2026-11-14T18:36:11.629831"
     },
     {
       "ngay": "Thứ bảy ngày 31-10-2026",
@@ -8040,7 +8652,6 @@
       "giao_thoa": [
         "02",
         "03",
-        "04",
         "07",
         "08",
         "09",
@@ -8056,11 +8667,10 @@
         "30",
         "31",
         "32",
-        "34",
         "35",
         "36",
         "39",
-        "53",
+        "52",
         "54",
         "59",
         "61",
@@ -8111,40 +8721,40 @@
         "96",
         "97"
       ],
-      "bach_thu": "54",
+      "bach_thu": "09",
       "tu_thu": [
-        "54",
+        "09",
         "35",
-        "04",
-        "90"
+        "52",
+        "39"
       ],
       "dan_9": [
-        "04",
+        "02",
         "08",
-        "34",
+        "09",
+        "32",
+        "35",
         "39",
-        "53",
+        "52",
         "54",
-        "59",
-        "63",
-        "90"
+        "59"
       ],
       "dan_dao": [
-        "40",
+        "20",
         "80",
-        "43",
-        "93",
-        "35",
-        "45"
+        "90",
+        "23",
+        "53",
+        "93"
       ],
       "canh_bao": {
         "canh_bao": false,
-        "bach_thu": "54",
+        "bach_thu": "09",
         "tu_thu": [
-          "54",
+          "09",
           "35",
-          "04",
-          "90"
+          "52",
+          "39"
         ],
         "so_ngay_max": 3
       },
@@ -8455,30 +9065,30 @@
         "dan_tinh_size": 60,
         "trung_size": 39,
         "ty_le_trung": 60.94,
-        "bach_thu": "54",
+        "bach_thu": "09",
         "tu_thu": [
-          "54",
+          "09",
           "35",
-          "04",
-          "90"
+          "52",
+          "39"
         ],
         "dan_9": [
-          "04",
+          "02",
           "08",
-          "34",
+          "09",
+          "32",
+          "35",
           "39",
-          "53",
+          "52",
           "54",
-          "59",
-          "63",
-          "90"
+          "59"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:11.627118"
+      "thoi_gian": "2026-11-14T18:36:11.680201"
     },
     {
       "ngay": "Thứ sáu ngày 30-10-2026",
@@ -8635,10 +9245,9 @@
         "36",
         "37",
         "38",
-        "40",
+        "45",
         "50",
         "53",
-        "54",
         "55",
         "58",
         "62",
@@ -8685,12 +9294,12 @@
         "83",
         "88"
       ],
-      "bach_thu": "81",
+      "bach_thu": "14",
       "tu_thu": [
-        "81",
         "14",
-        "40",
-        "09"
+        "81",
+        "08",
+        "04"
       ],
       "dan_9": [
         "03",
@@ -8699,9 +9308,9 @@
         "09",
         "13",
         "14",
-        "32",
-        "54",
-        "81"
+        "18",
+        "38",
+        "45"
       ],
       "dan_dao": [
         "30",
@@ -8714,14 +9323,14 @@
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 4 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "81",
+        "bach_thu": "14",
         "tu_thu": [
-          "81",
           "14",
-          "40",
-          "09"
+          "81",
+          "08",
+          "04"
         ],
-        "so_dao_lot": "18",
+        "so_dao_lot": "41",
         "so_ngay_max": 4
       },
       "cau_chay": [
@@ -9031,12 +9640,12 @@
         "dan_tinh_size": 60,
         "trung_size": 39,
         "ty_le_trung": 60.94,
-        "bach_thu": "81",
+        "bach_thu": "14",
         "tu_thu": [
-          "81",
           "14",
-          "40",
-          "09"
+          "81",
+          "08",
+          "04"
         ],
         "dan_9": [
           "03",
@@ -9045,16 +9654,16 @@
           "09",
           "13",
           "14",
-          "32",
-          "54",
-          "81"
+          "18",
+          "38",
+          "45"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:11.692934"
+      "thoi_gian": "2026-11-14T18:36:11.746017"
     },
     {
       "ngay": "Thứ năm ngày 29-10-2026",
@@ -9199,9 +9808,10 @@
         "10",
         "14",
         "15",
-        "17",
         "18",
         "19",
+        "21",
+        "28",
         "30",
         "32",
         "33",
@@ -9225,10 +9835,10 @@
         "64",
         "65",
         "69",
-        "71",
         "80",
         "83",
         "85",
+        "87",
         "88",
         "90",
         "91",
@@ -9265,25 +9875,25 @@
       "bach_thu": "14",
       "tu_thu": [
         "14",
+        "21",
         "37",
-        "71",
         "42"
       ],
       "dan_9": [
         "14",
-        "17",
-        "18",
+        "21",
+        "28",
         "32",
         "37",
         "38",
         "42",
         "47",
-        "91"
+        "87"
       ],
       "dan_dao": [
         "41",
-        "71",
-        "81",
+        "12",
+        "82",
         "23",
         "73",
         "83"
@@ -9294,8 +9904,8 @@
         "bach_thu": "14",
         "tu_thu": [
           "14",
+          "21",
           "37",
-          "71",
           "42"
         ],
         "so_dao_lot": "41",
@@ -9563,27 +10173,27 @@
         "bach_thu": "14",
         "tu_thu": [
           "14",
+          "21",
           "37",
-          "71",
           "42"
         ],
         "dan_9": [
           "14",
-          "17",
-          "18",
+          "21",
+          "28",
           "32",
           "37",
           "38",
           "42",
           "47",
-          "91"
+          "87"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:11.901364"
+      "thoi_gian": "2026-11-14T18:36:11.902645"
     },
     {
       "ngay": "Thứ tư ngày 28-10-2026",
@@ -9720,7 +10330,7 @@
       "giao_thoa": [
         "02",
         "06",
-        "09",
+        "10",
         "11",
         "14",
         "16",
@@ -9742,6 +10352,7 @@
         "46",
         "47",
         "48",
+        "60",
         "61",
         "63",
         "64",
@@ -9789,43 +10400,43 @@
         "98",
         "99"
       ],
-      "bach_thu": "14",
+      "bach_thu": "34",
       "tu_thu": [
-        "14",
+        "34",
+        "10",
         "06",
-        "69",
         "64"
       ],
       "dan_9": [
         "02",
-        "06",
-        "09",
+        "10",
         "14",
-        "61",
+        "16",
+        "34",
+        "60",
+        "63",
         "64",
-        "70",
-        "91",
-        "96"
+        "70"
       ],
       "dan_dao": [
         "20",
-        "60",
-        "90",
+        "01",
         "41",
-        "16",
-        "46"
+        "61",
+        "43",
+        "06"
       ],
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 4 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "14",
+        "bach_thu": "34",
         "tu_thu": [
-          "14",
+          "34",
+          "10",
           "06",
-          "69",
           "64"
         ],
-        "so_dao_lot": "41",
+        "so_dao_lot": "43",
         "so_ngay_max": 4
       },
       "cau_chay": [
@@ -10099,30 +10710,30 @@
         "dan_tinh_size": 60,
         "trung_size": 42,
         "ty_le_trung": 65.62,
-        "bach_thu": "14",
+        "bach_thu": "34",
         "tu_thu": [
-          "14",
+          "34",
+          "10",
           "06",
-          "69",
           "64"
         ],
         "dan_9": [
           "02",
-          "06",
-          "09",
+          "10",
           "14",
-          "61",
+          "16",
+          "34",
+          "60",
+          "63",
           "64",
-          "70",
-          "91",
-          "96"
+          "70"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:11.966811"
+      "thoi_gian": "2026-11-14T18:36:11.957208"
     },
     {
       "ngay": "Thứ ba ngày 27-10-2026",
@@ -10332,9 +10943,9 @@
       "bach_thu": "15",
       "tu_thu": [
         "15",
-        "61",
-        "96",
-        "38"
+        "38",
+        "63",
+        "96"
       ],
       "dan_9": [
         "06",
@@ -10360,9 +10971,9 @@
         "bach_thu": "15",
         "tu_thu": [
           "15",
-          "61",
-          "96",
-          "38"
+          "38",
+          "63",
+          "96"
         ],
         "so_ngay_max": 3
       },
@@ -10628,9 +11239,9 @@
         "bach_thu": "15",
         "tu_thu": [
           "15",
-          "61",
-          "96",
-          "38"
+          "38",
+          "63",
+          "96"
         ],
         "dan_9": [
           "06",
@@ -10648,7 +11259,7 @@
       "hit_top_4": false,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:12.043141"
+      "thoi_gian": "2026-11-14T18:36:12.030242"
     },
     {
       "ngay": "Thứ hai ngày 26-10-2026",
@@ -10791,6 +11402,7 @@
         "18",
         "21",
         "22",
+        "25",
         "26",
         "32",
         "34",
@@ -10802,7 +11414,6 @@
         "44",
         "48",
         "49",
-        "52",
         "61",
         "62",
         "63",
@@ -10855,27 +11466,27 @@
       "tu_thu": [
         "34",
         "62",
-        "73",
-        "32"
+        "76",
+        "37"
       ],
       "dan_9": [
+        "25",
         "32",
+        "34",
         "37",
         "39",
         "42",
-        "43",
-        "52",
         "61",
         "62",
         "67"
       ],
       "dan_dao": [
+        "52",
         "23",
+        "43",
         "73",
         "93",
-        "24",
-        "34",
-        "25"
+        "24"
       ],
       "canh_bao": {
         "canh_bao": false,
@@ -10883,8 +11494,8 @@
         "tu_thu": [
           "34",
           "62",
-          "73",
-          "32"
+          "76",
+          "37"
         ],
         "so_ngay_max": 3
       },
@@ -11151,16 +11762,16 @@
         "tu_thu": [
           "34",
           "62",
-          "73",
-          "32"
+          "76",
+          "37"
         ],
         "dan_9": [
+          "25",
           "32",
+          "34",
           "37",
           "39",
           "42",
-          "43",
-          "52",
           "61",
           "62",
           "67"
@@ -11170,7 +11781,7 @@
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:12.242471"
+      "thoi_gian": "2026-11-14T18:36:12.205749"
     },
     {
       "ngay": "Chủ nhật ngày 25-10-2026",
@@ -11314,8 +11925,6 @@
         "16",
         "17",
         "18",
-        "34",
-        "39",
         "40",
         "44",
         "45",
@@ -11376,43 +11985,43 @@
         "96",
         "97"
       ],
-      "bach_thu": "68",
+      "bach_thu": "54",
       "tu_thu": [
-        "68",
-        "13",
-        "81",
-        "54"
+        "54",
+        "61",
+        "18",
+        "09"
       ],
       "dan_9": [
         "04",
+        "09",
         "13",
         "18",
-        "34",
-        "39",
         "45",
+        "59",
         "61",
         "63",
         "68"
       ],
       "dan_dao": [
         "40",
+        "90",
         "31",
         "81",
-        "43",
-        "93",
-        "54"
+        "54",
+        "95"
       ],
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 5 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "68",
+        "bach_thu": "54",
         "tu_thu": [
-          "68",
-          "13",
-          "81",
-          "54"
+          "54",
+          "61",
+          "18",
+          "09"
         ],
-        "so_dao_lot": "86",
+        "so_dao_lot": "45",
         "so_ngay_max": 5
       },
       "cau_chay": [
@@ -11722,20 +12331,20 @@
         "dan_tinh_size": 60,
         "trung_size": 37,
         "ty_le_trung": 57.81,
-        "bach_thu": "68",
+        "bach_thu": "54",
         "tu_thu": [
-          "68",
-          "13",
-          "81",
-          "54"
+          "54",
+          "61",
+          "18",
+          "09"
         ],
         "dan_9": [
           "04",
+          "09",
           "13",
           "18",
-          "34",
-          "39",
           "45",
+          "59",
           "61",
           "63",
           "68"
@@ -11745,7 +12354,7 @@
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:12.317371"
+      "thoi_gian": "2026-11-14T18:36:12.271543"
     },
     {
       "ngay": "Thứ bảy ngày 24-10-2026",
@@ -11884,6 +12493,7 @@
         "02",
         "03",
         "05",
+        "08",
         "09",
         "11",
         "12",
@@ -11948,43 +12558,43 @@
         "92",
         "95"
       ],
-      "bach_thu": "32",
+      "bach_thu": "35",
       "tu_thu": [
-        "32",
+        "35",
         "03",
-        "20",
-        "12"
+        "80",
+        "32"
       ],
       "dan_9": [
-        "02",
         "03",
-        "12",
-        "32",
+        "05",
+        "08",
+        "16",
+        "23",
         "35",
+        "51",
         "52",
-        "61",
-        "63",
-        "80"
+        "63"
       ],
       "dan_dao": [
-        "20",
         "30",
-        "21",
-        "23",
-        "53",
-        "25"
+        "50",
+        "80",
+        "61",
+        "32",
+        "53"
       ],
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 5 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "32",
+        "bach_thu": "35",
         "tu_thu": [
-          "32",
+          "35",
           "03",
-          "20",
-          "12"
+          "80",
+          "32"
         ],
-        "so_dao_lot": "23",
+        "so_dao_lot": "53",
         "so_ngay_max": 5
       },
       "cau_chay": [
@@ -12294,30 +12904,30 @@
         "dan_tinh_size": 60,
         "trung_size": 39,
         "ty_le_trung": 60.94,
-        "bach_thu": "32",
+        "bach_thu": "35",
         "tu_thu": [
-          "32",
+          "35",
           "03",
-          "20",
-          "12"
+          "80",
+          "32"
         ],
         "dan_9": [
-          "02",
           "03",
-          "12",
-          "32",
+          "05",
+          "08",
+          "16",
+          "23",
           "35",
+          "51",
           "52",
-          "61",
-          "63",
-          "80"
+          "63"
         ]
       },
-      "hit_top_1": true,
+      "hit_top_1": false,
       "hit_top_4": true,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:12.395183"
+      "thoi_gian": "2026-11-14T18:36:12.330280"
     },
     {
       "ngay": "Thứ sáu ngày 23-10-2026",
@@ -12533,21 +13143,21 @@
       "dan_9": [
         "11",
         "12",
+        "16",
         "17",
         "25",
         "26",
         "35",
         "57",
-        "61",
         "67"
       ],
       "dan_dao": [
         "21",
+        "61",
         "71",
         "52",
         "62",
-        "53",
-        "75"
+        "53"
       ],
       "canh_bao": {
         "canh_bao": true,
@@ -12879,12 +13489,12 @@
         "dan_9": [
           "11",
           "12",
+          "16",
           "17",
           "25",
           "26",
           "35",
           "57",
-          "61",
           "67"
         ]
       },
@@ -12892,7 +13502,7 @@
       "hit_top_4": true,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:12.577268"
+      "thoi_gian": "2026-11-14T18:36:12.493761"
     },
     {
       "ngay": "Thứ năm ngày 22-10-2026",
@@ -13037,10 +13647,10 @@
         "15",
         "16",
         "17",
+        "34",
         "35",
         "38",
         "39",
-        "43",
         "44",
         "47",
         "48",
@@ -13100,43 +13710,43 @@
         "96",
         "98"
       ],
-      "bach_thu": "16",
+      "bach_thu": "08",
       "tu_thu": [
+        "08",
         "16",
         "39",
-        "83",
-        "08"
+        "83"
       ],
       "dan_9": [
+        "08",
         "12",
+        "16",
         "17",
+        "34",
         "35",
         "38",
         "39",
-        "43",
-        "61",
-        "67",
-        "80"
+        "67"
       ],
       "dan_dao": [
+        "80",
         "21",
+        "61",
         "71",
-        "53",
-        "83",
-        "93",
-        "34"
+        "43",
+        "53"
       ],
       "canh_bao": {
         "canh_bao": true,
         "ly_do": "Cầu vị trí đỉnh đã thông 5 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "16",
+        "bach_thu": "08",
         "tu_thu": [
+          "08",
           "16",
           "39",
-          "83",
-          "08"
+          "83"
         ],
-        "so_dao_lot": "61",
+        "so_dao_lot": "80",
         "so_ngay_max": 5
       },
       "cau_chay": [
@@ -13446,30 +14056,30 @@
         "dan_tinh_size": 60,
         "trung_size": 38,
         "ty_le_trung": 59.38,
-        "bach_thu": "16",
+        "bach_thu": "08",
         "tu_thu": [
+          "08",
           "16",
           "39",
-          "83",
-          "08"
+          "83"
         ],
         "dan_9": [
+          "08",
           "12",
+          "16",
           "17",
+          "34",
           "35",
           "38",
           "39",
-          "43",
-          "61",
-          "67",
-          "80"
+          "67"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": false,
-      "thoi_gian": "2026-11-13T18:36:12.651336"
+      "thoi_gian": "2026-11-14T18:36:12.555997"
     },
     {
       "ngay": "Thứ tư ngày 21-10-2026",
@@ -14034,7 +14644,7 @@
       "hit_top_4": true,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:12.727072"
+      "thoi_gian": "2026-11-14T18:36:12.622345"
     },
     {
       "ngay": "Thứ ba ngày 20-10-2026",
@@ -14182,19 +14792,16 @@
         "29",
         "32",
         "33",
-        "36",
         "37",
         "38",
         "40",
         "42",
         "45",
-        "46",
         "47",
         "50",
         "54",
         "55",
         "59",
-        "64",
         "72",
         "73",
         "74",
@@ -14208,7 +14815,6 @@
         "90",
         "92",
         "95",
-        "96",
         "97"
       ],
       "ngoai": [
@@ -14244,28 +14850,28 @@
       "bach_thu": "42",
       "tu_thu": [
         "42",
-        "64",
-        "06",
-        "32"
+        "54",
+        "38",
+        "06"
       ],
       "dan_9": [
+        "05",
         "06",
         "08",
         "29",
         "32",
-        "36",
+        "35",
         "38",
         "42",
-        "46",
-        "96"
+        "45"
       ],
       "dan_dao": [
+        "50",
         "60",
         "80",
         "92",
         "23",
-        "63",
-        "83"
+        "53"
       ],
       "canh_bao": {
         "canh_bao": true,
@@ -14273,9 +14879,9 @@
         "bach_thu": "42",
         "tu_thu": [
           "42",
-          "64",
-          "06",
-          "32"
+          "54",
+          "38",
+          "06"
         ],
         "so_dao_lot": "24",
         "so_ngay_max": 4
@@ -14590,27 +15196,27 @@
         "bach_thu": "42",
         "tu_thu": [
           "42",
-          "64",
-          "06",
-          "32"
+          "54",
+          "38",
+          "06"
         ],
         "dan_9": [
+          "05",
           "06",
           "08",
           "29",
           "32",
-          "36",
+          "35",
           "38",
           "42",
-          "46",
-          "96"
+          "45"
         ]
       },
       "hit_top_1": false,
       "hit_top_4": false,
       "hit_dan_9": false,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:12.801049"
+      "thoi_gian": "2026-11-14T18:36:12.680260"
     },
     {
       "ngay": "Thứ hai ngày 19-10-2026",
@@ -14752,7 +15358,8 @@
         "08",
         "09",
         "10",
-        "17",
+        "13",
+        "18",
         "22",
         "26",
         "27",
@@ -14768,7 +15375,7 @@
         "44",
         "45",
         "49",
-        "54",
+        "53",
         "60",
         "62",
         "63",
@@ -14780,7 +15387,6 @@
         "76",
         "77",
         "80",
-        "81",
         "86",
         "87",
         "90",
@@ -14818,40 +15424,40 @@
         "97",
         "98"
       ],
-      "bach_thu": "90",
+      "bach_thu": "45",
       "tu_thu": [
-        "90",
-        "17",
-        "04",
-        "45"
-      ],
-      "dan_9": [
+        "45",
         "04",
         "10",
-        "17",
+        "53"
+      ],
+      "dan_9": [
+        "03",
+        "04",
+        "08",
+        "10",
+        "13",
+        "18",
         "35",
-        "54",
-        "72",
-        "80",
-        "81",
+        "45",
         "90"
       ],
       "dan_dao": [
+        "30",
         "40",
+        "80",
         "01",
-        "71",
-        "53",
-        "45",
-        "27"
+        "31",
+        "81"
       ],
       "canh_bao": {
         "canh_bao": false,
-        "bach_thu": "90",
+        "bach_thu": "45",
         "tu_thu": [
-          "90",
-          "17",
+          "45",
           "04",
-          "45"
+          "10",
+          "53"
         ],
         "so_ngay_max": 3
       },
@@ -15138,30 +15744,30 @@
         "dan_tinh_size": 60,
         "trung_size": 36,
         "ty_le_trung": 56.25,
-        "bach_thu": "90",
+        "bach_thu": "45",
         "tu_thu": [
-          "90",
-          "17",
-          "04",
-          "45"
-        ],
-        "dan_9": [
+          "45",
           "04",
           "10",
-          "17",
+          "53"
+        ],
+        "dan_9": [
+          "03",
+          "04",
+          "08",
+          "10",
+          "13",
+          "18",
           "35",
-          "54",
-          "72",
-          "80",
-          "81",
+          "45",
           "90"
         ]
       },
-      "hit_top_1": true,
-      "hit_top_4": true,
+      "hit_top_1": false,
+      "hit_top_4": false,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:12.877191"
+      "thoi_gian": "2026-11-14T18:36:12.746494"
     },
     {
       "ngay": "Chủ nhật ngày 18-10-2026",
@@ -15708,584 +16314,7 @@
       "hit_top_4": true,
       "hit_dan_9": true,
       "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:12.951296"
-    },
-    {
-      "ngay": "Thứ bảy ngày 17-10-2026",
-      "de": "38",
-      "de_ve": "38",
-      "dan_cau_dong": [
-        "00",
-        "01",
-        "02",
-        "03",
-        "05",
-        "07",
-        "08",
-        "09",
-        "10",
-        "11",
-        "12",
-        "13",
-        "15",
-        "17",
-        "18",
-        "19",
-        "20",
-        "21",
-        "22",
-        "23",
-        "25",
-        "27",
-        "28",
-        "29",
-        "30",
-        "31",
-        "32",
-        "33",
-        "35",
-        "37",
-        "38",
-        "39",
-        "50",
-        "51",
-        "52",
-        "53",
-        "55",
-        "57",
-        "58",
-        "59",
-        "70",
-        "71",
-        "72",
-        "73",
-        "75",
-        "77",
-        "78",
-        "79",
-        "80",
-        "81",
-        "82",
-        "83",
-        "85",
-        "87",
-        "88",
-        "89",
-        "90",
-        "91",
-        "92",
-        "93",
-        "95",
-        "97",
-        "98",
-        "99"
-      ],
-      "dan_60s": [
-        "01",
-        "03",
-        "04",
-        "06",
-        "08",
-        "09",
-        "10",
-        "12",
-        "13",
-        "15",
-        "17",
-        "18",
-        "21",
-        "22",
-        "24",
-        "26",
-        "27",
-        "29",
-        "30",
-        "31",
-        "32",
-        "33",
-        "35",
-        "36",
-        "38",
-        "39",
-        "40",
-        "42",
-        "44",
-        "45",
-        "47",
-        "49",
-        "51",
-        "53",
-        "54",
-        "56",
-        "58",
-        "59",
-        "60",
-        "62",
-        "63",
-        "65",
-        "67",
-        "71",
-        "72",
-        "73",
-        "74",
-        "76",
-        "79",
-        "80",
-        "83",
-        "85",
-        "87",
-        "88",
-        "90",
-        "92",
-        "94",
-        "95",
-        "97",
-        "99"
-      ],
-      "giao_thoa": [
-        "01",
-        "03",
-        "06",
-        "08",
-        "09",
-        "10",
-        "12",
-        "13",
-        "15",
-        "17",
-        "18",
-        "21",
-        "22",
-        "27",
-        "29",
-        "30",
-        "31",
-        "32",
-        "33",
-        "35",
-        "38",
-        "39",
-        "42",
-        "45",
-        "51",
-        "53",
-        "54",
-        "56",
-        "58",
-        "59",
-        "63",
-        "71",
-        "72",
-        "73",
-        "79",
-        "80",
-        "83",
-        "85",
-        "87",
-        "88",
-        "90",
-        "92",
-        "95",
-        "97",
-        "99"
-      ],
-      "ngoai": [
-        "00",
-        "02",
-        "05",
-        "07",
-        "11",
-        "19",
-        "20",
-        "23",
-        "25",
-        "28",
-        "37",
-        "50",
-        "52",
-        "55",
-        "57",
-        "70",
-        "75",
-        "77",
-        "78",
-        "81",
-        "82",
-        "89",
-        "91",
-        "93",
-        "98"
-      ],
-      "bach_thu": "45",
-      "tu_thu": [
-        "45",
-        "18",
-        "51",
-        "63"
-      ],
-      "dan_9": [
-        "06",
-        "13",
-        "15",
-        "18",
-        "38",
-        "42",
-        "54",
-        "56",
-        "63"
-      ],
-      "dan_dao": [
-        "60",
-        "31",
-        "51",
-        "81",
-        "83",
-        "24"
-      ],
-      "canh_bao": {
-        "canh_bao": true,
-        "ly_do": "Cầu vị trí đỉnh đã thông 4 ngày - Đã tự động ưu tiên nhịp vàng 2d-3d & lót lộn",
-        "bach_thu": "45",
-        "tu_thu": [
-          "45",
-          "18",
-          "51",
-          "63"
-        ],
-        "so_dao_lot": "54",
-        "so_ngay_max": 4
-      },
-      "cau_chay": [
-        {
-          "vi_tri": "g5.4.0",
-          "chu_so": "7",
-          "chu_so_goc": "7",
-          "chu_so_bong": "2",
-          "so_ngay": 4,
-          "diem": 105,
-          "role": "head",
-          "hits_5d": 4,
-          "streak_head": 3,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g4.2.0",
-          "chu_so": "5",
-          "chu_so_goc": "5",
-          "chu_so_bong": "0",
-          "so_ngay": 3,
-          "diem": 98,
-          "role": "tail",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 2
-        },
-        {
-          "vi_tri": "g4.0.0",
-          "chu_so": "0",
-          "chu_so_goc": "0",
-          "chu_so_bong": "5",
-          "so_ngay": 2,
-          "diem": 93,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 2,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g3.2.0",
-          "chu_so": "6",
-          "chu_so_goc": "6",
-          "chu_so_bong": "1",
-          "so_ngay": 2,
-          "diem": 93,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 2,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g5.3.3",
-          "chu_so": "8",
-          "chu_so_goc": "8",
-          "chu_so_bong": "3",
-          "so_ngay": 2,
-          "diem": 89,
-          "role": "tail",
-          "hits_5d": 4,
-          "streak_head": 0,
-          "streak_tail": 1
-        },
-        {
-          "vi_tri": "g5.0.3",
-          "chu_so": "1",
-          "chu_so_goc": "1",
-          "chu_so_bong": "6",
-          "so_ngay": 2,
-          "diem": 89,
-          "role": "tail",
-          "hits_5d": 4,
-          "streak_head": 0,
-          "streak_tail": 1
-        },
-        {
-          "vi_tri": "g5.2.0",
-          "chu_so": "7",
-          "chu_so_goc": "7",
-          "chu_so_bong": "2",
-          "so_ngay": 2,
-          "diem": 88,
-          "role": "tail",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 2
-        },
-        {
-          "vi_tri": "g4.0.2",
-          "chu_so": "7",
-          "chu_so_goc": "7",
-          "chu_so_bong": "2",
-          "so_ngay": 2,
-          "diem": 84,
-          "role": "head",
-          "hits_5d": 4,
-          "streak_head": 1,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g2.1.3",
-          "chu_so": "8",
-          "chu_so_goc": "3",
-          "chu_so_bong": "3",
-          "so_ngay": 2,
-          "diem": 83,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 2,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g3.3.1",
-          "chu_so": "2",
-          "chu_so_goc": "2",
-          "chu_so_bong": "7",
-          "so_ngay": 2,
-          "diem": 81,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 1,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g2.0.2",
-          "chu_so": "8",
-          "chu_so_goc": "8",
-          "chu_so_bong": "3",
-          "so_ngay": 2,
-          "diem": 81,
-          "role": "tail",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 1
-        },
-        {
-          "vi_tri": "g5.0.0",
-          "chu_so": "9",
-          "chu_so_goc": "4",
-          "chu_so_bong": "4",
-          "so_ngay": 2,
-          "diem": 78,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 2,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g3.5.1",
-          "chu_so": "3",
-          "chu_so_goc": "3",
-          "chu_so_bong": "8",
-          "so_ngay": 2,
-          "diem": 76,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 1,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g5.2.1",
-          "chu_so": "9",
-          "chu_so_goc": "4",
-          "chu_so_bong": "4",
-          "so_ngay": 2,
-          "diem": 71,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 1,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g4.1.0",
-          "chu_so": "1",
-          "chu_so_goc": "6",
-          "chu_so_bong": "6",
-          "so_ngay": 2,
-          "diem": 71,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 1,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g3.3.4",
-          "chu_so": "9",
-          "chu_so_goc": "9",
-          "chu_so_bong": "4",
-          "so_ngay": 2,
-          "diem": 69,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g3.0.0",
-          "chu_so": "2",
-          "chu_so_goc": "2",
-          "chu_so_bong": "7",
-          "so_ngay": 2,
-          "diem": 69,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g2.1.4",
-          "chu_so": "9",
-          "chu_so_goc": "9",
-          "chu_so_bong": "4",
-          "so_ngay": 2,
-          "diem": 69,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g1.0.2",
-          "chu_so": "0",
-          "chu_so_goc": "5",
-          "chu_so_bong": "5",
-          "so_ngay": 2,
-          "diem": 66,
-          "role": "tail",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 1
-        },
-        {
-          "vi_tri": "g4.1.1",
-          "chu_so": "3",
-          "chu_so_goc": "3",
-          "chu_so_bong": "8",
-          "so_ngay": 2,
-          "diem": 64,
-          "role": "tail",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g1.0.3",
-          "chu_so": "9",
-          "chu_so_goc": "9",
-          "chu_so_bong": "4",
-          "so_ngay": 2,
-          "diem": 64,
-          "role": "tail",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g1.0.0",
-          "chu_so": "2",
-          "chu_so_goc": "2",
-          "chu_so_bong": "7",
-          "so_ngay": 2,
-          "diem": 64,
-          "role": "tail",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g5.3.0",
-          "chu_so": "6",
-          "chu_so_goc": "1",
-          "chu_so_bong": "1",
-          "so_ngay": 2,
-          "diem": 59,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g5.1.1",
-          "chu_so": "0",
-          "chu_so_goc": "5",
-          "chu_so_bong": "5",
-          "so_ngay": 2,
-          "diem": 59,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        },
-        {
-          "vi_tri": "g5.1.0",
-          "chu_so": "0",
-          "chu_so_goc": "5",
-          "chu_so_bong": "5",
-          "so_ngay": 2,
-          "diem": 59,
-          "role": "head",
-          "hits_5d": 3,
-          "streak_head": 0,
-          "streak_tail": 0
-        }
-      ],
-      "so_sanh": {
-        "dan_dong_size": 64,
-        "dan_tinh_size": 60,
-        "trung_size": 39,
-        "ty_le_trung": 60.94,
-        "bach_thu": "45",
-        "tu_thu": [
-          "45",
-          "18",
-          "51",
-          "63"
-        ],
-        "dan_9": [
-          "06",
-          "13",
-          "15",
-          "18",
-          "38",
-          "42",
-          "54",
-          "56",
-          "63"
-        ]
-      },
-      "hit_top_1": false,
-      "hit_top_4": false,
-      "hit_dan_9": true,
-      "hit_giao_thoa": true,
-      "thoi_gian": "2026-11-13T18:36:13.151383"
+      "thoi_gian": "2026-11-14T18:36:12.814648"
     }
   ]
 }
