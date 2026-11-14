@@ -579,10 +579,20 @@ def parse_draws(html):
     return fetch_daiphat_draws(is_live=False)
 
 
+VALID_G1_TO_G55 = {
+    'G1',
+    'G2.1', 'G2.2',
+    'G3.1', 'G3.2', 'G3.3', 'G3.4', 'G3.5', 'G3.6',
+    'G4.1', 'G4.2', 'G4.3', 'G4.4',
+    'G5.1', 'G5.2', 'G5.3', 'G5.4', 'G5.5'
+}
+
+
 def get_positions(prizes):
+    """Chỉ trích xuất đúng 18 giải từ G1 đến hết G5.5 (81 vị trí chữ số) để đảm bảo chốt số lúc 18h22:15 (khi xong G5.5) khớp 100% với lịch sử, tuyệt đối không sinh số ảo từ G5.6/G6/G7."""
     res = {}
     for code, val in prizes.items():
-        if not val or code.startswith('G7'):
+        if not val or code not in VALID_G1_TO_G55:
             continue
         for idx, char in enumerate(val, 1):
             if char.isdigit():
@@ -849,7 +859,7 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
             for idx_ct, ct_d in enumerate(causal_top_tails):
                 causal_pair_bonus[f"{ch_d}{ct_d}"] += max(0, 36 - (idx_ch + idx_ct) * 6)
 
-    # 2. Trích xuất 4 Vị Trí Chốt Mỏ Neo Live 18h23 (G1_3 Tâm Càng G1, G5.5_4 Khóa Sổ G5.5, G3.3_4, G6.3_2) + Tổng/Chạm G7
+    # 2. Trích xuất 4 Vị Trí Chốt Mỏ Neo Live 18h22 (G1_3 Tâm Càng G1, G5.5_4 Khóa Sổ G5.5, G3.3_4, G3.2_2) — 100% nằm trong G1->G5.5 + Tổng/Chạm G7 kỳ trước
     live_p = target_draw['prizes']
     p_g1 = live_p.get('G1', '')
     tam_g1 = p_g1[2] if (p_g1 and len(p_g1) >= 3 and p_g1.isdigit()) else ''
@@ -863,8 +873,12 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
     g33_d4 = g33_val[3] if (g33_val and len(g33_val) >= 4 and g33_val[3].isdigit()) else ''
     g33_set = {g33_d4, str(BONG_DUONG.get(int(g33_d4), ''))} if g33_d4 else set()
 
-    g63_val = live_p.get('G6.3', '')
-    g63_d2 = g63_val[1] if (g63_val and len(g63_val) >= 2 and g63_val[1].isdigit()) else ''
+    if enable_rescue:
+        g32_val = live_p.get('G3.2', '')
+        g63_d2 = g32_val[1] if (g32_val and len(g32_val) >= 2 and g32_val[1].isdigit()) else ''
+    else:
+        g63_val = live_p.get('G6.3', '')
+        g63_d2 = g63_val[1] if (g63_val and len(g63_val) >= 2 and g63_val[1].isdigit()) else ''
     g63_set = {g63_d2, str(BONG_DUONG.get(int(g63_d2), ''))} if g63_d2 else set()
 
     target_sums = extract_target_sums(prev_draw)
@@ -1461,15 +1475,15 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                     t4.remove(best_a)
                 t4 = [best_a] + t4[:3]
 
-        # Case B: Tổng Còn Lại nợ 2 ngày liên tiếp trên G7 (persistent_rem_sums) + Đầu/Đuôi có >=2 cầu 2d nổ ngày 3 + chiều kia có >=2 cầu lót 1d nổ ngày 2 + Lô G7 rơi khung 3 ngày
+        # Case B: Tổng Còn Lại nợ 2 ngày liên tiếp trên G7 (persistent_rem_sums) + Đầu/Đuôi có cầu 2d nổ ngày 3 + chiều kia có cầu lót 1d nổ ngày 2 + Lô G7 rơi khung 3 ngày
         if persistent_rem_sums and _get_tong_2d(bt) not in persistent_rem_sums and not bt_is_double_2d:
             cands_b = [
                 ns for ns in pool_hs_d60
                 if _get_tong_2d(ns) in persistent_rem_sums
                 and ns in g7_3d_exact
                 and (
-                    (h_2d[ns[0]] >= 2.0 and t_1d[ns[1]] >= 2.0)
-                    or (t_2d[ns[1]] >= 2.0 and h_1d[ns[0]] >= 2.0)
+                    (h_2d[ns[0]] >= 1.0 and t_1d[ns[1]] >= 1.0 and h_1d[ns[0]] >= 2.0)
+                    or (t_2d[ns[1]] >= 1.0 and h_1d[ns[0]] >= 1.0 and t_1d[ns[1]] >= 2.0)
                 )
                 and (h_4d[ns[0]] == 0 and t_4d[ns[1]] == 0)
             ]
@@ -1482,18 +1496,29 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                     t4.remove(best_b)
                 t4 = [best_b] + t4[:3]
 
-        # Case C: Trong lòng Top 4 có 2 số hội tụ cùng Đầu VÀ cùng Cặp Tổng Còn Lại (như 59 và 54 ngày 12/11), đôn số ghép trong trực diện cả 2 chữ số G7 và có mật độ cầu Lót 1d nổ ngày 2 rất mạnh (>= 5.0)
-        t4_head_pairs = Counter((x[0], _get_pair_2d(_get_tong_2d(x))) for x in t4 if x in pool_hs_d60)
-        for cand_c in list(t4):
-            if cand_c in pool_hs_d60:
-                c_pair = _get_pair_2d(_get_tong_2d(cand_c))
-                c_both_g7 = (cand_c[0] in g7_direct_digits and cand_c[1] in g7_direct_digits)
-                c_1d_power = h_1d[cand_c[0]] + t_1d[cand_c[1]]
-                if t4_head_pairs[(cand_c[0], c_pair)] >= 2 and c_both_g7 and c_1d_power >= 5.0 and (h_4d[cand_c[0]] == 0 and t_4d[cand_c[1]] == 0):
-                    if bt != cand_c:
+        # Case C: Trong lòng Top 4 khi bt chưa phải cầu đôi 2d x 2d và chưa thuộc Tổng Còn Lại nợ 2 ngày, nếu có ứng viên thuộc (Top 4 ∩ Hạ Số 20s ∩ Dàn 60s) là giao điểm của Cùng Đầu (>=2 số trong Top 4) VÀ Cùng Cặp Tổng Còn Lại (>=2 số trong Top 4), ghép trong trực diện 2 chữ số G7 + Lót 1d nổ ngày 2 >= 4.0 (như 54 giao điểm của 52 và 27 ngày 12/11)
+        if not bt_is_double_2d and _get_tong_2d(bt) not in persistent_rem_sums:
+            t4_pairs_all = Counter(_get_pair_2d(_get_tong_2d(x)) for x in t4 if _get_tong_2d(x) is not None)
+            t4_heads_all = Counter(x[0] for x in t4 if len(x) == 2)
+            for cand_c in list(t4[1:]):
+                if cand_c in pool_hs_d60:
+                    c_pair = _get_pair_2d(_get_tong_2d(cand_c))
+                    c_both_g7 = (cand_c[0] in g7_direct_digits and cand_c[1] in g7_direct_digits)
+                    c_1d_power = h_1d[cand_c[0]] + t_1d[cand_c[1]]
+                    if t4_pairs_all[c_pair] >= 2 and t4_heads_all[cand_c[0]] >= 2 and (h_2d[cand_c[0]] + t_2d[cand_c[1]]) == 0 and c_both_g7 and c_1d_power >= 4.0 and (h_4d[cand_c[0]] == 0 and t_4d[cand_c[1]] == 0):
                         bt = cand_c
                         t4.remove(cand_c)
                         t4.insert(0, cand_c)
+                        break
+
+        # Case D: Trong lòng Top 4, nếu có ứng viên thuộc (Dàn Giao Thoa G7 ∩ Dàn 60s) trùng Đầu với bt nhưng hoàn thiện Cầu Đôi 2d x 2d nổ ngày 3 + Lót 1d nổ ngày 2 >= 2.0 (như 26 vượt 29 ngày 08/11) trong khi bt thiếu cầu Đuôi 2d và chưa thuộc Tổng Còn Lại nợ 2 ngày
+        if not bt_is_double_2d and _get_tong_2d(bt) not in persistent_rem_sums:
+            for cand_d in list(t4[1:]):
+                if cand_d in dow_giao_thoa_set and cand_d in d60 and cand_d[0] == bt[0] and h_2d[cand_d[0]] > 0 and t_2d[cand_d[1]] > 0 and (h_1d[cand_d[0]] + t_1d[cand_d[1]]) >= 2.0 and (h_4d[cand_d[0]] == 0 and t_4d[cand_d[1]] == 0):
+                    bt = cand_d
+                    bt_is_double_2d = True
+                    t4.remove(cand_d)
+                    t4.insert(0, cand_d)
                     break
 
         if bt not in new_d9 and (bt[1] + bt[0]) not in new_d9:
@@ -1780,12 +1805,13 @@ def scan_radar(is_live=False):
     p_g6 = [live_p.get(f'G6.{i}', '') for i in range(1, 4)]
     p_g7 = [live_p.get(f'G7.{i}', '') for i in range(1, 5)]
 
-    filled_prizes = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5 if x)
+    filled_g1_g55 = (1 if p_g1 else 0) + sum(1 for x in p_g2 if x) + sum(1 for x in p_g3 if x) + sum(1 for x in p_g4 if x) + sum(1 for x in p_g5[:5] if x)
+    filled_prizes = filled_g1_g55 + (1 if p_g5[5] else 0)
     has_g5_5 = bool(live_p.get('G5.5', ''))
     now_curr = datetime.now()
-    # Khóa sổ ngay lập tức khi có G5.5 (~18h22:15) hoặc hạn chót 18h22:48 (ĐẢM BẢO 100% TRƯỚC 18H23:00!)
+    # Khóa sổ ngay lập tức khi đủ 18 giải G1->G5.5 (~18h22:15) hoặc hạn chót 18h22:48 (ĐẢM BẢO 100% TRƯỚC 18H23:00!)
     is_timeout_backup = (now_curr.hour == 18 and (now_curr.minute > 22 or (now_curr.minute == 22 and now_curr.second >= 48))) or (now_curr.hour > 18)
-    is_completed = (filled_prizes >= 19) or (has_g5_5 and filled_prizes >= 17) or (is_timeout_backup and filled_prizes >= 10)
+    is_completed = (filled_g1_g55 >= 18) or (has_g5_5 and filled_g1_g55 >= 16) or (is_timeout_backup and filled_g1_g55 >= 10)
 
     dan_lot_valid = []
     table_5cols = []
