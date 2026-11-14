@@ -1521,6 +1521,169 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                     t4.insert(0, cand_d)
                     break
 
+        # 8. GIẢI PHÓNG KHỎI SỰ CHI PHỐI CỦA "TÂM G1 CỐ ĐỊNH" — ĐẶT TRỤC XƯƠNG SỐNG VÀO 3 TRỤ CỘT THỰC CHIẾN:
+        # Trụ cột 1: Tổng G7 & Chữ số lặp G7 | Trụ cột 2: Cầu Động Lộ Diện (raw_digit 3d/2d/1d) G1->G5.5 | Trụ cột 3: Dàn 60s N1 Động & Hạ Số 20s
+        raw_h_all, raw_t_all = Counter(), Counter()
+        raw_h_2d, raw_t_2d = Counter(), Counter()
+        raw_h_3d, raw_t_3d = Counter(), Counter()
+        raw_h_1d, raw_t_1d = Counter(), Counter()
+        for _, inf_raw in highlight_positions.items():
+            rd = inf_raw.get('raw_digit', inf_raw.get('digit', ''))
+            rst = inf_raw.get('raw_streak', 1)
+            h5 = inf_raw.get('hits_5d', 1)
+            if not rd:
+                continue
+            if inf_raw.get('role') == 'head':
+                raw_h_all[rd] += 1
+                if rst == 2:
+                    raw_h_2d[rd] += h5
+                elif rst == 3:
+                    raw_h_3d[rd] += h5
+                elif rst == 1:
+                    raw_h_1d[rd] += 1
+            else:
+                raw_t_all[rd] += 1
+                if rst == 2:
+                    raw_t_2d[rd] += h5
+                elif rst == 3:
+                    raw_t_3d[rd] += h5
+                elif rst == 1:
+                    raw_t_1d[rd] += 1
+
+        raw_3d_all = set(raw_h_3d.keys()) | set(raw_t_3d.keys())
+        raw_2d_all = set(raw_h_2d.keys()) | set(raw_t_2d.keys())
+
+        # Trụ cột 8A: Giao thoa Độc Nhất (Chạm 3d Lộ Diện × Chạm 2d Lộ Diện) trong (Dàn Hạ Số 20s ∩ Dàn 60s N1 Động)
+        # (Ví dụ kỳ 14/11/2026: Chạm 3 3d tại G3.2_3 × Chạm 9 2d tại G4.1_3 hội tụ duy nhất về cặp 93 - 39 thuộc Tổng 2-7 G7)
+        cross_3d_2d_hs = [
+            ns for ns in sorted(hs20_set & d60)
+            if len(ns) == 2 and ns[0] != ns[1] and ns != prev_de
+            and ((ns[0] in raw_3d_all and ns[1] in raw_2d_all) or (ns[0] in raw_2d_all and ns[1] in raw_3d_all))
+        ]
+        if len(raw_3d_all) == 1 and len(cross_3d_2d_hs) == 2 and (cross_3d_2d_hs[0][1] + cross_3d_2d_hs[0][0]) == cross_3d_2d_hs[1]:
+            cross_3d_2d_hs.sort(
+                key=lambda ns: (
+                    raw_h_2d[ns[0]] + raw_t_2d[ns[1]],
+                    raw_h_1d[ns[0]] + raw_t_1d[ns[1]]
+                ),
+                reverse=True
+            )
+            best_3d2d = cross_3d_2d_hs[0]
+            bt = best_3d2d
+            bt_is_double_2d = True
+            if best_3d2d in t4:
+                t4.remove(best_3d2d)
+            t4 = [best_3d2d] + t4[:3]
+            for c_pair in cross_3d_2d_hs:
+                if c_pair not in combos_map:
+                    combos_map[c_pair] = {
+                        'num': c_pair, 'c_digit': c_pair[0], 'd_digit': c_pair[1],
+                        'c_cycle': 3, 'd_cycle': 2, 'min_cycle': 2, 'cycle_days': 3,
+                        'category': "Chỉ đạo", 'cat_label': "✅ HỘI TỤ 3 TRỤ CỘT (3d×2d)",
+                        'weight': 1.0, 'combo_type': "chính diện", 'score': 195,
+                        'bridge_hits': 3, 'strong_bridge_hits': 2,
+                        'h_pos': "Cầu Lộ Diện 2d/3d", 't_pos': "Tổng G7 ∩ Hạ Số 20s",
+                        'in_cap4': True, 'in_cap4_str': "Có",
+                        'consensus_score': 560.0, 'in_d9': True, 'in_tam': False, 'in_sum': True,
+                        'convergence_badges': ["N1 Động", "Hạ Số 20s", "Tổng G7", "Cầu Lộ Diện 3d×2d"]
+                    }
+                    found_list.append(combos_map[c_pair])
+
+        # Trụ cột 8B: Khi bảng không có cầu 3d lộ diện, xét Tổng G7 Trùng Chính Chữ (>=2 vị trí) × Cầu Đôi Lộ Diện (raw_h_2d × raw_t_2d) trong (Giao Thoa G7 ∩ 60s N1)
+        # (Ví dụ kỳ 26/10/2026: Tổng 3 trùng 2 vị trí G7 chính chữ 94, 67 + Đầu 1/4 2d × Đuôi 2 2d hội tụ về 21 - 12)
+        if not bt_is_double_2d and not raw_3d_all and overlap_direct_sums:
+            cands_8b = [
+                ns for ns in sorted(dow_giao_thoa_set & d60)
+                if len(ns) == 2 and ns[0] != ns[1] and ns != prev_de
+                and _get_tong_2d(ns) in overlap_direct_sums
+                and ((ns[0] in raw_h_2d and ns[1] in raw_t_2d) or (ns[0] in raw_t_2d and ns[1] in raw_h_2d))
+            ]
+            if cands_8b:
+                cands_8b.sort(
+                    key=lambda ns: (
+                        raw_h_1d[ns[0]],
+                        raw_h_all[ns[0]] + raw_t_all[ns[1]]
+                    ),
+                    reverse=True
+                )
+                best_8b = cands_8b[0]
+                bt = best_8b
+                bt_is_double_2d = True
+                if best_8b in t4:
+                    t4.remove(best_8b)
+                t4 = [best_8b] + t4[:3]
+                if best_8b not in combos_map:
+                    combos_map[best_8b] = {
+                        'num': best_8b, 'c_digit': best_8b[0], 'd_digit': best_8b[1],
+                        'c_cycle': 2, 'd_cycle': 2, 'min_cycle': 2, 'cycle_days': 2,
+                        'category': "Chỉ đạo", 'cat_label': "✅ TRÙNG TỔNG G7 × CẦU 2d×2d",
+                        'weight': 1.0, 'combo_type': "chính diện", 'score': 185,
+                        'bridge_hits': 3, 'strong_bridge_hits': 2,
+                        'h_pos': "Cầu Lộ Diện 2d", 't_pos': "Trùng Tổng G7",
+                        'in_cap4': True, 'in_cap4_str': "Có",
+                        'consensus_score': 550.0, 'in_d9': True, 'in_tam': False, 'in_sum': True,
+                        'convergence_badges': ["N1 Động", "Trùng Tổng G7", "Cầu Lộ Diện 2d×2d"]
+                    }
+                    found_list.append(combos_map[best_8b])
+
+        # Trụ cột 8C: Đỉnh Đầu Lộ Diện Áp Đảo (>=5 vị trí kèm cầu 2d nổ ngày 3) khử Bạch Thủ Ảo do Tâm G1 (khi Đuôi bt có 0 cầu lộ diện)
+        # (Ví dụ kỳ 27/10/2026: Đầu 9 lộ diện 5 vị trí kèm G4.1_3 2d ghép Đuôi 1 thành 91 thuộc Tổng 0 G7, khử 15 bị ảo Đuôi 5)
+        dom_raw_heads = [d_h for d_h, cnt_h in raw_h_all.items() if cnt_h >= 5 and raw_h_2d[d_h] > 0]
+        if not bt_is_double_2d and not raw_3d_all and dom_raw_heads and len(bt) == 2 and raw_t_all[bt[1]] == 0:
+            h_dom = dom_raw_heads[0]
+            cands_8c = [
+                ns for ns in sorted(dow_giao_thoa_set & d60)
+                if len(ns) == 2 and ns[0] == h_dom and ns[1] in bt and raw_t_all[ns[1]] >= 2 and ns != prev_de
+            ]
+            if cands_8c:
+                best_8c = cands_8c[0]
+                bt = best_8c
+                bt_is_double_2d = True
+                if best_8c in t4:
+                    t4.remove(best_8c)
+                t4 = [best_8c] + t4[:3]
+
+        # Trụ cột 8D: Khử Ghế Tứ Thủ Ảo do Tâm G1 (không thuộc Hạ Số 20s & có 0 cầu Đầu lộ diện, hoặc khi Tâm G1 gãy cầu 'G1_3' not in highlight_positions)
+        g7_dig_cnt = Counter(ch for v in g7_vals_prev if v and v.isdigit() for ch in v)
+        rep_g7_digs = sorted([d_g for d_g, c_g in g7_dig_cnt.items() if c_g >= 2])
+        if len(rep_g7_digs) == 2 and 'G1_3' not in highlight_positions:
+            rep_cands = [
+                p_rep for p_rep in (rep_g7_digs[0] + rep_g7_digs[1], rep_g7_digs[1] + rep_g7_digs[0])
+                if p_rep in hs20_set and p_rep in d60 and p_rep != prev_de
+            ]
+            if rep_cands and rep_cands[0] not in t4:
+                dead_tam_slots = [idx_s for idx_s, x_s in enumerate(t4) if idx_s >= 1 and x_s not in hs20_set and x_s[0] == tam_g1]
+                if dead_tam_slots:
+                    best_rep = rep_cands[0]
+                    old_dead = t4[dead_tam_slots[0]]
+                    t4[dead_tam_slots[0]] = best_rep
+                    if old_dead in new_d9 and best_rep not in new_d9 and (best_rep[1] + best_rep[0]) not in new_d9:
+                        new_d9[new_d9.index(old_dead)] = best_rep
+                        new_d9 = sorted(new_d9)
+                    if not bt_is_double_2d and raw_t_all[bt[1]] <= 1:
+                        bt = best_rep
+                        t4.remove(best_rep)
+                        t4.insert(0, best_rep)
+
+        for idx_s in range(1, len(t4)):
+            cur_s = t4[idx_s]
+            if cur_s not in hs20_set and raw_h_all[cur_s[0]] == 0:
+                cands_8d = [
+                    x_d9 for x_d9 in new_d9
+                    if x_d9 in hs20_set and x_d9 in d60
+                    and hs_sum_cnt[_get_tong_2d(x_d9)] == max_hs_sum
+                    and raw_h_all[x_d9[0]] >= 3 and raw_t_all[x_d9[1]] >= 1
+                    and x_d9 not in t4 and (x_d9[1] + x_d9[0]) not in t4
+                ]
+                if cands_8d:
+                    best_8d = cands_8d[0]
+                    t4[idx_s] = best_8d
+                    if not bt_is_double_2d and raw_t_all[bt[1]] == 0:
+                        bt = best_8d
+                        t4.remove(best_8d)
+                        t4.insert(0, best_8d)
+                    break
+
         if bt not in new_d9 and (bt[1] + bt[0]) not in new_d9:
             new_d9[-1] = bt
             new_d9 = sorted(new_d9)
@@ -1809,8 +1972,8 @@ def scan_radar(is_live=False):
     filled_prizes = filled_g1_g55 + (1 if p_g5[5] else 0)
     has_g5_5 = bool(live_p.get('G5.5', ''))
     now_curr = datetime.now()
-    # Khóa sổ ngay lập tức khi đủ 18 giải G1->G5.5 (~18h22:15) hoặc hạn chót 18h22:48 (ĐẢM BẢO 100% TRƯỚC 18H23:00!)
-    is_timeout_backup = (now_curr.hour == 18 and (now_curr.minute > 22 or (now_curr.minute == 22 and now_curr.second >= 48))) or (now_curr.hour > 18)
+    # Khóa sổ ngay lập tức khi có giải G5.5 (~18h22:15 - 18h23:10) hoặc hạn chót backup 18h23:25 (không cắt cụt sớm ở G5.3 lúc 18h22:48)
+    is_timeout_backup = (now_curr.hour == 18 and (now_curr.minute > 23 or (now_curr.minute == 23 and now_curr.second >= 25))) or (now_curr.hour > 18)
     is_completed = (filled_g1_g55 >= 18) or (has_g5_5 and filled_g1_g55 >= 16) or (is_timeout_backup and filled_g1_g55 >= 10)
 
     dan_lot_valid = []

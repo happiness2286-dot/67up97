@@ -134,8 +134,8 @@ def doc_danh_sach_draws(count=35):
 
 def extract_85_positions_single_draw(ket_qua_ngay):
     """
-    Trích xuất 85 vị trí chữ số từ G1 đến G5.6 của 1 kỳ quay.
-    Trả về dict: { 'g1.0.0': '8', ..., 'g5.5.3': '4' }
+    Trích xuất 81 vị trí chữ số chuẩn từ G1 đến hết G5.5 của 1 kỳ quay (loại bỏ hoàn toàn G5.6).
+    Trả về dict: { 'g1.0.0': '8', ..., 'g5.4.3': '4' }
     """
     pos_map = {}
     prizes = ket_qua_ngay.get('prizes', ket_qua_ngay) if isinstance(ket_qua_ngay, dict) else {}
@@ -144,7 +144,7 @@ def extract_85_positions_single_draw(ket_qua_ngay):
         ('g2', 2, 5),
         ('g3', 6, 5),
         ('g4', 4, 4),
-        ('g5', 6, 4),
+        ('g5', 5, 4),
     ]
 
     for ten_giai, so_giai, do_dai in giai_config:
@@ -389,18 +389,12 @@ def tinh_diem_hoi_tu_cap_so(cau_chay, dan_60s, context):
             tail_scores[bong] += wt * 0.5
             head_scores[cs] += wt * 0.4
 
-    # Cộng hưởng với Tâm G1 và Chạm G7
-    for d in context.get('tam_set', set()):
-        if d in head_scores:
-            head_scores[d] += 25.0
-            tail_scores[d] += 25.0
-            touch_scores[d] += 25.0
-
+    # Giải phóng khỏi Tâm G1 cố định: chỉ cộng hưởng mạnh với Chạm G7 và Tổng G7 thực chiến
     for d in context.get('g7_chams', set()):
         if d in head_scores:
-            head_scores[d] += 15.0
-            tail_scores[d] += 15.0
-            touch_scores[d] += 15.0
+            head_scores[d] += 22.0
+            tail_scores[d] += 22.0
+            touch_scores[d] += 22.0
 
     # Đảm bảo tính biến thiên: trừ nhẹ điểm bão hòa của chữ số Đầu/Đuôi vừa nổ hôm qua
     prev_de = context.get('prev_de', '')
@@ -408,7 +402,7 @@ def tinh_diem_hoi_tu_cap_so(cau_chay, dan_60s, context):
         head_scores[prev_de[0]] -= 12.0
         tail_scores[prev_de[1]] -= 12.0
 
-    # Chấm điểm 100 cặp số 00..99
+    # Chấm điểm 100 cặp số 00..99 theo 3 Trụ Cột Thực Chiến (Tổng G7 + Cầu Động 2d-3d + Dàn 60s N1 Động)
     dan_60_set = set(dan_60s)
     target_sums = context.get('target_sums', set())
     pair_scores = {}
@@ -420,15 +414,12 @@ def tinh_diem_hoi_tu_cap_so(cau_chay, dan_60s, context):
 
         sc = head_scores[h] * 1.15 + tail_scores[t] * 1.15 + (touch_scores[h] + touch_scores[t]) * 0.35
         if num_str in dan_60_set:
-            sc += 45.0
+            sc += 50.0
         else:
             sc -= 80.0
 
         if s_val in target_sums:
-            sc += 28.0
-
-        if h in context.get('tam_set', set()) or t in context.get('tam_set', set()):
-            sc += 20.0
+            sc += 42.0
 
         # Khử kẹt số: Phạt nặng nếu trùng chính xác con Đề vừa nổ hôm qua
         if num_str == prev_de:
