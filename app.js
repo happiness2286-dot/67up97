@@ -1250,7 +1250,7 @@ function checkResetTime(mockDate = null) {
         if (bannerEl) bannerEl.textContent = waitTitle;
 
         const subEl = document.getElementById('lblFastLockSub');
-        if (subEl) subEl.textContent = 'Lúc 18h15 bóng bắt đầu rơi (G7, G6, G5) -> Dàn Động kích hoạt. Hết G5.6 (~18h24) -> Khóa Chốt Dàn Cứng để vào tiền trước 18h28!';
+        if (subEl) subEl.textContent = 'Lúc 18h15 bóng bắt đầu rơi (G7, G6, G5) -> Dàn Động kích hoạt. Hết G5.5 (~18h23) -> Khóa Chốt Dàn Cứng để vào tiền trước 18h28!';
 
         const badgeEl = document.getElementById('lblCountdownLock');
         if (badgeEl) {
@@ -1620,7 +1620,7 @@ function renderFastLockBanner() {
         if (titleEl) titleEl.textContent = waitTitle;
         const bannerEl = document.getElementById('banner');
         if (bannerEl) bannerEl.textContent = waitTitle;
-        if (subEl) subEl.textContent = `Lúc 18h15 bóng bắt đầu rơi (G7, G6, G5) -> Dàn Động kích hoạt. Khi có kết quả HẾT G5.6 (~18h24) -> Khóa Chốt Dàn Cứng để vào tiền trước 18h28!`;
+        if (subEl) subEl.textContent = `Lúc 18h15 bóng bắt đầu rơi (G7, G6, G5) -> Dàn Động kích hoạt. Khi có kết quả HẾT G5.5 (~18h23) -> Khóa Chốt Dàn Cứng để vào tiền trước 18h28!`;
         if (badgeEl) {
             badgeEl.className = 'badge';
             badgeEl.style.background = 'rgba(100, 116, 139, 0.2)';
@@ -1675,24 +1675,24 @@ function buildChipHtml(valStr, prizeCode, hp) {
 
 // =======================================================
 // =======================================================
-// LOGIC KHÓA CHỐT DÀN TỰ ĐỘNG TẠI HẾT G5.6 HOẶC MỐC 18H24 (Fix Lỗi 2 & 4)
+// LOGIC KHÓA CHỐT DÀN TỰ ĐỘNG TẠI HẾT G5.5 HOẶC MỐC 18H23:25
 // =======================================================
 let isRadarLockedState = false;
 
 function checkLock() {
     if (window.isRadarWaitingMode) return;
-    // Kiểm tra Hết Giải 5.6 (data-giai="5.6")
-    const g5_6 = document.querySelector('[data-giai="5.6"]');
+    // Kiểm tra Hết Giải 5.5 (data-giai="5.5")
+    const g5_5 = document.querySelector('[data-giai="5.5"]');
     const now = window.__mockDate ? new Date(window.__mockDate) : new Date();
     const lockTime = new Date(now);
-    lockTime.setHours(18, 24, 0, 0);
+    lockTime.setHours(18, 23, 25, 0);
 
-    const hasG5_6 = Boolean(g5_6 && g5_6.textContent.replace(/[•\s]/g, '') !== '');
-    const isPast18h24 = (now >= lockTime);
-    const serverLocked = Boolean(window.radarData && (window.radarData.is_g5_6_done || window.radarData.is_locked || window.radarData.dan_type === 'LOCKED'));
+    const hasG5_5 = Boolean(g5_5 && g5_5.textContent.replace(/[•\s]/g, '') !== '');
+    const isPast18h23 = (now >= lockTime);
+    const serverLocked = Boolean(window.radarData && (window.radarData.is_g5_5_done || window.radarData.is_g5_finished || window.radarData.is_locked || window.radarData.dan_type === 'LOCKED'));
 
-    if ((hasG5_6 || isPast18h24 || serverLocked) && !isRadarLockedState) {
-        const bannerMsg = '🔒 DÀN CỨNG - ĐÃ CHỐT HẠ (HẾT G5.6) - VÀO TIỀN TRƯỚC 18H28!';
+    if ((hasG5_5 || isPast18h23 || serverLocked) && !isRadarLockedState) {
+        const bannerMsg = '🔒 DÀN CỨNG - ĐÃ CHỐT HẠ (HẾT G5.5 - 18H23) - VÀO TIỀN TRƯỚC 18H28!';
         const banner = document.getElementById('banner');
         if (banner) {
             banner.innerHTML = bannerMsg;
@@ -1705,14 +1705,14 @@ function checkLock() {
         const badgeEl = document.getElementById('lblCountdownLock');
         if (badgeEl) {
             badgeEl.className = 'badge badge-gold badge-locked-hard';
-            badgeEl.innerHTML = '🔒 DÀN CỨNG (HẾT G5.6)';
+            badgeEl.innerHTML = '🔒 DÀN CỨNG (HẾT G5.5)';
         }
         const subEl = document.getElementById('lblFastLockSub');
         if (subEl) {
-            subEl.innerHTML = '<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Đã chốt hạ sau khi hết Giải 5.6 (hoặc backup 18h24). Vào tiền trước 18h28!';
+            subEl.innerHTML = '<span style="color: #FBBF24; font-weight: 800;">⚡ VÀO TIỀN NGAY CHO GIẢI ĐẶC BIỆT HÔM NAY!</span> Đã chốt hạ ngay khi hết Giải 5.5 (18h23). Vào tiền trước 18h28!';
         }
         isRadarLockedState = true;
-        console.log('🔒 Đã chốt dàn cứng lúc:', now.toLocaleTimeString('vi-VN'));
+        console.log('🔒 Đã chốt dàn cứng G5.5 lúc:', now.toLocaleTimeString('vi-VN'));
     }
 }
 setInterval(checkLock, 1000); // Kiểm tra mỗi 1 giây
@@ -1942,9 +1942,9 @@ function renderRadarTopSummaries() {
 
     if (section2Title) {
         if (isDynamic) {
-            section2Title.innerHTML = `<span style="color: #38BDF8;"><i class="fa-solid fa-bolt"></i> ⚡ DÀN ĐỘNG ĐANG DÒ CẦU (CHỐT HẠ KHI HẾT G5.6)</span>`;
+            section2Title.innerHTML = `<span style="color: #38BDF8;"><i class="fa-solid fa-bolt"></i> ⚡ DÀN ĐỘNG ĐANG DÒ CẦU (CHỐT HẠ KHI HẾT G5.5 - 18H23)</span>`;
         } else {
-            section2Title.innerHTML = `<span style="color: #FBBF24;"><i class="fa-solid fa-lock"></i> 🔒 DÀN CỨNG CHÍNH THỨC (ĐÃ CHỐT HẾT G5.6)</span>`;
+            section2Title.innerHTML = `<span style="color: #FBBF24;"><i class="fa-solid fa-lock"></i> 🔒 DÀN CỨNG CHÍNH THỨC (ĐÃ CHỐT HẾT G5.5 - 18H23)</span>`;
         }
     }
 }
@@ -2442,13 +2442,35 @@ function renderTabCauDong() {
     const dan60s = latest.dan_60s || [];
     const giaoThoa = latest.giao_thoa || [];
     const ngoai = latest.ngoai || [];
-    const bt = latest.bach_thu || '--';
+    let bt = latest.bach_thu || '--';
+    let tuThu = latest.tu_thu || [];
+    let dan9 = latest.dan_9 || [];
+    let danDao = latest.dan_dao || [];
+
+    // Đồng bộ trực tiếp với Radar Live nếu đang trong cùng kỳ quay đã có bóng rơi G1->G5.5
+    const isSameRadarDate = Boolean(radarData && radarData.target_date === ngay && radarData.filled_count > 0);
+    if (isSameRadarDate) {
+        if (radarData.top_1) bt = radarData.top_1;
+        if (radarData.top_4 && radarData.top_4.length > 0) tuThu = radarData.top_4;
+        if (radarData.dan_9_so && radarData.dan_9_so.length > 0) {
+            dan9 = radarData.dan_9_so;
+            danDao = dan9.filter(s => s && s.length === 2 && s[0] !== s[1]).map(s => s[1] + s[0]).filter(s => !dan9.includes(s)).slice(0, 6);
+        }
+    }
+
     const lotLon = bt && bt.length === 2 && bt[0] !== bt[1] ? (bt[1] + bt[0]) : (bt ? bt : '--');
-    const tuThu = latest.tu_thu || [];
-    const dan9 = latest.dan_9 || [];
-    const danDao = latest.dan_dao || [];
     const canhBao = latest.canh_bao || { canh_bao: false };
     const cauChay = latest.cau_chay || [];
+
+    const subNoteEl = document.getElementById('lblTab4SubNote');
+    if (subNoteEl) {
+        const isWaitingLive = (!latest.de || latest.de === '--') && !isSameRadarDate;
+        if (isWaitingLive) {
+            subNoteEl.innerHTML = `<span style="color: #FBBF24; font-weight: 700;">⏳ ĐANG HIỂN THỊ SỐ DỰ BÁO SỚM TRƯỚC GIỜ QUAY</span> — Hệ thống sẽ tự động khóa số Cầu Động thực chiến khi có bóng rơi <strong>G1→G5.5 lúc 18h23</strong>!`;
+        } else {
+            subNoteEl.innerHTML = `<span style="color: #34D399; font-weight: 700;">🔒 ĐÃ KHÓA SỐ THỰC CHIẾN TỪ 81 VỊ TRÍ (G1→G5.5 - 18H23)</span> — Hội tụ 3 Trụ cột (Tổng G7 × Cầu Lộ Diện × 60s N1)`;
+        }
+    }
 
     // Lưu biến toàn cục hỗ trợ Copy
     window.cauDongBT = bt;
@@ -2468,7 +2490,7 @@ function renderTabCauDong() {
     if (kpiBtTt) kpiBtTt.textContent = `${bt} • ${tuThu.slice(0, 3).join(',')}`;
 
     const kpiSize = document.getElementById('kpiCauDongSize');
-    if (kpiSize) kpiSize.textContent = `${danDong.length} Số (G1→G5.6)`;
+    if (kpiSize) kpiSize.textContent = `${danDong.length} Số (G1→G5.5)`;
 
     const kpiTrung = document.getElementById('kpiCauDongTrung');
     if (kpiTrung) {

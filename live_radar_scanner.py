@@ -40,6 +40,7 @@ SUMMARY_JSON_PATH = os.path.join(BASE_DIR, 'analysis_summary.json')
 CACHE_DRAWS_PATH = os.path.join(BASE_DIR, 'cached_draws.json')
 TELEGRAM_CFG_PATH = os.path.join(BASE_DIR, 'telegram_config.json')
 TELEGRAM_SENT_LOG_PATH = os.path.join(BASE_DIR, 'telegram_sent_log.json')
+LOCKED_SNAPSHOTS_PATH = os.path.join(BASE_DIR, 'locked_g55_snapshots.json')
 
 API_383_LIVE_URL = "https://api.383.im/lottery/live.json"
 DAIPHAT_LIVE_URL = "https://xosodaiphat.com/xsmb-xo-so-mien-bac.html"
@@ -74,6 +75,53 @@ def extract_date_key(d_str):
     if m:
         return f"{int(m.group(1)):02d}-{int(m.group(2)):02d}-{m.group(3)}"
     return str(d_str).strip()
+
+
+def load_locked_g55_snapshot(date_str):
+    """Đọc bản chụp bộ số đã đóng băng lúc 18h23 (G5.5) của ngày date_str (nếu có)."""
+    t_key = extract_date_key(date_str)
+    if not t_key or not os.path.exists(LOCKED_SNAPSHOTS_PATH):
+        return None
+    try:
+        with open(LOCKED_SNAPSHOTS_PATH, 'r', encoding='utf-8') as f:
+            snaps = json.load(f)
+        if isinstance(snaps, dict) and t_key in snaps:
+            return snaps[t_key]
+    except Exception:
+        pass
+    return None
+
+
+def save_locked_g55_snapshot(date_str, snap_dict):
+    """Đóng băng vĩnh viễn bộ số đã chốt lúc 18h23 (G5.5) để không bao giờ bị biến đổi sau 18h36."""
+    t_key = extract_date_key(date_str)
+    if not t_key or not snap_dict:
+        return False
+    snaps = {}
+    if os.path.exists(LOCKED_SNAPSHOTS_PATH):
+        try:
+            with open(LOCKED_SNAPSHOTS_PATH, 'r', encoding='utf-8') as f:
+                snaps = json.load(f)
+            if not isinstance(snaps, dict):
+                snaps = {}
+        except Exception:
+            snaps = {}
+    if t_key in snaps:
+        return False
+    snaps[t_key] = {
+        'top_1': snap_dict.get('top_1', ''),
+        'lot_lon': snap_dict.get('lot_lon', ''),
+        'song_thu': snap_dict.get('song_thu_tru') or snap_dict.get('song_thu', []),
+        'top_4': list(snap_dict.get('top_4', [])),
+        'dan_9_so': list(snap_dict.get('dan_9_so', [])),
+        'locked_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    try:
+        with open(LOCKED_SNAPSHOTS_PATH, 'w', encoding='utf-8') as f:
+            json.dump(snaps, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception:
+        return False
 
 
 def send_telegram_alert(message_text):
@@ -190,7 +238,9 @@ def ensure_daily_telegram_sent(res):
             sent_log = {}
 
     changed = False
-    # 1. Gửi bản tin chốt khóa G5.5 nếu hôm nay đã có G5.5 mà chưa gửi
+    # 1. Đóng băng bản chụp G5.5 và gửi bản tin chốt khóa G5.5 nếu hôm nay đã có G5.5
+    if res.get('is_g5_finished'):
+        save_locked_g55_snapshot(t_date, res)
     if res.get('is_g5_finished') and sent_log.get('last_g55_date') != today_key:
         tg_msg = format_g55_telegram_message(res, is_test=False)
         if send_telegram_alert(tg_msg):
@@ -904,7 +954,9 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                 matched_dow_log = True
                 break
         if not matched_dow_log:
-            dow_ha_so_list = list(dm.get('next_dan_ha_so', []))
+            # Chuẩn hóa thứ tự tăng dần đồng nhất 100% với dan_ha_so_str trong history_log_dow
+            # để trọng số Top 10 Hạ Số lúc bắn Live 18h23 và sau 18h36 khớp nhau tuyệt đối
+            dow_ha_so_list = sorted(list(dm.get('next_dan_ha_so', [])))
             dow_giao_thoa_set = set(dm.get('next_dan_giao_thoa', []))
             dow_sums = {int(s) for s in dm.get('next_target_sums', []) if str(s).isdigit()}
     dow_ha_so_set = set(dow_ha_so_list)
@@ -1569,11 +1621,23 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                 reverse=True
             )
             best_3d2d = cross_3d_2d_hs[0]
+            lot_3d2d = cross_3d_2d_hs[1]
             bt = best_3d2d
             bt_is_double_2d = True
             if best_3d2d in t4:
                 t4.remove(best_3d2d)
             t4 = [best_3d2d] + t4[:3]
+            # Làm sạch các ghế phụ trong Tứ thủ bị chiếm bởi số ảo ngoài Hạ Số 20s (như 32, 28 ngày 14/11)
+            hs_clean_pool = [lot_3d2d] + [
+                x_hs for x_hs in dow_ha_so_list
+                if x_hs in d60 and x_hs in new_d9_all and x_hs not in t4 and x_hs != best_3d2d and x_hs != lot_3d2d
+            ]
+            for idx_clean in range(1, len(t4)):
+                if t4[idx_clean] not in hs20_set:
+                    for repl_hs in hs_clean_pool:
+                        if repl_hs not in t4:
+                            t4[idx_clean] = repl_hs
+                            break
             for c_pair in cross_3d_2d_hs:
                 if c_pair not in combos_map:
                     combos_map[c_pair] = {
@@ -1684,6 +1748,46 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
                         t4.insert(0, best_8d)
                     break
 
+        # Trụ cột 8E: Khi Tâm G1 gãy cầu ('G1_3' not in highlight_positions) và tam_g1_set có 0 cầu 2d/3d lộ diện,
+        # nếu bt hiện tại bị kéo bởi Tâm G1 (0 chữ số thuộc raw_2d_all | raw_3d_all), xét giao thoa Cầu Đôi 2d×2d Lộ Diện độc nhất trong (Giao Thoa G7 ∩ 60s N1)
+        raw_23_all = raw_2d_all | raw_3d_all
+        if 'G1_3' not in highlight_positions and not (tam_g1_set & raw_23_all) and len(bt) == 2 and bt[0] not in raw_23_all and bt[1] not in raw_23_all:
+            cands_8e = [
+                ns for ns in sorted(dow_giao_thoa_set & d60)
+                if len(ns) == 2 and ns[0] != ns[1] and ns != prev_de
+                and ns[0] in raw_2d_all and ns[1] in raw_2d_all
+                and ns[0] not in prev_de and ns[1] not in prev_de
+            ]
+            if len(cands_8e) == 2 and (cands_8e[0][1] + cands_8e[0][0]) == cands_8e[1] and (cands_8e[0][0] in g7_direct_digits or cands_8e[0][1] in g7_direct_digits):
+                cands_8e.sort(
+                    key=lambda ns: (
+                        ns[0] in g7_direct_digits,
+                        raw_h_2d[ns[0]] + raw_t_2d[ns[0]],
+                        raw_h_all[ns[0]] + raw_t_all[ns[1]]
+                    ),
+                    reverse=True
+                )
+                best_8e = cands_8e[0]
+                bt = best_8e
+                bt_is_double_2d = True
+                if best_8e in t4:
+                    t4.remove(best_8e)
+                t4 = [best_8e] + t4[:3]
+                for c_8e in cands_8e:
+                    if c_8e not in combos_map:
+                        combos_map[c_8e] = {
+                            'num': c_8e, 'c_digit': c_8e[0], 'd_digit': c_8e[1],
+                            'c_cycle': 2, 'd_cycle': 2, 'min_cycle': 2, 'cycle_days': 2,
+                            'category': "Chỉ đạo", 'cat_label': "✅ HỘI TỤ CẦU ĐÔI 2d×2d LỘ DIỆN",
+                            'weight': 1.0, 'combo_type': "chính diện", 'score': 188,
+                            'bridge_hits': 3, 'strong_bridge_hits': 2,
+                            'h_pos': "Cầu Lộ Diện 2d", 't_pos': "Tổng G7 ∩ 60s N1",
+                            'in_cap4': True, 'in_cap4_str': "Có",
+                            'consensus_score': 555.0, 'in_d9': True, 'in_tam': False, 'in_sum': True,
+                            'convergence_badges': ["N1 Động", "Tổng G7", "Cầu Đôi 2d×2d Lộ Diện"]
+                        }
+                        found_list.append(combos_map[c_8e])
+
         if bt not in new_d9 and (bt[1] + bt[0]) not in new_d9:
             new_d9[-1] = bt
             new_d9 = sorted(new_d9)
@@ -1693,6 +1797,18 @@ def compute_radar_convergence(sub_draws, cap4_set, summary_data=None, enable_res
         lot_lon = get_lot_lon(top_1)
         song_thu_tru = [top_1, lot_lon] if lot_lon else [top_1]
         top_4 = t4
+
+        # Khôi phục bản chụp đóng băng lúc 18h23 (nếu ngày này đã được khóa sổ G5.5 trước đó)
+        frozen_snap = load_locked_g55_snapshot(target_draw.get('date', ''))
+        if frozen_snap and frozen_snap.get('top_1'):
+            top_1 = frozen_snap['top_1']
+            lot_lon = frozen_snap.get('lot_lon') or get_lot_lon(top_1)
+            song_thu_tru = frozen_snap.get('song_thu') or ([top_1, lot_lon] if lot_lon else [top_1])
+            if frozen_snap.get('top_4'):
+                top_4 = list(frozen_snap['top_4'])
+            if frozen_snap.get('dan_9_so'):
+                dan_9_so = list(frozen_snap['dan_9_so'])
+                new_d9 = dan_9_so
 
         for item in found_list:
             if item['num'] in new_d9:

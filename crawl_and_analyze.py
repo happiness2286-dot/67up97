@@ -823,6 +823,7 @@ def analyze_all(data_2026):
             'dan_size': len(dan_giao_thoa),
             'dan_str': ", ".join(sorted(list(dan_giao_thoa))),
             'dan_ha_so_str': ", ".join(sorted(list(dan_ha_so))),
+            'dan_ha_so_ranked': list(dan_ha_so_list),
             'hit_1d': "TRÚNG N1 🎯" if hit_1d else "TRƯỢT ❌",
             'hit_ha_so': "TRÚNG HỎA LỰC 🎯" if hit_ha_so else "TRƯỢT ❌",
             'res_f3': res_f3
