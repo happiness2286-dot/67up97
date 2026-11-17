@@ -36,18 +36,18 @@
       "0917",
       "2633",
       "3146",
-      ""
+      "5806"
     ],
     "g6": [
-      "",
-      "",
-      ""
+      "648",
+      "952",
+      "173"
     ],
     "g7": [
-      "",
-      "",
-      "",
-      ""
+      "29",
+      "57",
+      "44",
+      "70"
     ]
   },
   "highlight_positions": {
@@ -579,15 +579,15 @@
       "tooltip": "G5.5 vị trí 4: Đầu 6 (1d, 2/5 kỳ) | ⚡ LÓT 1d (Săn Nổ Ngày 2)"
     }
   },
-  "filled_count": 18,
+  "filled_count": 19,
   "total_count": 19,
   "is_g5_finished": true,
   "is_g5_5_done": true,
-  "is_g5_6_done": false,
+  "is_g5_6_done": true,
   "is_locked": true,
-  "radar_status": "LOCKED_G5",
-  "status_text": "🔒 ĐÃ CHỐT KHÓA TẠI G5.5 - VÀO TIỀN NGAY TRƯỚC 18H28!",
-  "lock_badge": "🔒 ĐÃ KHÓA CHỐT DÀN (G5.5)",
+  "radar_status": "FINISHED_RESULT",
+  "status_text": "ĐÃ HOÀN TẤT KỲ QUAY (ĐỀ VỀ 65)",
+  "lock_badge": "🎯 ĐÃ CÓ KẾT QUẢ ĐỀ: 65",
   "top_1": "38",
   "lot_lon": "83",
   "song_thu_tru": [
@@ -3238,11 +3238,11 @@
       "top_rank": "❌ Loại bỏ (Ngoài N1)"
     }
   ],
-  "actual_de": "",
-  "actual_3d": "",
+  "actual_de": "65",
+  "actual_3d": "865",
   "dan_tinh_4cap": {
-    "target_date": "Thứ ba ngày 17-11-2026",
-    "status_text": "ĐANG CÓ HIỆU LỰC (VÀO TIỀN TRƯỚC 18H15)",
+    "target_date": "Thứ tư ngày 18-11-2026",
+    "status_text": "ĐANG HIỆU LỰC CHO KỲ TỚI (VÀO TIỀN TRƯỚC 18H15 NGÀY 18/11)",
     "bach_thu": "38",
     "lot_lon": "83",
     "song_thu": [
@@ -3373,7 +3373,7 @@
     ]
   },
   "frame_transition": {
-    "last_result": "Kỳ gần nhất (Thứ ba ngày 17-11-2026) Đề về đang quay: 🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI",
+    "last_result": "Kỳ gần nhất (Thứ ba ngày 17-11-2026) Đề về 65: 🎯 ĐÃ TRÚNG N1 → RESET CHUYỂN CHU KỲ MỚI",
     "status_badge": "ĐÃ TRÚNG N1 → RESET CẦU MỚI",
     "dan_n1": [
       "01",
@@ -3531,6 +3531,109 @@
   "history_records": [
     {
       "stt": 1,
+      "date": "Thứ ba ngày 17-11-2026",
+      "de": "65",
+      "actual_3d": "865",
+      "top_1": "38",
+      "lot_lon": "83",
+      "song_thu": [
+        "38",
+        "83"
+      ],
+      "hit_top_1": false,
+      "hit_lot_lon": false,
+      "hit_song_thu": false,
+      "top_4": [
+        "38",
+        "63",
+        "81",
+        "29"
+      ],
+      "hit_top_4": false,
+      "dan_9_so": [
+        "06",
+        "13",
+        "18",
+        "24",
+        "26",
+        "29",
+        "36",
+        "38",
+        "61"
+      ],
+      "pred_heads": "3, 2, 1",
+      "pred_tails": "6, 8, 3",
+      "hit_dan_9": false,
+      "dan_lot": [
+        "01",
+        "02",
+        "04",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "13",
+        "14",
+        "15",
+        "17",
+        "18",
+        "24",
+        "25",
+        "26",
+        "27",
+        "31",
+        "33",
+        "34",
+        "35",
+        "36",
+        "39",
+        "40",
+        "42",
+        "43",
+        "45",
+        "46",
+        "47",
+        "51",
+        "53",
+        "54",
+        "56",
+        "57",
+        "59",
+        "60",
+        "61",
+        "65",
+        "66",
+        "68",
+        "70",
+        "72",
+        "73",
+        "74",
+        "75",
+        "77",
+        "79",
+        "83",
+        "86",
+        "88",
+        "90",
+        "91",
+        "92",
+        "93",
+        "95",
+        "97"
+      ],
+      "hit_dan_lot": true,
+      "hit_n1": true,
+      "top3_cang": [
+        "3",
+        "6",
+        "8"
+      ],
+      "hit_cang_tt": false,
+      "hit_cang_bt": false
+    },
+    {
+      "stt": 2,
       "date": "Thứ hai ngày 16-11-2026",
       "de": "03",
       "actual_3d": "403",
@@ -3633,7 +3736,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 2,
+      "stt": 3,
       "date": "Chủ nhật ngày 15-11-2026",
       "de": "25",
       "actual_3d": "225",
@@ -3736,7 +3839,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 3,
+      "stt": 4,
       "date": "Thứ bảy ngày 14-11-2026",
       "de": "93",
       "actual_3d": "893",
@@ -3839,7 +3942,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 4,
+      "stt": 5,
       "date": "Thứ sáu ngày 13-11-2026",
       "de": "51",
       "actual_3d": "451",
@@ -3942,7 +4045,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 5,
+      "stt": 6,
       "date": "Thứ năm ngày 12-11-2026",
       "de": "54",
       "actual_3d": "454",
@@ -4045,7 +4148,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 6,
+      "stt": 7,
       "date": "Thứ tư ngày 11-11-2026",
       "de": "29",
       "actual_3d": "129",
@@ -4148,7 +4251,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 7,
+      "stt": 8,
       "date": "Thứ ba ngày 10-11-2026",
       "de": "83",
       "actual_3d": "683",
@@ -4251,7 +4354,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 8,
+      "stt": 9,
       "date": "Thứ hai ngày 09-11-2026",
       "de": "72",
       "actual_3d": "372",
@@ -4354,7 +4457,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 9,
+      "stt": 10,
       "date": "Chủ nhật ngày 08-11-2026",
       "de": "26",
       "actual_3d": "926",
@@ -4457,7 +4560,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 10,
+      "stt": 11,
       "date": "Thứ bảy ngày 07-11-2026",
       "de": "14",
       "actual_3d": "014",
@@ -4560,7 +4663,7 @@
       "hit_cang_bt": true
     },
     {
-      "stt": 11,
+      "stt": 12,
       "date": "Thứ sáu ngày 06-11-2026",
       "de": "77",
       "actual_3d": "477",
@@ -4663,7 +4766,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 12,
+      "stt": 13,
       "date": "Thứ năm ngày 05-11-2026",
       "de": "02",
       "actual_3d": "502",
@@ -4766,7 +4869,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 13,
+      "stt": 14,
       "date": "Thứ tư ngày 04-11-2026",
       "de": "46",
       "actual_3d": "046",
@@ -4869,7 +4972,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 14,
+      "stt": 15,
       "date": "Thứ ba ngày 03-11-2026",
       "de": "46",
       "actual_3d": "446",
@@ -4972,7 +5075,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 15,
+      "stt": 16,
       "date": "Thứ hai ngày 02-11-2026",
       "de": "29",
       "actual_3d": "129",
@@ -5075,7 +5178,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 16,
+      "stt": 17,
       "date": "Chủ nhật ngày 01-11-2026",
       "de": "17",
       "actual_3d": "917",
@@ -5178,7 +5281,7 @@
       "hit_cang_bt": true
     },
     {
-      "stt": 17,
+      "stt": 18,
       "date": "Thứ bảy ngày 31-10-2026",
       "de": "57",
       "actual_3d": "457",
@@ -5281,7 +5384,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 18,
+      "stt": 19,
       "date": "Thứ sáu ngày 30-10-2026",
       "de": "59",
       "actual_3d": "259",
@@ -5384,7 +5487,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 19,
+      "stt": 20,
       "date": "Thứ năm ngày 29-10-2026",
       "de": "01",
       "actual_3d": "401",
@@ -5487,7 +5590,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 20,
+      "stt": 21,
       "date": "Thứ tư ngày 28-10-2026",
       "de": "75",
       "actual_3d": "175",
@@ -5590,7 +5693,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 21,
+      "stt": 22,
       "date": "Thứ ba ngày 27-10-2026",
       "de": "91",
       "actual_3d": "691",
@@ -5693,7 +5796,7 @@
       "hit_cang_bt": true
     },
     {
-      "stt": 22,
+      "stt": 23,
       "date": "Thứ hai ngày 26-10-2026",
       "de": "21",
       "actual_3d": "221",
@@ -5796,7 +5899,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 23,
+      "stt": 24,
       "date": "Chủ nhật ngày 25-10-2026",
       "de": "28",
       "actual_3d": "328",
@@ -5899,7 +6002,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 24,
+      "stt": 25,
       "date": "Thứ bảy ngày 24-10-2026",
       "de": "32",
       "actual_3d": "932",
@@ -6002,7 +6105,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 25,
+      "stt": 26,
       "date": "Thứ sáu ngày 23-10-2026",
       "de": "67",
       "actual_3d": "067",
@@ -6105,7 +6208,7 @@
       "hit_cang_bt": true
     },
     {
-      "stt": 26,
+      "stt": 27,
       "date": "Thứ năm ngày 22-10-2026",
       "de": "14",
       "actual_3d": "814",
@@ -6208,7 +6311,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 27,
+      "stt": 28,
       "date": "Thứ tư ngày 21-10-2026",
       "de": "63",
       "actual_3d": "163",
@@ -6311,7 +6414,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 28,
+      "stt": 29,
       "date": "Thứ ba ngày 20-10-2026",
       "de": "09",
       "actual_3d": "809",
@@ -6414,7 +6517,7 @@
       "hit_cang_bt": false
     },
     {
-      "stt": 29,
+      "stt": 30,
       "date": "Thứ hai ngày 19-10-2026",
       "de": "90",
       "actual_3d": "390",
@@ -6515,123 +6618,20 @@
       ],
       "hit_cang_tt": true,
       "hit_cang_bt": true
-    },
-    {
-      "stt": 30,
-      "date": "Chủ nhật ngày 18-10-2026",
-      "de": "42",
-      "actual_3d": "642",
-      "top_1": "42",
-      "lot_lon": "24",
-      "song_thu": [
-        "42",
-        "24"
-      ],
-      "hit_top_1": true,
-      "hit_lot_lon": false,
-      "hit_song_thu": true,
-      "top_4": [
-        "42",
-        "04",
-        "15",
-        "21"
-      ],
-      "hit_top_4": true,
-      "dan_9_so": [
-        "04",
-        "06",
-        "08",
-        "12",
-        "15",
-        "35",
-        "42",
-        "54",
-        "59"
-      ],
-      "pred_heads": "5, 0, 1",
-      "pred_tails": "5, 4, 2",
-      "hit_dan_9": true,
-      "dan_lot": [
-        "01",
-        "03",
-        "06",
-        "08",
-        "09",
-        "10",
-        "12",
-        "13",
-        "17",
-        "18",
-        "22",
-        "24",
-        "26",
-        "27",
-        "29",
-        "30",
-        "31",
-        "35",
-        "36",
-        "39",
-        "40",
-        "44",
-        "45",
-        "47",
-        "49",
-        "51",
-        "53",
-        "54",
-        "56",
-        "58",
-        "59",
-        "60",
-        "61",
-        "62",
-        "63",
-        "65",
-        "66",
-        "67",
-        "68",
-        "71",
-        "72",
-        "74",
-        "76",
-        "77",
-        "79",
-        "80",
-        "81",
-        "85",
-        "86",
-        "87",
-        "90",
-        "92",
-        "94",
-        "95",
-        "97",
-        "99"
-      ],
-      "hit_dan_lot": false,
-      "hit_n1": true,
-      "top3_cang": [
-        "0",
-        "8",
-        "1"
-      ],
-      "hit_cang_tt": false,
-      "hit_cang_bt": false
     }
   ],
   "history_summary": {
     "total_evals": 30,
-    "top1_hits": 15,
-    "top1_rate": 50.0,
-    "song_thu_hits": 15,
-    "song_thu_rate": 50.0,
-    "top4_hits": 18,
-    "top4_rate": 60.0,
-    "dan9_hits": 18,
-    "dan9_rate": 60.0,
-    "lot_hits": 4,
-    "lot_rate": 13.33,
+    "top1_hits": 14,
+    "top1_rate": 46.67,
+    "song_thu_hits": 14,
+    "song_thu_rate": 46.67,
+    "top4_hits": 17,
+    "top4_rate": 56.67,
+    "dan9_hits": 17,
+    "dan9_rate": 56.67,
+    "lot_hits": 5,
+    "lot_rate": 16.67,
     "n1_hits": 22,
     "n1_rate": 73.33,
     "cang_tt_hits": 6,
@@ -6639,5 +6639,5 @@
     "cang_bt_hits": 5,
     "cang_bt_rate": 16.67
   },
-  "last_updated": "18:22:42 17/11/2026"
+  "last_updated": "18:31:21 17/11/2026"
 }
